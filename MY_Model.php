@@ -2,103 +2,109 @@
 
 class MY_Model extends CI_Model
 {
-  protected $_table;
-  protected $_primary = 'id';
-  protected $_timestamps = TRUE;
-  protected $_timestamp_format = 'datetime'; // format can be 'datetime','date','timestamp'
-  protected $_created_col = 'created_at';
-  protected $_updated_col = 'updated_at';
-  private $_time;
-  public function __construct()
-  {
-    parent::__construct();
-	$this->load->database();
-	switch ($this->_timestamp_format)
+	protected $_table;
+	protected $_primary = 'id';
+	protected $_timestamps = TRUE;
+	protected $_timestamp_format = 'datetime'; // format can be 'datetime','date','timestamp'
+	protected $_created_col = 'created_at';
+	protected $_updated_col = 'updated_at';
+	private $_time;
+	public function __construct()
 	{
-		case 'datetime':
-			$this->_time = date('Y-m-d H:i:s');			
+		parent::__construct();
+		$this->load->database();
+		switch ($this->_timestamp_format)
+		{
+			case 'datetime':
+				$this->_time = date('Y-m-d H:i:s');			
 			break;
-		case 'date':
-			$this->_time = date('Y-m-d');			
+			case 'date':
+				$this->_time = date('Y-m-d');			
 			break;
-		case 'timestamp':
-			$this->_time = time();
+			case 'timestamp':
+				$this->_time = time();
 			break;
+		}
 	}
-  }
-  /** retrieve all records from DB
-   *
-   * @param array $where_arr
-   * @param var|array $order_by_var_arr
-   * @param var $select
-   * @return object
-   */
-  public function get_all($where_arr = NULL, $order_by_var_arr = NULL, $select = NULL)
-  {
-	  if(isset($where_arr))
-	  {
-		  $this->db->where($where_arr);
-	  }
-	  if(isset($order_by_var_arr))
-	  {
-		  if(!is_array($order_by_var_arr))
-		  {
-			  $order_by[0] = $order_by_var_arr;
-			  $order_by[1] = 'asc';
-		  }
+	/** retrieve all records from DB
+	 * @param array $where_arr
+	 * @param var|array $order_by_var_arr
+	 * @param var $select
+	 * @return object
+	**/
+	public function get_all($where_arr = NULL, $order_by_var_arr = NULL, $select = NULL)
+	{
+		if(isset($where_arr))
+		{
+			$this->db->where($where_arr);
+		}
+		if(isset($order_by_var_arr))
+		{
+			if(!is_array($order_by_var_arr))
+			{
+				$order_by[0] = $order_by_var_arr;
+				$order_by[1] = 'asc';
+			}
+			else
+			{
+				$order_by[0] = $order_by_var_arr[0];
+				$order_by[1] = $order_by_var_arr[1];
+			}
+			$this->db->order_by($order_by[0],$order_by[1]);
+		}
+		if(isset($select))
+		{
+			$this->db->select($select);
+		}
+		$query = $this->db->get($this->_table);
+		if($query->num_rows()>0)
+		{
+			foreach($query->result() as $row)
+			{
+				$data[] = $row;
+			}
+			return $data;
+		}
 		else
 		{
-			$order_by[0] = $order_by_var_arr[0];
-			$order_by[1] = $order_by_var_arr[1];
+			return FALSE;
 		}
-	$this->db->order_by($order_by[0],$order_by[1]);
 	}
-	if(isset($select))
+	
+	/**
+	 * Retrieve one record from DB
+	 * @param int|array $where_arr_var
+	 * @param str $select_str
+	 * @return object
+	*/
+	public function get($where_arr_var = NULL,$select = NULL)
 	{
-	$this->db->select($select);
-	}
-	$query = $this->db->get($this->_table);
-	if($query->num_rows()>0)
-	{
-		foreach($query->result() as $row)
+		if(isset($where_arr_var))
 		{
-			$data[] = $row;
+			if(is_array($where_arr_var))
+			{
+				$this->db->where($where_arr);
+			}
+			else
+			{
+				$this->db->where(array($this->_primary => $where_arr_var));
+			}
 		}
-		return $data;
+		if(isset($select))
+		{
+			$this->db->select($select);
+		}
+		$this->db->limit(1);
+		$query = $this->db->get($this->_table);
+		if($query->num_rows()>0)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
-	else
-	{
-	return FALSE;
-	}
-  }
-
-  /**
-   * Retrieve one record from DB
-   * @param type $where_arr
-   * @param type $select_str
-   * @return object
-   */
-  public function get($where_arr = NULL,$select = NULL)
-  {
-	  if(isset($where_arr))
-	  {
-		  $this->db->where($where_arr);
-	  }
-	  if(isset($select))
-	  {
-	  	$this->db->select($select);
-	  }
-	  $this->db->limit(1);
-	  $query = $this->db->get($this->_table);
-	  if($query->num_rows()>0)
-	  {
-		  return $query->row();
-	  }
-	  else
-	  {
-		  return FALSE;
-	  }
-  }
 	/**
 	 * Insert a record into DB
 	 * @param type $columns_arr
