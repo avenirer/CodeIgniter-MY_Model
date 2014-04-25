@@ -4,15 +4,11 @@ class MY_Model extends CI_Model
 {
   protected $_table;
   protected $_primary = 'id';
-  protected $_timestamps = FALSE;
+  protected $_timestamps = TRUE;
   protected $_timestamp_format = 'datetime'; // format can be 'datetime','date','timestamp'
   protected $_created_col = 'created_at';
   protected $_updated_col = 'updated_at';
   private $_time;
-  public $where_arr = NULL;
-  public $order_by_arr = NULL;
-  public $cols_sel = NULL;
-  public $cols_upd = NULL;
   public function __construct()
   {
     parent::__construct();
