@@ -83,7 +83,7 @@ class MY_Model extends CI_Model
 		{
 			if(is_array($where_arr_var))
 			{
-				$this->db->where($where_arr);
+				$this->db->where($where_arr_var);
 			}
 			else
 			{
