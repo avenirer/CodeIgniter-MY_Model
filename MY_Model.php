@@ -162,11 +162,11 @@ class MY_Model extends CI_Model
 	 */
 	public function delete($where_arr_var = NULL)
 	{
-		if(isset($where_arr))
+		if(isset($where_arr_var))
 		{
 			if(is_array($where_arr_var))
 			{
-				$this->db->where($where_arr);
+				$this->db->where($where_arr_var);
 			}
 			else
 			{
