@@ -13,6 +13,7 @@ class MY_Model extends CI_Model
 	{
 		parent::__construct();
 		$this->load->database();
+		$this->_fetch_table();
 		switch ($this->_timestamp_format)
 		{
 			case 'datetime':
@@ -189,6 +190,14 @@ class MY_Model extends CI_Model
 	public function hash($string)
 	{
 		return hash('sha512', $string, config_item('encryption_key'));
+	}
+	private function _fetch_table()
+	{
+		if ($this->_table == NULL)
+	        {
+	        	$this->load->helper('inflector');
+	        	$this->_table = plural(preg_replace('/(_m|_model)?$/', '', strtolower(get_class($this))));
+	        }
 	}
 
 }
