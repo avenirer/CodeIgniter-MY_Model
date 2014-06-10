@@ -9,6 +9,9 @@ class MY_Model extends CI_Model
 	protected $_created_col = 'created_at';
 	protected $_updated_col = 'updated_at';
 	private $_time;
+	protected $_soft_delete = TRUE;
+	protected $_soft_delete_col = 'status';
+	protected $_soft_delete_values = array(0=>'inactive',1=>'active');
 	public function __construct()
 	{
 		parent::__construct();
@@ -170,7 +173,7 @@ class MY_Model extends CI_Model
 		}
 	}
 	/**
-	 * Delete row(s)
+	 * Delete row(s) - it does a soft delete or a raw delete depending on the $_soft_delete values
 	 * @param array $where_arr
 	 * @return integer affected rows
 	 */
@@ -186,7 +189,14 @@ class MY_Model extends CI_Model
 			{
 				$this->db->where(array($this->_primary => $where_arr_var));
 			}
-			$this->db->delete($this->_table);
+			if($this->_soft_delete===TRUE)
+			{
+				$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[0]);
+			}
+			else
+			{
+				$this->db->delete($this->_table);
+			}
 			return $this->db->affected_rows();
 		}
 		else
@@ -195,6 +205,35 @@ class MY_Model extends CI_Model
 		}
 
 	}
+	/**
+	 * Delete row(s) - it does a soft delete or a raw delete depending on the $_soft_delete values
+	 * @param array $where_arr
+	 * @return integer affected rows
+	 */
+	public function undelete($where_arr_var = NULL)
+	{
+		if($this->_soft_delete && !empty($where_arr_var))
+		{
+			if(is_array($where_arr_var))
+			{
+				$this->db->where($where_arr_var);
+			}
+			else
+			{
+				$this->db->where(array($this->_primary => $where_arr_var));
+			}
+			$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[1]);
+			return $this->db->affected_rows();
+			
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
+	
+	
 	/**
 	 * hash a string
 	 * @param string $string
