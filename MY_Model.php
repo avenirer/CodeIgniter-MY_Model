@@ -158,7 +158,7 @@ class MY_Model extends CI_Model
 		{
 			$this->db->where($where_arr);
 		}
-		if($this->_timestamps==TRUE && !array_key_exists($this->_updated_col, $columns_arr))
+		if($this->_timestamps && !array_key_exists($this->_updated_col, $columns_arr))
 		{
 			$columns_arr[$this->_updated_col]= $this->_time;
 		}
