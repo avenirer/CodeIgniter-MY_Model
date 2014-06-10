@@ -72,6 +72,19 @@ class MY_Model extends CI_Model
 		}
 	}
 	
+	/** retrieve number of records from DB
+	 * @param array $where_arr
+	 * @return int
+	**/
+	public function get_count($where_arr = NULL)
+	{
+		if(isset($where_arr))
+		{
+			$this->db->where($where_arr);
+		}
+		return $this->db->count_all_results($this->_table);
+	}
+	
 	/**
 	 * Retrieve one record from DB
 	 * @param int|array $where_arr_var
