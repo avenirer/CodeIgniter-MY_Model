@@ -98,14 +98,7 @@ class MY_Model extends CI_Model
 	{
 		if(isset($where_arr_var))
 		{
-			if(is_array($where_arr_var))
-			{
-				$this->db->where($where_arr_var);
-			}
-			else
-			{
-				$this->db->where(array($this->_primary => $where_arr_var));
-			}
+			$this->_where($where_arr_var);
 		}
 		if(isset($select))
 		{
@@ -181,14 +174,7 @@ class MY_Model extends CI_Model
 	{
 		if(isset($where_arr_var))
 		{
-			if(is_array($where_arr_var))
-			{
-				$this->db->where($where_arr_var);
-			}
-			else
-			{
-				$this->db->where(array($this->_primary => $where_arr_var));
-			}
+			$this->_where($where_arr_var);
 			if($this->_soft_delete===TRUE)
 			{
 				$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[0]);
@@ -250,6 +236,17 @@ class MY_Model extends CI_Model
 	        	$this->load->helper('inflector');
 	        	$this->_table = plural(preg_replace('/(_m|_model)?$/', '', strtolower(get_class($this))));
 	        }
+	}
+	private function _where($where_arr_var)
+	{
+		if(is_array($where_arr_var))
+		{
+			 return $this->db->where($where_arr_var);
+		}
+		else
+		{
+			return $this->db->where(array($this->_primary => $where_arr_var));
+		}
 	}
 
 }
