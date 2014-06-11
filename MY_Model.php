@@ -142,14 +142,14 @@ class MY_Model extends CI_Model
 	/**
 	 * Update record(s)
 	 * @param array $columns_arr
-	 * @param array $where_arr
+	 * @param array/var $where_arr_var
 	 * @return integer affected rows
 	 */
-	public function update($columns_arr, $where_arr = NULL)
+	public function update($columns_arr, $where_arr_var = NULL)
 	{
-		if(isset($where_arr))
+		if(isset($where_arr_var))
 		{
-			$this->db->where($where_arr);
+			$this->_where($where_arr_var);
 		}
 		if($this->_timestamps && !array_key_exists($this->_updated_col, $columns_arr))
 		{
@@ -198,7 +198,7 @@ class MY_Model extends CI_Model
 	 */
 	public function undelete($where_arr_var = NULL)
 	{
-		if($this->_soft_delete && !empty($where_arr_var))
+		if($this->_soft_delete && isset($where_arr_var))
 		{
 			if(is_array($where_arr_var))
 			{
