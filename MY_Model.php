@@ -38,10 +38,7 @@ class MY_Model extends CI_Model
 	**/
 	public function get_all($where_arr = NULL, $order_by_var_arr = NULL, $select = NULL)
 	{
-		if(isset($where_arr))
-		{
-			$this->db->where($where_arr);
-		}
+		$this->_where($where_arr_var);
 		if(isset($order_by_var_arr))
 		{
 			if(!is_array($order_by_var_arr))
@@ -81,10 +78,7 @@ class MY_Model extends CI_Model
 	**/
 	public function get_count($where_arr = NULL)
 	{
-		if(isset($where_arr))
-		{
-			$this->db->where($where_arr);
-		}
+		$this->db->where($where_arr);
 		return $this->db->count_all_results($this->_table);
 	}
 	
@@ -96,10 +90,7 @@ class MY_Model extends CI_Model
 	*/
 	public function get($where_arr_var = NULL,$select = NULL)
 	{
-		if(isset($where_arr_var))
-		{
-			$this->_where($where_arr_var);
-		}
+		$this->_where($where_arr_var);
 		if(isset($select))
 		{
 			$this->db->select($select);
@@ -140,17 +131,14 @@ class MY_Model extends CI_Model
 	}
 
 	/**
-	 * Update record(s)
+	 * Update record
 	 * @param array $columns_arr
 	 * @param array/var $where_arr_var
 	 * @return integer affected rows
 	 */
 	public function update($columns_arr, $where_arr_var = NULL)
 	{
-		if(isset($where_arr_var))
-		{
-			$this->_where($where_arr_var);
-		}
+		$this->_where($where_arr_var);
 		if($this->_timestamps && !array_key_exists($this->_updated_col, $columns_arr))
 		{
 			$columns_arr[$this->_updated_col]= $this->_time;
@@ -192,22 +180,15 @@ class MY_Model extends CI_Model
 
 	}
 	/**
-	 * Delete row(s) - it does a soft delete or a raw delete depending on the $_soft_delete values
-	 * @param array $where_arr
+	 * Undelete row(s) - it does a soft undelete or a raw delete depending on the $_soft_delete values
+	 * @param array $where_arr_var
 	 * @return integer affected rows
 	 */
 	public function undelete($where_arr_var = NULL)
 	{
 		if($this->_soft_delete && isset($where_arr_var))
 		{
-			if(is_array($where_arr_var))
-			{
-				$this->db->where($where_arr_var);
-			}
-			else
-			{
-				$this->db->where(array($this->_primary => $where_arr_var));
-			}
+			$this->_where($where_arr_var);
 			$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[1]);
 			return $this->db->affected_rows();
 			
@@ -237,16 +218,20 @@ class MY_Model extends CI_Model
 	        	$this->_table = plural(preg_replace('/(_m|_model)?$/', '', strtolower(get_class($this))));
 	        }
 	}
-	private function _where($where_arr_var)
+	private function _where($where_arr_var = NULL)
 	{
-		if(is_array($where_arr_var))
+		if(isset($where_arr_var))
 		{
-			 return $this->db->where($where_arr_var);
+			if(is_array($where_arr_var))
+			{
+				 return $this->db->where($where_arr_var);
+			}
+			else
+			{
+				return $this->db->where(array($this->_primary => $where_arr_var));
+			}
 		}
-		else
-		{
-			return $this->db->where(array($this->_primary => $where_arr_var));
-		}
+		return;
 	}
 
 }
