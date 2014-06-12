@@ -165,7 +165,7 @@ class MY_Model extends CI_Model
 			$this->_where($where_arr_var);
 			if($this->_soft_delete===TRUE)
 			{
-				$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[0]);
+				$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[0]));
 			}
 			else
 			{
@@ -189,7 +189,7 @@ class MY_Model extends CI_Model
 		if($this->_soft_delete && isset($where_arr_var))
 		{
 			$this->_where($where_arr_var);
-			$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[1]);
+			$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[1]));
 			return $this->db->affected_rows();
 			
 		}
