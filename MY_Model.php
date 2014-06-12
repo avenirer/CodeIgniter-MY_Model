@@ -38,7 +38,7 @@ class MY_Model extends CI_Model
 	**/
 	public function get_all($where_arr = NULL, $order_by_var_arr = NULL, $select = NULL)
 	{
-		$this->_where($where_arr_var);
+		$this->_where($where_arr);
 		if(isset($order_by_var_arr))
 		{
 			if(!is_array($order_by_var_arr))
