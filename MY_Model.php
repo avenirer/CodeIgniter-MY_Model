@@ -1,5 +1,23 @@
 <?php
-
+/** how to extend MY_Model:
+ *	class User_model extends MY_Model
+ *	{
+ * 		public function __construct()
+ * 		{
+ * 			$this->_table ='users'; // OPTIONAL (default: plural of model name) - if the table name is the plural of the model name (model name: User_model; table: users) this line is optional
+ * 			$this->_primary = 'id'; // OPTIONAL (default: id) - the primary key
+ * 			$this->_timestamps = TRUE; // OPTIONAL (default: TRUE) - allow for the use of timestamps for creation and update
+ * 			$this->_timestamp_format = 'datetime'; // OPTIONAL (default: datetime) - format can be 'datetime','date','timestamp'
+ * 			$this->_created_col = 'created_at'; // OPTIONAL (default: created_at) - the name of the column for creation time
+ * 			$this->_updated_col = 'updated_at'; // OPTIONAL (default: updated_at) - the name of the column for update time
+ * 			$this->_soft_delete = TRUE; // OPTIONAL (default: TRUE) - allow for soft deletes?
+ * 			$this->_soft_delete_col = 'status'; //OPTIONAL (default:status) - what column will be used to allow for soft delete
+ * 			$this->_soft_delete_values = array(0=>'inactive', 1=>'active'); // OPTIONAL - what values will the column take for soft delete (0) and removal of soft delete(1)
+ * 			parent::__construct();
+ * 		}
+ * 	}
+ * 
+ **/
 class MY_Model extends CI_Model
 {
 	protected $_table;
