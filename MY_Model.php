@@ -6,13 +6,10 @@
  * 		{
  * 			$this->_table ='users'; // OPTIONAL (default: plural of model name) - if the table name is the plural of the model name (model name: User_model; table: users) this line is optional
  * 			$this->_primary = 'id'; // OPTIONAL (default: id) - the primary key
- * 			$this->_timestamps = TRUE; // OPTIONAL (default: TRUE) - allow for the use of timestamps for creation and update
- * 			$this->_timestamp_format = 'datetime'; // OPTIONAL (default: datetime) - format can be 'datetime','date','timestamp'
+ * 			$this->_time_format = 'datetime'; //  format of time for the created_col, updated_col, and soft_delete_col: can be 'datetime','date','timestamp'; leave blank if you don't want enabled;
  * 			$this->_created_col = 'created_at'; // OPTIONAL (default: created_at) - the name of the column for creation time
  * 			$this->_updated_col = 'updated_at'; // OPTIONAL (default: updated_at) - the name of the column for update time
- * 			$this->_soft_delete = TRUE; // OPTIONAL (default: TRUE) - allow for soft deletes?
- * 			$this->_soft_delete_col = 'status'; //OPTIONAL (default:status) - what column will be used to allow for soft delete
- * 			$this->_soft_delete_values = array(0=>'inactive', 1=>'active'); // OPTIONAL - what values will the column take for soft delete (0) and removal of soft delete(1)
+ * 			$this->_soft_delete_col = 'deleted_at'; // what column will be used to allow for soft delete; leave blank if you don't want soft delete
  * 			parent::__construct();
  * 		}
  * 	}
@@ -22,31 +19,47 @@ class MY_Model extends CI_Model
 {
 	protected $_table;
 	protected $_primary = 'id';
-	protected $_timestamps = TRUE;
-	protected $_timestamp_format = 'datetime'; // format can be 'datetime','date','timestamp'
+	protected $_time_format = 'datetime'; // format can be 'datetime','date','timestamp'
 	protected $_created_col = 'created_at';
 	protected $_updated_col = 'updated_at';
-	private $_time;
-	protected $_soft_delete = TRUE;
-	protected $_soft_delete_col = 'status';
-	protected $_soft_delete_values = array(0=>'inactive',1=>'active');
+    protected $_soft_delete_col = 'deleted_at';
+
+    private $_created_at = FALSE;
+    private $_updated_at = FALSE;
+    private $_soft_delete = FALSE;
+    private $_timestamps = TRUE;
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->database();
 		$this->_fetch_table();
-		switch ($this->_timestamp_format)
+        switch ($this->_time_format)
 		{
 			case 'datetime':
-				$this->_time = date('Y-m-d H:i:s');			
-			break;
+				$this->_time = date('Y-m-d H:i:s');
+                break;
 			case 'date':
-				$this->_time = date('Y-m-d');			
-			break;
+				$this->_time = date('Y-m-d');
+                break;
 			case 'timestamp':
 				$this->_time = time();
-			break;
+                break;
+            default:
+                $this->_timestamps = FALSE;
+                break;
 		}
+        if($this->_timestamps === TRUE) {
+            if (strlen($this->_soft_delete_col) > 0) {
+                $this->soft_delete = TRUE;
+            }
+            if (strlen($this->_created_col) > 0) {
+                $this->_created_at = TRUE;
+            }
+            if (strlen($this->_updated_col) > 0) {
+                $this->_updated_at = TRUE;
+            }
+        }
 	}
 	/** retrieve all records from DB
 	 * @param array $where_arr
@@ -133,7 +146,7 @@ class MY_Model extends CI_Model
 	{
 		if(is_array($columns_arr))
 		{
-			if($this->_timestamps==TRUE && !array_key_exists($this->_created_col, $columns_arr))
+			if($this->_created_at==TRUE && !array_key_exists($this->_created_col, $columns_arr))
 			{
 				$columns_arr[$this->_created_col]= $this->_time;
 			}
@@ -157,7 +170,7 @@ class MY_Model extends CI_Model
 	public function update($columns_arr, $where_arr_var = NULL)
 	{
 		$this->_where($where_arr_var);
-		if($this->_timestamps && !array_key_exists($this->_updated_col, $columns_arr))
+		if($this->_created_at && !array_key_exists($this->_updated_col, $columns_arr))
 		{
 			$columns_arr[$this->_updated_col]= $this->_time;
 		}
@@ -183,7 +196,7 @@ class MY_Model extends CI_Model
 			$this->_where($where_arr_var);
 			if($this->_soft_delete===TRUE)
 			{
-				$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[0]));
+				$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_time));
 			}
 			else
 			{
@@ -207,7 +220,7 @@ class MY_Model extends CI_Model
 		if($this->_soft_delete && isset($where_arr_var))
 		{
 			$this->_where($where_arr_var);
-			$this->db->update($this->_table, array($this->_soft_delete_col=>$this->_soft_delete_values[1]));
+			$this->db->update($this->_table, array($this->_soft_delete_col=>''));
 			return $this->db->affected_rows();
 			
 		}
@@ -226,7 +239,7 @@ class MY_Model extends CI_Model
 	 */
 	public function hash($string)
 	{
-		return hash('sha512', $string, config_item('encryption_key'));
+		return hash('sha512', $string, $this->config->item('encryption_key'));
 	}
 	private function _fetch_table()
 	{
