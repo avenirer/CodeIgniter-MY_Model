@@ -6,10 +6,10 @@
  * 		{
  * 			$this->_table ='users'; // OPTIONAL (default: plural of model name) - if the table name is the plural of the model name (model name: User_model; table: users) this line is optional
  * 			$this->_primary = 'id'; // OPTIONAL (default: id) - the primary key
- * 			$this->_time_format = 'datetime'; //  format of time for the created_col, updated_col, and soft_delete_col: can be 'datetime','date','timestamp'; leave blank if you don't want enabled;
- * 			$this->_created_col = 'created_at'; // OPTIONAL (default: created_at) - the name of the column for creation time
- * 			$this->_updated_col = 'updated_at'; // OPTIONAL (default: updated_at) - the name of the column for update time
- * 			$this->_soft_delete_col = 'deleted_at'; // what column will be used to allow for soft delete; leave blank if you don't want soft delete
+ * 			$this->_time_format = 'datetime'; //  OPTIONAL (default: datetime) - format of time for the created_col, updated_col, and soft_delete_col: can be 'datetime','date','timestamp'; leave blank if you don't want created_col, updated_col and soft_delete_col;
+ * 			$this->_created_col = 'created_at'; // OPTIONAL (default: created_at) - the name of the column for creation time; leave blank if you don't want "created at" column
+ * 			$this->_updated_col = 'updated_at'; // OPTIONAL (default: updated_at) - the name of the column for update time; leave blank if you don't want "updated at" column
+ * 			$this->_soft_delete_col = 'deleted_at'; // what column will be used to allow for soft delete; leave blank if you don't want "soft delete column"
  * 			parent::__construct();
  * 		}
  * 	}
