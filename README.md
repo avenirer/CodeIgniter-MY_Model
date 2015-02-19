@@ -7,23 +7,23 @@ This CodeIgniter MY_Model is the result of a lengthy tutorial about constructing
 
 Synopsis
 
-class User_model extends MY_Model { }
+	class User_model extends MY_Model { }
 
-$this->load->model('user_model');
+	$this->load->model('user_model');
 
-$this->user_model->get(1)
-$this->user_model->get_all();
+	$this->user_model->get(1)
+	$this->user_model->get_all();
 
-$this->user_model->where('username','avenirer')->get();
+	$this->user_model->where('username','avenirer')->get();
 
-$this->user_model->insert(array(
-    'username' => 'avenirer',
-    'email' => 'avenir.ro@gmail.com'
-));
+	$this->user_model->insert(array(
+		'username' => 'avenirer',
+		'email' => 'avenir.ro@gmail.com'
+	));
 
-$this->user_model->update(array( 'status' => '0' ), 1);
+	$this->user_model->update(array( 'status' => '0' ), 1);
 
-$this->user_model->delete(1);
+	$this->user_model->delete(1);
 
 
 Installation/Usage
