@@ -42,7 +42,7 @@ If extended like that, MY_Model makes the following assumptions:
 * there are **at least a "created_at" and "updated_at" columns**.
 
 If you want, you can be original by changing the settings before the `parent::__construct();`
-```
+```php
 class User_model extends MY_Model
 {
 	public function __construct()
@@ -72,9 +72,8 @@ class User_model extends MY_Model
 ```
 ##Relationships
 
-When you extend MY_Model, you can also setup relationships between the model and other models (as long as they are created and extend MY_Model). So, just before parent::__construct(); you can also add:
-
-
+When you extend MY_Model, you can also setup relationships between the model and other models (as long as they are created and extend MY_Model). So, just before `parent::__construct();` you can also add:
+```php
 $this->has_one['phone'] = 'Phone_model'
 // if the Phone_model doesn't extend the MY_Model, you can manually define the relationship by using an array
 $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
@@ -82,24 +81,24 @@ $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
 $this->has_one['address'] = 'Address_model'
 
 $this->has_many['posts'] = array('Posts_model','foreign_key','another_local_key');
-
+```
 There are times when you'll need to alter your model data before or after it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, MY_Model contains a series of callbacks/observers -- methods that will be called at certain points.
 
 The full list of observers are as follows:
-
-$before_create
-$after_create
-$before_update
-$after_update
-$before_get
-$after_get
-$before_delete
-$after_delete
-$before_soft_delete
-$after_soft_delete
-
+```php
+$before_create = array();
+$after_create = array();
+$before_update = array();
+$after_update = array();
+$before_get = array();
+$after_get = array();
+$before_delete = array();
+$after_delete = array();
+$before_soft_delete = array();
+$after_soft_delete = array();
+```
 These are instance variables usually defined at the class level. They are arrays of methods on this class to be called at certain points. An example:
-
+```php
 class User_model extends MY_Model
 {
 	function __construct()
@@ -115,13 +114,13 @@ class User_model extends MY_Model
         return $data;
     }
 }
+```
+Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has an `after_get` trigger which will be called last.
 
-Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has a after_get trigger.
-
-Working with relationships
+##Working with relationships
 
 Every table has a way to interact with other tables. So if your model has relationships with other models, you can define those relationships:
-
+```php
 class User_model extends MY_Model
 {
 
@@ -133,11 +132,10 @@ class User_model extends MY_Model
         parent::__construct();
     }
 }
+```
+You can then access your related data using the `with()` method:
 
-
-You can then access your related data using the with() method:
-
-$user = $this->user_model->with('phone')->with('posts')->get(1);
+`php $user = $this->user_model->with('phone')->with('posts')->get(1);`
 
 You can also call the related data in one single string, by separating the relations with pipe:
 
