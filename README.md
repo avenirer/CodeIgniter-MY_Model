@@ -204,7 +204,7 @@ $this->user_model->trashed(3); // will return TRUE or FALSE
 
 The class will automatically use the default database connection, and even load it for you if you haven't yet.
 
-You can specify a database connection on a per-model basis by declaring the `$_db_group` instance variable.
+You can specify a database connection on a per-model basis by declaring the `$_database_connection` instance variable.
 
 You can also change the database connection on a per request basis. For example, if you want to use a different database connection for writing data you can do this:
 ```php
