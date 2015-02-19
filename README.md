@@ -1,11 +1,8 @@
 # CodeIgniter-MY_Model
 
-
-CodeIgniter MY_Model
-
 This CodeIgniter MY_Model is the result of a lengthy tutorial about constructing a MY_Model in CodeIgniter. It's based on Jamie Rumbelow's Base Model but with some changed/added methods. It provides a full CRUD base for database interactions, as well as an event-based observer system, intelligent table name guessing and soft delete.
 
-Synopsis
+##Synopsis
 
 	class User_model extends MY_Model { }
 
