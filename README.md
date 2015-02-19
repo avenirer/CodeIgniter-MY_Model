@@ -1,6 +1,6 @@
 # CodeIgniter-MY_Model
 
-This CodeIgniter MY_Model is the result of a lengthy tutorial about constructing a MY_Model in CodeIgniter. It's based on Jamie Rumbelow's Base Model but with some changed/added methods. It provides a full CRUD base for database interactions, as well as an event-based observer system, intelligent table name guessing and soft delete.
+This **CodeIgniter MY_Model** is the result of a lengthy tutorial about constructing a **MY_Model** in CodeIgniter (http://avenir.ro/revisiting-my_model-copying-jamie-rumbelow-looking-eloquent/). It's based on **Jamie Rumbelow's Base Model** (https://github.com/jamierumbelow/codeigniter-base-model), but with some changed/added methods. It provides a full CRUD base for database interactions, as well as an event-based observer system, intelligent table name guessing and soft delete.
 
 ##Synopsis
 ```php
@@ -23,7 +23,7 @@ $this->user_model->delete(1);
 
 ##Installation/Usage
 
-Download and drag the MY_Model.php file into your application/core directory. CodeIgniter will load and initialise this class automatically.
+Download and drag the **MY_Model.php** file into your **application/core** directory. CodeIgniter will load and initialise this class automatically.
 
 Extend your model classes from MY_Model and all the functionality will be baked in automatically.
 ```php
@@ -37,7 +37,7 @@ class User_model extends MY_Model
 ```
 If extended like that, MY_Model makes the following assumptions:
 
-* the table name is the plural of the model name without the "_model" or "_m" extension: if a model is called "User_model", the table is "users". That means that you have to call your models like "*_model" or "*_m"
+* **the table name** is the plural of the model name without the **_model** or **_m** extension: if a model is called "User_model", the table is "users". That means that you have to call your models like "*_model" or "*_m"
 * the primary key is named "id". That means you have to call your models like "id"
 * there are at least a "created_at" and "updated_at" columns.
 
