@@ -134,70 +134,82 @@ class User_model extends MY_Model
 }
 ```
 You can then access your related data using the `with()` method:
-
-`php $user = $this->user_model->with('phone')->with('posts')->get(1);`
-
+```php
+$user = $this->user_model->with('phone')->with('posts')->get(1);
+```
 You can also call the related data in one single string, by separating the relations with pipe:
-
+```php
 $user = $this->user_model->with('phone|address|posts')->get(1);
-
+```
 The related data will be embedded in the returned value having "phone", "address" and "posts" as keys.
-
+```php
 echo $user->phone->phone_number;
 
 foreach ($user->posts as $post)
 {
     echo $post->title;
 }
-
-If you have a one on one relationship, you can get the related data by joining tables so that no separate query is made. This is made by passing "FALSE" as second parameter for with() Also, you can make sure you don't have conflicting column names by chaining a fields() method to the query:
-
+```
+If you have a one on one relationship, you can get the related data by joining tables so that no separate query is made. This is made by passing **FALSE** as second parameter for with() Also, you can make sure you don't have conflicting column names by chaining a `fields()` method to the query:
+```php
 $users = $this->user_model->with('phone',FALSE)->fields('users.id,users.username,phones.id as phone_id, phones.phone_number')->get_all();
-
+```
 You must take into consideration that if you don't do a join or have a many_to_many relationships, for each relation there is one separate query.
 
-Arrays vs Objects
+##Arrays vs Objects
 
 By default, MY_Model is setup to return objects. If you'd like to return results as array you can:
 
-- either define $this->return_as = 'array' in the constructor
-- or add as_array() into the query chain: $users = $this->user_model->as_array()->get_all(); $posts = $this->post_model->as_object()->get_all();
-
+* either define `$this->return_as = 'array'` in the constructor
+* or add `as_array()` into the query chain:
+```php
+$users = $this->user_model->as_array()->get_all(); $posts = $this->post_model->as_object()->get_all();
+```
 If you'd like all your calls to use the array methods, you can set the $return_type variable to array.
 
-Soft Deletes
+##Soft Deletes
 
-By default, the delete mechanism works with an SQL DELETE statement. However, you might not want to destroy the data, you might instead want to perform a 'soft delete'.
+By default, the delete mechanism works with an SQL DELETE statement. However, you might not want to destroy the data, you might instead want to perform a **'soft delete'**.
 
-If you enable soft deleting, the deleted_at row will be filled with the current date and time, rather than actually being removed from the database.
+If you enable soft deleting, the **deleted_at** row will be filled with the current date and time, rather than actually being removed from the database.
 
-You can enable soft delete in the constructor: $this->soft_deletes = TRUE;
+You can enable soft delete in the constructor:
+```php
+$this->soft_deletes = TRUE;
+```
+Once you've enabled it whenever you do, for example, a `$this->user_model->delete(3);` the **delete()** method will only create a datetime in the **deleted_at** column of the user with id 3.
 
-Once you've enabled it whenever you do, for example, a $this->user_model->delete(3); the delete() method will only create a datetime in the deleted_at column of the user with id 3.
-
-If you really want to delete a row you can use force_delete() method: $this->user_model->force_delete(6);
-
-You can also restore or "un-delete" a row by using the restore() method: $this->user_model->restore(3). This will set to NULL the deleted_at value.
+If you really want to delete a row you can use `force_delete()` method:
+```php
+$this->user_model->force_delete(6);
+```
+You can also restore or "un-delete" a row by using the `restore()` method:
+```php
+$this->user_model->restore(3)
+```
+This will set to **NULL** the **deleted_at** value.
 
 Once you soft delete a row, that row won't appear in read results unless expressely asked to:
 
 For this, you have the following methods:
 
-* with_trashed() - will show all rows, including those that were soft deleted
-* only_trashed() - will show only the rows that were soft deleted
+* `with_trashed()` - will show all rows, including those that were soft deleted
+* `only_trashed()` - will show only the rows that were soft deleted
 
-You can also check if a row is soft_deleted by using trashed() method:
-
+You can also check if a row is **soft_deleted** by using `trashed()` method:
+```php
 $this->user_model->trashed(3); // will return TRUE or FALSE
-
-Database Connection
+```
+##Database Connection
 
 The class will automatically use the default database connection, and even load it for you if you haven't yet.
 
-You can specify a database connection on a per-model basis by declaring the $_db_group instance variable. This is equivalent to calling $this->db->database($this->_db_group, TRUE).
+You can specify a database connection on a per-model basis by declaring the `$_db_group` instance variable.
 
 You can also change the database connection on a per request basis. For example, if you want to use a different database connection for writing data you can do this:
-
+```php
 $this->user_model->on('write_conn')->delete(3);
+```
+After this, I would advise you to do a `$this->user_model->reset();` in order to reset the database connection to the model's (or application's) default.
 
-After this, I would advise you to do a $this->user_model->reset(); in order to reset the database connection to the model's (or application's) default.
+Enjoy using my MY_Model and please report any issues or try some pull requests. Thank you
