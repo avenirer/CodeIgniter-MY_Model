@@ -37,7 +37,7 @@ class User_model extends MY_Model
 ```
 If extended like that, MY_Model makes the following assumptions:
 
-* **the table name** is the plural of the model name without the **_model** or **_m** extension: if a model is called "User_model", the table is "users". That means that you have to call your models like "*_model" or "*_m"
+* **the table name** is the plural of the model name without the **_model** or **_m** extension: if a model is called **User_model**, the table is assumed to be called **users**. That means that you have to call your models like ***_model** or ***_m**
 * the primary key is named "id". That means you have to call your models like "id"
 * there are at least a "created_at" and "updated_at" columns.
 
