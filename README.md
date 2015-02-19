@@ -3,32 +3,30 @@
 This CodeIgniter MY_Model is the result of a lengthy tutorial about constructing a MY_Model in CodeIgniter. It's based on Jamie Rumbelow's Base Model but with some changed/added methods. It provides a full CRUD base for database interactions, as well as an event-based observer system, intelligent table name guessing and soft delete.
 
 ##Synopsis
+```php
+class User_model extends MY_Model { }
 
-	class User_model extends MY_Model { }
+$this->load->model('user_model');
 
-	$this->load->model('user_model');
+$this->user_model->get(1)
 
-	$this->user_model->get(1)
-	$this->user_model->get_all();
+$this->user_model->get_all();
 
-	$this->user_model->where('username','avenirer')->get();
+$this->user_model->where('username','avenirer')->get();
 
-	$this->user_model->insert(array(
-		'username' => 'avenirer',
-		'email' => 'avenir.ro@gmail.com'
-	));
+$this->user_model->insert(array('username' => 'avenirer','email' => 'avenir.ro@gmail.com'));
 
-	$this->user_model->update(array( 'status' => '0' ), 1);
+$this->user_model->update(array('status' => '0'), 1);
 
-	$this->user_model->delete(1);
+$this->user_model->delete(1);
+```
 
-
-Installation/Usage
+##Installation/Usage
 
 Download and drag the MY_Model.php file into your application/core directory. CodeIgniter will load and initialise this class automatically.
 
 Extend your model classes from MY_Model and all the functionality will be baked in automatically.
-
+```php
 class User_model extends MY_Model
 {
 	public function __construct()
@@ -36,7 +34,7 @@ class User_model extends MY_Model
 		parent::__construct()
 	}
 }
-
+```
 If extended like that, MY_Model makes the following assumptions:
 
 * the table name is the plural of the model name without the "_model" or "_m" extension: if a model is called "User_model", the table is "users". That means that you have to call your models like "*_model" or "*_m"
