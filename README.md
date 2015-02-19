@@ -37,12 +37,12 @@ class User_model extends MY_Model
 ```
 If extended like that, MY_Model makes the following assumptions:
 
-* **the table name** is the plural of the model name without the **_model** or **_m** extension: if a model is called **User_model**, the table is assumed to be called **users**. That means that you have to call your models like ***_model** or ***_m**
-* the primary key is named "id". That means you have to call your models like "id"
-* there are at least a "created_at" and "updated_at" columns.
+* **the table name** is the plural of the model name without the **_model** or **_m** extension: if a model is called **User_model**, the table is assumed to be called **users**. That means that you have to call your models like **Table_model** or **Table_m**
+* **the primary key** is named "id". That means that every table must have "id" as primary key.
+* there are **at least a "created_at" and "updated_at" columns**.
 
-If you want, you can be original by changing the settings before the parent::__construct();
-
+If you want, you can be original by changing the settings before the `parent::__construct();`
+```
 class User_model extends MY_Model
 {
 	public function __construct()
@@ -69,8 +69,8 @@ class User_model extends MY_Model
 		parent::__construct();
  	}
 }
-
-Relationships
+```
+##Relationships
 
 When you extend MY_Model, you can also setup relationships between the model and other models (as long as they are created and extend MY_Model). So, just before parent::__construct(); you can also add:
 
