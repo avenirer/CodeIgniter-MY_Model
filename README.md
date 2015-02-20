@@ -232,11 +232,14 @@ $this->user_model->insert($data);
 
 ###update($data, $column_name_where = NULL)
 It updates one or more rows from table
+
 ####Parameters
 * $data - the updated data as object or multidimensional array or multiple array (just like the native $this->db->update())
 * $column_name_where - no value if you want to update all rows, an id of the row, an array containing column name and value or, if there are multiple rows, the name of the column that can be found in the $data array.
+
 ####Return
 Returns the number of affected rows
+
 ####Examples
 ```php
 $newdata = array('status'=>'1');
@@ -254,10 +257,13 @@ $this->user_model->update($data,'email');
 
 ###where($where_col_array, $value = NULL)
 It sets a where condition to the query
+
 ####Parameters
 * $where_col_array, $value = NULL - if you want to look by an id you can simply pass the id; if you want to look for a value of a column, you can pass it as to parameters where('column','value');  if you have multiple columns for identifing a row you can pass it an array where(array('column1'=>'value1','column2'=>'value2')); if you have a "where in" type of query (multiple posible values for a column), you can pass it the name of the column as first parameter and an array of possible values as second parameter;
+
 ####Return
 Doesn't return anything, being a part of the query chain
+
 ####Examples
 ```php
 $this->user_model->where(3)->get();
@@ -280,7 +286,9 @@ Is a wrapper for $this->db->order_by()
 
 ###delete(where)
 It deletes or soft deletes (depending on your settings) rows, working like the native $this->db->delete().
+
 ####Parameters
+
 ####Return
 It returns affected rows or false, if no delete was done.
 
@@ -293,9 +301,10 @@ Takes same parameters and returns same thing like the method before
 
 ###trashed($where)
 Verifies if a row is soft deleted or not
-####Parameters
+
 ####Return
 It returns TRUE or FALSE
+
 ####Examples
 ```php
 if($this->user_model->trashed(1))
@@ -306,10 +315,13 @@ if($this->user_model->trashed(1))
 
 ###get($where = NULL)
 Returns a single row that respects the $where parameter
+
 ####Parameters
 * where - the $where parameter uses the where($param) method, that means only one parameter
+
 ####Return
 Returns a row;
+
 ####Examples
 ```php
 $user = $this->user_model->get(1);
@@ -322,6 +334,7 @@ Same as the get() method but it can return more than one row
 
 ###as_array()
 Sets the option to return the results as an array(), if the model was previously set to return the results as objects.
+
 ####Example
 ```php
 $users = $this->user_model->as_array()->get_all();
@@ -329,6 +342,7 @@ $users = $this->user_model->as_array()->get_all();
 
 ###fields($fields)
 Allows the user to select only specific columns
+
 ###Examples
 ```php
 $users = $this->user_model->fields('username,password'->get_all();
@@ -338,6 +352,7 @@ $users = $this->user_model->fields(array('users.username', 'users.password', 'gr
 
 ###as_object()
 Sets the option to return the results as object, if the model was previously set to return the results as arrays.
+
 ####Example
 ```php
 $users = $this->user_model->as_object()->get_all();
@@ -345,6 +360,7 @@ $users = $this->user_model->as_object()->get_all();
 
 ###with_trashed()
 Sets the option to return in the results the rows that were soft deleted
+
 ####Example
 ```php
 $users = $this->user_model->with_trashed()->get_all;
@@ -352,6 +368,7 @@ $users = $this->user_model->with_trashed()->get_all;
 
 ###only_trashed()
 Sets the option to return in the results only the rows that were soft deleted
+
 ####Example
 ```php
 $users = $this->user_model->only_trashed()->get_all;
