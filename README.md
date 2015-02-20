@@ -217,10 +217,10 @@ After this, I would advise you to do a `$this->user_model->reset();` in order to
 ###insert($data)
 It inserts one or more rows into table
 ####Parameters
-* $data - data to be inserted
+* $data - data to be inserted.
 ####Return
 * either a integer representing the id of the inserted row;
-* or an array with ids
+* or an array with ids.
 ####Examples
 ```php
 $data = array('username'=>'avenirer','email'=>'avenir.ro@gmail.com');
