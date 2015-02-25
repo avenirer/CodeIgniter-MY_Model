@@ -478,6 +478,7 @@ class MY_Model extends CI_Model
         $data = json_decode(json_encode($data), TRUE);
         foreach($this->_requested as $requested_key => $request)
         {
+            $pivot_table = NULL;
             $relation = $this->_relationships[$request];
             $this->load->model($relation['foreign_model']);
             $foreign_key = $relation['foreign_key'];
