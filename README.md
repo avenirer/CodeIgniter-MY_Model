@@ -428,6 +428,14 @@ $user = $this->user_model->get(array('username'=>'avenirer'));
 ###get_all($where = NULL)
 Same as the get() method but it can return more than one row
 
+###count($where = NULL)
+Returns the number of rows.
+
+####Example
+```php
+$users = $this->user_model->as_array()->count();
+```
+
 ###as_array()
 Sets the option to return the results as an array(), if the model was previously set to return the results as objects.
 
