@@ -82,6 +82,8 @@ $this->has_one['address'] = 'Address_model'
 
 $this->has_many['posts'] = array('Posts_model','foreign_key','another_local_key');
 ```
+##Observers##
+
 There are times when you'll need to alter your model data before or after it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, MY_Model contains a series of callbacks/observers -- methods that will be called at certain points.
 
 The full list of observers are as follows:
