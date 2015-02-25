@@ -144,7 +144,7 @@ class Post_model extends MY_Model
 
 Many to many relationship can have one to one as reverse relationship. But there are also many to many relationships that have many to many as reverse relationships. For this we have has_many_pivot key as relation. This one allows establishing MANY TO MANY or more MANY TO MANY relationship(s) between models/tables with the use of a PIVOT TABLE.
 
-**ATTENTION**: The pivot table name must be composed of the two connected table names separated by "_" the table names having to be alphabetically ordered (NOT users_posts, but posts_users). Also the pivot table must contain as identifying columns the columns named by convention as follows: foreign_table_name_singular + "_" + foreign_table_primary_key.
+**ATTENTION**: The pivot table name must be composed of the two connected table names separated by _ (underscore) the table names having to be alphabetically ordered (NOT users_posts, but posts_users). Also the pivot table must contain as identifying columns the columns named by convention as follows: foreign_table_name_singular + _ (underscore) + foreign_table_primary_key.
 
 For example: considering that a post can have multiple authors, a pivot table that connects the two tables (**users** and **posts**) must be named **posts_users** (**NOT users_posts**) and must have **post_id** and **user_id** as identifying columns for the **posts.id** and **users.id** tables.
 
