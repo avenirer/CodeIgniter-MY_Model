@@ -116,6 +116,30 @@ class Phone_model extends MY_Model
 
 Has Many relationship tells our model that a record in the table can have many related records in another table. The reverse of this relationship is a has one relation, which translates into a One To Many type of relationship. For a reverse relationship of type Many To Many, we will have another property named Has Many Pivot.
 
+```php
+class User_model extends MY_Model
+{
+
+	function __construct()
+	{
+		$this->has_many['posts'] = 'Post_model';
+	}
+ }
+ ```
+
+The reverse of the relationship (which in this case is a one to one) is defined the same:
+
+```php
+class Post_model extends MY_Model
+{
+
+	function __construct()
+	{
+		$this->has_one['user'] = 'User_model';
+	}
+}
+```
+
 ##Working with relationships
 
 Every table has a way to interact with other tables. So if your model has relationships with other models, you can define those relationships:
