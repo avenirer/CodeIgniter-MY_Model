@@ -208,7 +208,7 @@ class User_model extends MY_Model
 
 	protected function hash_password($data)
     {
-        $book['password'] = 'whateverpasswordcreationresultyoumaythinkof';
+        $data['password'] = 'whateverpasswordcreationresultyoumaythinkof';
         return $data;
     }
 }
