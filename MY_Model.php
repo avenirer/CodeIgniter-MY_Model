@@ -21,8 +21,14 @@
  *              Allows the model to return the results as object or as array
  *          $this->has_one['phone'] = 'Phone_model' or $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
  *          $this->has_one['address'] = 'Address_model' or $this->has_one['address'] = array('Address_model','foreign_key','another_local_key');
+ *              Allows establishing ONE TO ONE or more ONE TO ONE relationship(s) between models/tables
  *          $this->has_many['posts'] = 'Post_model' or $this->has_many['posts'] = array('Posts_model','foreign_key','another_local_key');
- *              Allows establishing one or more one on one relationship(s) between models/tables
+ *              Allows establishing ONE TO MANY or more ONE TO MANY relationship(s) between models/tables
+ *          $this->has_many_pivot['posts'] = 'Post_model' or $this->has_many_pivot['posts'] = array('Posts_model','foreign_primary_key','local_primary_key');
+ *              Allows establishing MANY TO MANY or more MANY TO MANY relationship(s) between models/tables with the use of a PIVOT TABLE
+ *              !ATTENTION: The pivot table name must be composed of the two table names separated by "_" the table names having to to be alphabetically ordered (NOT users_posts, but posts_users).
+ *                  Also the pivot table must contain as identifying columns the columns named by convention as follows: table_name_singular + _ + foreign_table_primary_key.
+ *                  For example: considering that a post can have multiple authors, a pivot table that connects two tables (users and posts) must be named posts_users and must have post_id and user_id as identifying columns for the posts.id and users.id tables.
  *
  *
  * 			parent::__construct();
@@ -74,6 +80,7 @@ class MY_Model extends CI_Model
     private $_relationships = array();
     public $has_one = array();
     public $has_many = array();
+    public $has_many_pivot = array();
     public $separate_subqueries = TRUE;
     private $_requested = array();
     /** end relationships variables */
@@ -104,6 +111,7 @@ class MY_Model extends CI_Model
     public function __construct()
     {
         parent::__construct();
+        $this->load->helper('inflector');
         $this->_set_connection();
         $this->_fetch_table();
         $this->_set_timestamps();
@@ -460,6 +468,8 @@ class MY_Model extends CI_Model
             $this->load->model($relation['foreign_model']);
             $foreign_key = $relation['foreign_key'];
             $local_key = $relation['local_key'];
+            (isset($relation['pivot_table'])) ? $pivot_table = $relation['pivot_table'] : FALSE;
+            $foreign_table = $relation['foreign_table'];
             $type = $relation['relation'];
             $relation_key = $relation['relation_key'];
             $local_key_values = array();
@@ -468,7 +478,16 @@ class MY_Model extends CI_Model
                 $local_key_values[$key] = $element[$local_key];
             }
 
-            $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
+            if(!isset($pivot_table))
+            {
+                $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
+            }
+            else
+            {
+                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'right');
+                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$this->primary.' = '.$this->table.'.'.$this->primary,'right');
+                $sub_results = $this->_database->get($foreign_table)->result_array();
+            }
 
 
             foreach($sub_results as $result)
@@ -515,21 +534,33 @@ class MY_Model extends CI_Model
     {
         if(empty($this->_relationships))
         {
-            $options = array('has_one','has_many');
+            $options = array('has_one','has_many','has_many_pivot');
             foreach($options as $option)
             {
                 if(isset($this->{$option}) && !empty($this->{$option}))
                 {
-                    $this->load->helper('inflector');
                     foreach($this->{$option} as $key => $relation)
                     {
                         $foreign_model = (is_array($relation)) ? $relation[0] : $relation;
                         $foreign_model_name = strtolower($foreign_model);
                         $this->load->model($foreign_model_name);
                         $foreign_table = $this->{$foreign_model_name}->table;
-                        $foreign_key = (is_array($relation)) ? $relation[1] : singular($this->table) . '_id';
-                        $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                        if($option=='has_many_pivot')
+                        {
+                            $tables = array($this->table, $foreign_table);
+                            sort($tables);
+                            $pivot_table = $tables[0].'_'.$tables[1];
+                            $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary;
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                        }
+                        else
+                        {
+                            $foreign_key = (is_array($relation)) ? $relation[1] : singular($this->table) . '_id';
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                        }
                         $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => $foreign_model_name, 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
+                        ($option == 'has_many_pivot') ? ($this->_relationships[$key]['pivot_table'] = $pivot_table) : FALSE;
+
                     }
                 }
             }
