@@ -82,42 +82,6 @@ $this->has_one['address'] = 'Address_model'
 
 $this->has_many['posts'] = array('Posts_model','foreign_key','another_local_key');
 ```
-##Observers##
-
-There are times when you'll need to alter your model data before or after it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, MY_Model contains a series of callbacks/observers -- methods that will be called at certain points.
-
-The full list of observers are as follows:
-```php
-$before_create = array();
-$after_create = array();
-$before_update = array();
-$after_update = array();
-$before_get = array();
-$after_get = array();
-$before_delete = array();
-$after_delete = array();
-$before_soft_delete = array();
-$after_soft_delete = array();
-```
-These are instance variables usually defined at the class level. They are arrays of methods on this class to be called at certain points. An example:
-```php
-class User_model extends MY_Model
-{
-	function __construct()
-	{
-		$this->before_create[] = 'hash_password';
-		parent::__construct();
-	}
-    public $before_create = array( 'hash_password' );
-
-	protected function hash_password($data)
-    {
-        $book['password'] = 'whateverpasswordcreationresultyoumaythinkof';
-        return $data;
-    }
-}
-```
-Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has an `after_get` trigger which will be called last.
 
 ##Working with relationships
 
@@ -213,6 +177,43 @@ You can also change the database connection on a per request basis. For example,
 $this->user_model->on('write_conn')->delete(3);
 ```
 After this, I would advise you to do a `$this->user_model->reset();` in order to reset the database connection to the model's (or application's) default.
+
+##Observers##
+
+There are times when you'll need to alter your model data before or after it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, MY_Model contains a series of callbacks/observers -- methods that will be called at certain points.
+
+The full list of observers are as follows:
+```php
+$before_create = array();
+$after_create = array();
+$before_update = array();
+$after_update = array();
+$before_get = array();
+$after_get = array();
+$before_delete = array();
+$after_delete = array();
+$before_soft_delete = array();
+$after_soft_delete = array();
+```
+These are instance variables usually defined at the class level. They are arrays of methods on this class to be called at certain points. An example:
+```php
+class User_model extends MY_Model
+{
+	function __construct()
+	{
+		$this->before_create[] = 'hash_password';
+		parent::__construct();
+	}
+    public $before_create = array( 'hash_password' );
+
+	protected function hash_password($data)
+    {
+        $book['password'] = 'whateverpasswordcreationresultyoumaythinkof';
+        return $data;
+    }
+}
+```
+Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has an `after_get` trigger which will be called last.
 
 ##Available methods
 
