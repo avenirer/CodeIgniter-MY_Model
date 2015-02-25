@@ -140,6 +140,42 @@ class Post_model extends MY_Model
 }
 ```
 
+###Has Many Pivot relationship (property)
+
+Many to many relationship can have one to one as reverse relationship. But there are also many to many relationships that have many to many as reverse relationships. For this we have has_many_pivot key as relation. This one allows establishing MANY TO MANY or more MANY TO MANY relationship(s) between models/tables with the use of a PIVOT TABLE.
+
+**ATTENTION**: The pivot table name must be composed of the two connected table names separated by "_" the table names having to be alphabetically ordered (NOT users_posts, but posts_users). Also the pivot table must contain as identifying columns the columns named by convention as follows: foreign_table_name_singular + "_" + foreign_table_primary_key.
+
+For example: considering that a post can have multiple authors, a pivot table that connects the two tables (**users** and **posts**) must be named **posts_users** (**NOT users_posts**) and must have **post_id** and **user_id** as identifying columns for the **posts.id** and **users.id** tables.
+
+Usage example:
+
+```php
+class User_model extends MY_Model
+{
+
+	function __construct()
+	{
+		$this->has_many_pivot['posts'] = 'Post_model';
+		// or $this->has_many_pivot['posts'] = array('Post_model','id','id'); where the second parameter is the foreign primary key of posts table, and the third parameter is the local primary key.
+	}
+ }
+ ```
+
+The reverse of the relationship (which in this case is also a many to many) is defined the same:
+
+```php
+class Post_model extends MY_Model
+{
+
+	function __construct()
+	{
+		$this->has_many_pivot['user'] = 'User_model';
+		// or $this->has_many_pivot['users'] = array('User_model','id','id'); where the second parameter is the foreign primary key of users table, and the third parameter is the local primary key.
+	}
+}
+```
+
 ##Working with relationships
 
 Every table has a way to interact with other tables. So if your model has relationships with other models, you can define those relationships:
