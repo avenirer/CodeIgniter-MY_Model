@@ -428,7 +428,7 @@ $user = $this->user_model->get(array('username'=>'avenirer'));
 ###get_all($where = NULL)
 Same as the get() method but it can return more than one row
 
-###count()
+###count($where)
 Returns the number of rows.
 
 ####Example
