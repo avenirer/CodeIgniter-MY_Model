@@ -379,7 +379,7 @@ class MY_Model extends CI_Model
      * public function get()
      * Retrieves one row from table.
      * @param null $where
-     * @return bool
+     * @return mixed
      */
     public function get($where = NULL)
     {
@@ -398,9 +398,9 @@ class MY_Model extends CI_Model
 
     /**
      * public function get_all()
-     * Retrieves one row from table.
+     * Retrieves rows from table.
      * @param null $where
-     * @return bool
+     * @return mixed
      */
     public function get_all($where = NULL)
     {
@@ -414,6 +414,20 @@ class MY_Model extends CI_Model
             return $data;
         }
         return FALSE;
+    }
+    
+    /**
+     * public function count()
+     * Retrieves number of rows from table.
+     * @param null $where
+     * @return integer
+     */
+    public function count($where = NULL)
+    {
+        $this->where($where);
+        $this->_database->from($this->table);
+        $number_rows = $this->_database->count_all_results();
+        return $number_rows;
     }
 
     /** RELATIONSHIPS */
