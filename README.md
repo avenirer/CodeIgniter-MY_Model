@@ -170,7 +170,7 @@ class Post_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_many_pivot['user'] = 'User_model';
+		$this->has_many_pivot['users'] = 'User_model';
 		// or $this->has_many_pivot['users'] = array('User_model','id','id'); where the second parameter is the foreign primary key of users table, and the third parameter is the local primary key.
 	}
 }
