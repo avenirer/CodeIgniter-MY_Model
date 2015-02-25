@@ -83,7 +83,7 @@ $this->has_one['address'] = 'Address_model'
 $this->has_many['posts'] = array('Posts_model','foreign_key','another_local_key');
 ```
 
-##Has One (one to one) relationship (property)
+###Has One (one to one) relationship (property)
 
 Has One relationship tells our model that ever record in the table has assigned to it a record in another table. It is my opinion that there is no need to do a reverse relation like in Eloquent, where there is a "belongs to" relationship because, the truth be told, being a "one to one" relationship it's an equality between the entities.
 
@@ -112,7 +112,7 @@ class Phone_model extends MY_Model
 }
 ```
 
-##Has Many relationship (property)
+###Has Many relationship (property)
 
 Has Many relationship tells our model that a record in the table can have many related records in another table. The reverse of this relationship is a has one relation, which translates into a One To Many type of relationship. For a reverse relationship of type Many To Many, we will have another property named Has Many Pivot.
 
