@@ -976,7 +976,10 @@ class MY_Model extends CI_Model
     {
         if(substr($method,0,6) == 'where_')
         {
-            echo 'ok';
+            $column = substr($method,6);
+            $this->where($column, $arguments);
+            return $this;
         }
+        else echo 'No method with that name in MY_Model.';
     }
 }
