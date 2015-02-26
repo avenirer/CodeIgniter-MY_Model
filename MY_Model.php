@@ -831,7 +831,6 @@ class MY_Model extends CI_Model
                 }
             }
             $mask = (isset($string)) ? $path.$prefix.$string : $path.$prefix.'*';
-            echo $mask;
             array_map('unlink', glob($mask));
         }
         return $this;
