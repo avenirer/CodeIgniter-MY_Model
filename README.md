@@ -108,10 +108,24 @@ $this->load->model('user_model');
 $users = $this->user_model->as_array()->set_cache('get_all_users')->get_all();
 ```
 The code above will create a cache file named mm_get_all_users. If you want the cache to have a time limit, you can pass a second parameter that represents the number of seconds:
+
 ```php
 $users = $this->user_model->as_array()->set_cache('get_all_users',3600)->get_all();
 ```
 This file will then be used by the model whenever you call the get_all() method that has a set_cache('get_all_users') method in the chain.
+
+Whenever you want, you can delete the cache "manually" by using the delete_cache() method.
+
+There are three ways you can delete the cache:
+
+* `delete_cache('get_all_users')` deletes a certain cache;
+* `delete_cache('users_*')` deletes the caches that start with 'mm_users_' (where 'mm_' is the prefix used by MY_Model);
+* `delete_cache()` deletes all cache that start with 'mm_' (where 'mm_' is the prefix used by MY_Model).
+
+Example:
+```php
+$this->user_model->delete_cache('get_all_users');
+```
 
 ##Relationships
 
