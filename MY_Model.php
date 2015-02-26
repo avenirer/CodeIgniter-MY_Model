@@ -808,6 +808,33 @@ class MY_Model extends CI_Model
         {
             $this->_cache = array();
         }
+        return $this;
+    }
+
+    public function delete_cache($string = NULL)
+    {
+        $this->load->driver('cache');
+        $prefix = (strlen($this->cache_prefix)>0) ? $this->cache_prefix.'_' : '';
+        if(isset($string) && (strpos($string,'*') === FALSE))
+        {
+            $this->cache->{$this->cache_driver}->delete($prefix . $string);
+        }
+        else
+        {
+            $cached = $this->cache->file->cache_info();
+            foreach($cached as $file)
+            {
+                if(array_key_exists('relative_path',$file))
+                {
+                    $path = $file['relative_path'];
+                    break;
+                }
+            }
+            $mask = (isset($string)) ? $path.$prefix.$string : $path.$prefix.'*';
+            echo $mask;
+            array_map('unlink', glob($mask));
+        }
+        return $this;
     }
 
     /**
