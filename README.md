@@ -98,6 +98,21 @@ class User_model extends MY_Model
  	}
 }
 ```
+
+##Caching
+
+If you want to cache the result for faster output, you can at any time use the MY_Model's caching. To do this you simply attach a set_cache('name') inside the query chain:
+
+```php
+$this->load->model('user_model');
+$users = $this->user_model->as_array()->set_cache('get_all_users')->get_all();
+```
+The code above will create a cache file named mm_get_all_users. If you want the cache to have a time limit, you can pass a second parameter that represents the number of seconds:
+```php
+$users = $this->user_model->as_array()->set_cache('get_all_users',3600)->get_all();
+```
+This file will then be used by the model whenever you call the get_all() method that has a set_cache('get_all_users') method in the chain.
+
 ##Relationships
 
 When you extend MY_Model, you can also setup relationships between the model and other models (as long as they are created and extend MY_Model). So, just before `parent::__construct();` you can also add:
