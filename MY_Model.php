@@ -85,6 +85,10 @@ class MY_Model extends CI_Model
     private $_requested = array();
     /** end relationships variables */
 
+    /*caching*/
+    public $cache_driver = 'file';
+    protected $_cache = array();
+
 
     /**
      * The various callbacks available to the model. Each are
@@ -383,17 +387,40 @@ class MY_Model extends CI_Model
      */
     public function get($where = NULL)
     {
-        $this->trigger('before_get');
-        $this->where($where);
-        $this->limit(1);
-        $query = $this->_database->get($this->table);
-        if($query->num_rows() == 1)
+        if(isset($this->_cache) && !empty($this->_cache))
         {
-            $row = $query->{$this->_return_type(FALSE)}();
-            $row = $this->trigger('after_get',$row);
-            return $row;
+            $this->load->driver('cache');
+            $cache_name = $this->_cache['cache_name'];
+            $seconds = $this->_cache['seconds'];
         }
-        return FALSE;
+        if(isset($this->_cache) && !empty($this->_cache))
+        {
+            $data = $this->cache->{$this->cache_driver}->get($cache_name);
+        }
+
+        if(isset($data) && $data !== FALSE)
+        {
+            return $data;
+        }
+        else
+        {
+            $this->trigger('before_get');
+            $this->where($where);
+            $this->limit(1);
+            $query = $this->_database->get($this->table);
+            if ($query->num_rows() == 1)
+            {
+                $row = $query->{$this->_return_type(FALSE)}();
+                $row = $this->trigger('after_get', $row);
+                if(isset($cache_name) && isset($seconds))
+                {
+                    $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
+                    $this->_reset_cache($cache_name);
+                }
+                return $row;
+            }
+            return FALSE;
+        }
     }
 
     /**
@@ -404,18 +431,45 @@ class MY_Model extends CI_Model
      */
     public function get_all($where = NULL)
     {
-        $this->trigger('before_get');
-        $this->where($where);
-        $query = $this->_database->get($this->table);
-        if($query->num_rows() > 0)
+        if(isset($this->_cache) && !empty($this->_cache))
         {
-            $data = $query->{$this->_return_type(TRUE)}();
-            $data = $this->trigger('after_get',$data);
+            $this->load->driver('cache');
+            $cache_name = $this->_cache['cache_name'];
+            $seconds = $this->_cache['seconds'];
+        }
+
+        if(isset($this->_cache) && !empty($this->_cache))
+        {
+            $data = $this->cache->{$this->cache_driver}->get($cache_name);
+        }
+
+        if(isset($data) && $data !== FALSE)
+        {
             return $data;
         }
-        return FALSE;
+        else
+        {
+            $this->trigger('before_get');
+            $this->where($where);
+            $query = $this->_database->get($this->table);
+            if($query->num_rows() > 0)
+            {
+                $data = $query->{$this->_return_type(TRUE)}();
+                $data = $this->trigger('after_get', $data);
+                if(isset($cache_name) && isset($seconds))
+                {
+                    $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
+                    $this->_reset_cache($cache_name);
+                }
+                return $data;
+            }
+            else
+            {
+                return FALSE;
+            }
+        }
     }
-    
+
     /**
      * public function count()
      * Retrieves number of rows from table.
@@ -724,6 +778,7 @@ class MY_Model extends CI_Model
         $this->return_as = 'array';
         return $this;
     }
+
     /**
      * Return the next call as an object rather than an array
      */
@@ -731,6 +786,20 @@ class MY_Model extends CI_Model
     {
         $this->return_as = 'object';
         return $this;
+    }
+
+    public function set_cache($string, $seconds = 86400)
+    {
+        $this->_cache = array('cache_name' => 'mm_'.$string,'seconds'=>$seconds);
+        return $this;
+    }
+
+    private function _reset_cache($string)
+    {
+        if(isset($string))
+        {
+            $this->_cache = array();
+        }
     }
 
     /**
@@ -866,5 +935,14 @@ class MY_Model extends CI_Model
     {
         isset($this->_database_connection) ? $this->load->database($this->_database_connection) : $this->load->database();
         $this->_database = $this->db;
+    }
+
+
+    public function __call($method, $arguments)
+    {
+        if(substr($method,0,6) == 'where_')
+        {
+            echo 'ok';
+        }
     }
 }
