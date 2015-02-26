@@ -29,6 +29,10 @@
  *              !ATTENTION: The pivot table name must be composed of the two table names separated by "_" the table names having to to be alphabetically ordered (NOT users_posts, but posts_users).
  *                  Also the pivot table must contain as identifying columns the columns named by convention as follows: table_name_singular + _ + foreign_table_primary_key.
  *                  For example: considering that a post can have multiple authors, a pivot table that connects two tables (users and posts) must be named posts_users and must have post_id and user_id as identifying columns for the posts.id and users.id tables.
+ *          $this->cache_driver = 'file'
+ *              If you know you will do some caching of results without the native caching solution, you can at any time use the MY_Model's caching.
+ *              By default, MY_Model uses the files to cache result.
+ *              If you want to change the way it stores the cache, you can change the $cache_driver property to whatever CodeIgniter cache driver you want to use
  *
  *
  * 			parent::__construct();
@@ -87,6 +91,7 @@ class MY_Model extends CI_Model
 
     /*caching*/
     public $cache_driver = 'file';
+    public $cache_prefix = 'mm';
     protected $_cache = array();
 
 
@@ -790,7 +795,8 @@ class MY_Model extends CI_Model
 
     public function set_cache($string, $seconds = 86400)
     {
-        $this->_cache = array('cache_name' => 'mm_'.$string,'seconds'=>$seconds);
+        $prefix = (strlen($this->cache_prefix)>0) ? $$this->cache_prefix.'_' : '';
+        $this->_cache = array('cache_name' => $prefix.$string,'seconds'=>$seconds);
         return $this;
     }
 
