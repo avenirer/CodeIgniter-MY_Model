@@ -435,8 +435,8 @@ $this->user_model->where('username',array('avenirer','aveniro')->get();
 There is also a "dynamic" where. That means that at any time you can write a where method that contains the name of the column:
 
 ```php
-$this->user_model->where_username('avenirer'); // where the "username" value is avenirer
-$this->user->model->where_mail(array('avenir.ro@gmail.com','adrian.voicu@avenir.ro'));
+$this->user_model->where_username('avenirer')->get(); // where the "username" value is avenirer
+$this->user->model->where_mail(array('avenir.ro@gmail.com','adrian.voicu@avenir.ro'))->get_all();
 ```
 
 ###limit($limit,$offset=0)
