@@ -535,7 +535,7 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
-        $data = (sizeof($data)==1) ? array([0]=>$data) : $data;
+        $data = (sizeof($data)==1) ? array($data) : $data;
         $data = json_decode(json_encode($data), TRUE);
         foreach($this->_requested as $requested_key => $request)
         {
