@@ -61,7 +61,7 @@ class MY_Model extends CI_Model
      * Sets table name
      */
     public $table = NULL;
-    protected $_fields;
+    protected $table_fields;
 
     /** @var string
      * Sets default id column
@@ -958,6 +958,23 @@ class MY_Model extends CI_Model
         $this->load->helper('inflector');
         $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
         return $table_name;
+    }
+
+    /**
+     * protected function fetch_fields()
+     *
+     * Gets the table fields when called by the functions that need them
+     *
+     */
+    protected function fetch_fields()
+    {
+        if(empty($this->table_fields))
+        {
+            $fields = $this->_database->list_fields($this->table);
+            foreach ($fields as $field) {
+                $this->table_fields[] = $field;
+            }
+        }
     }
 
     /**
