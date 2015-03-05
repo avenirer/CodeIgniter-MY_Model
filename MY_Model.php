@@ -274,10 +274,7 @@ class MY_Model extends CI_Model
                 $this->_database->where($where_col_array);
             }
         }
-        if($this->_trashed!='without')
-        {
-            $this->_where_trashed();
-        }
+        $this->_where_trashed();
         return $this;
     }
 
