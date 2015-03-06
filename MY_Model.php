@@ -565,18 +565,20 @@ class MY_Model extends CI_Model
                 $sub_results = $this->_database->get($foreign_table)->result_array();
             }
 
-
-            foreach($sub_results as $result)
+            if(isset($sub_results) && !empty($sub_results))
             {
-                if(in_array($result[$foreign_key], $local_key_values))
+                foreach($sub_results as $result)
                 {
-                    $reverse_values = array_flip($local_key_values);
-                    if($type=='has_one') {
-                        $data[$reverse_values[$result[$foreign_key]]][$relation_key] = $result;
-                    }
-                    else
+                    if(in_array($result[$foreign_key], $local_key_values))
                     {
-                        $data[$reverse_values[$result[$foreign_key]]][$relation_key][] = $result;
+                        $reverse_values = array_flip($local_key_values);
+                        if($type=='has_one') {
+                            $data[$reverse_values[$result[$foreign_key]]][$relation_key] = $result;
+                        }
+                        else
+                        {
+                            $data[$reverse_values[$result[$foreign_key]]][$relation_key][] = $result;
+                        }
                     }
                 }
             }
