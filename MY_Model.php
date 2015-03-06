@@ -957,7 +957,6 @@ class MY_Model extends CI_Model
     }
     private function _get_table_name($model_name)
     {
-        $this->load->helper('inflector');
         $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
         return $table_name;
     }
