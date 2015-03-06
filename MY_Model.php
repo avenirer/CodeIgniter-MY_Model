@@ -274,7 +274,10 @@ class MY_Model extends CI_Model
                 $this->_database->where($where_col_array);
             }
         }
-        $this->_where_trashed();
+        if($this->soft_deletes===TRUE)
+        {
+            $this->_where_trashed();
+        }
         return $this;
     }
 
