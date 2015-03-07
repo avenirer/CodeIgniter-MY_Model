@@ -551,12 +551,16 @@ class MY_Model extends CI_Model
             $local_key_values = array();
             foreach($data as $key => $element)
             {
-                $local_key_values[$key] = $element[$local_key];
+                $local_key_values[$element[$foreign_key]] = $element[$local_key];
             }
 
             if(!isset($pivot_table))
             {
                 $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
+                echo '<pre>';
+                print_r($local_key_values);
+                echo '</pre>';
+                //echo $this->_database->last_query().'<br />';
             }
             else
             {
@@ -564,20 +568,28 @@ class MY_Model extends CI_Model
                 $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$this->primary.' = '.$this->table.'.'.$this->primary,'right');
                 $sub_results = $this->_database->get($foreign_table)->result_array();
             }
-
             if(isset($sub_results) && !empty($sub_results))
             {
+                $subs = array();
                 foreach($sub_results as $result)
                 {
-                    if(in_array($result[$foreign_key], $local_key_values))
+                    $subs[$result[$foreign_key]] = $result;
+                }
+                $sub_results = $subs;
+                echo '<pre>';
+                print_r($data);
+                echo '</pre>';
+                foreach($data as &$result)
+                {
+                    print_r($result);
+                    if(array_key_exists($local_key_values[$result[$foreign_key]],$sub_results))
                     {
-                        $reverse_values = array_flip($local_key_values);
                         if($type=='has_one') {
-                            $data[$reverse_values[$result[$foreign_key]]][$relation_key] = $result;
+                            $result[$relation_key] = $sub_results[$local_key_values[$result[$foreign_key]]];
                         }
                         else
                         {
-                            $data[$reverse_values[$result[$foreign_key]]][$relation_key][] = $result;
+                            $result[$relation_key][] = $sub_results[$local_key_values[$result[$foreign_key]]];
                         }
                     }
                 }
