@@ -549,15 +549,19 @@ class MY_Model extends CI_Model
             $type = $relation['relation'];
             $relation_key = $relation['relation_key'];
             $local_key_values = array();
+            $new_data = array();
             foreach($data as $key => $element)
             {
-                $local_key_values[$element[$local_key]] = $element[$local_key];
+                if(isset($element[$local_key]))
+                {
+                    $id = $element[$local_key];
+                    $local_key_values[$id] = $id;
+                    $new_data[$id] = $element;
+                }
             }
-
             if(!isset($pivot_table))
             {
                 $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
-
             }
             else
             {
@@ -565,6 +569,7 @@ class MY_Model extends CI_Model
                 $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$this->primary.' = '.$this->table.'.'.$this->primary,'right');
                 $sub_results = $this->_database->get($foreign_table)->result_array();
             }
+
             if(isset($sub_results) && !empty($sub_results))
             {
                 $subs = array();
@@ -573,20 +578,19 @@ class MY_Model extends CI_Model
                     $subs[$result[$foreign_key]][] = $result;
                 }
                 $sub_results = $subs;
-                foreach($data as &$result)
+                foreach($local_key_values as $value)
                 {
-                    if(array_key_exists($local_key_values[$result[$local_key]],$sub_results))
+                    if(array_key_exists($value,$sub_results))
                     {
-                        if($type=='has_one') {
-                            $result[$relation_key] = $sub_results[$local_key_values[$result[$local_key]]][0];
-                        }
-                        else
-                        {
-                            $result[$relation_key] = $sub_results[$local_key_values[$result[$local_key]]];
+                        if ($type == 'has_one') {
+                            $new_data[$value][$relation_key] = $sub_results[$value][0];
+                        } else {
+                            $new_data[$value][$relation_key] = $sub_results[$value];
                         }
                     }
                 }
             }
+            $data = $new_data;
             unset($this->_requested[$requested_key]);
         }
         if(sizeof($data)==1) $data = $data[0];
