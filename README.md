@@ -156,7 +156,7 @@ class User_model extends MY_Model
  }
  ```
 
-The reverse of the relationship is defined the same:
+The reverse of the relationship is defined taking care of the foreign key and local key:
 
 ```php
 class Phone_model extends MY_Model
@@ -164,7 +164,7 @@ class Phone_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = 'User_model';
+		$this->has_one['user'] = array('User_model','id','user_id');
 	}
 }
 ```
@@ -192,7 +192,7 @@ class Post_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = 'User_model';
+		$this->has_one['user'] = array('User_model','id','user_id');
 	}
 }
 ```
