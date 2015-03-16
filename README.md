@@ -141,7 +141,7 @@ Examples:
 
 ```php
 $total_posts = $this->post_model->count(); // retrieve the total number of posts
-$posts = $this->post_model->paginate(10); // paginate with 10 rows per page
+$posts = $this->post_model->paginate(10,$total_posts); // paginate with 10 rows per page
 echo $this->post_model->all_pages; // will output links to all pages like this model: "< 1 2 3 4 5 >". It will put a link if the page number is not the "current page"
 echo $this->post_model->previous_page; // will output link to the previous page like this model: "<". It will only put a link if there is a "previous page"
 echo $this->post_model->next_page; // will output link to the next page like this model: ">". It will only put a link if there is a "next page"
