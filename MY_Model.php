@@ -535,8 +535,11 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
-        $data = (sizeof($data)==1) ? array($data) : $data;
         $data = json_decode(json_encode($data), TRUE);
+        if(array_key_exists($this->primary,$data))
+        {
+            $data = array($data);
+        }
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
