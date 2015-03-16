@@ -127,6 +127,26 @@ Example:
 $this->user_model->delete_cache('get_all_users');
 ```
 
+##Pagination
+
+You can at any time "paginate" the results. You can do this by simply changing `get_all()` method with `paginate()` method. The paginate() method can receive up to three parameters:
+
+* first paramater, which is optional (default is set to 10) is the number of rows per page;
+* second parameter, which is optional (default is set to NULL), is the total of rows;
+* the third parameter, which is also optional (default is set to 1) is the page you want to get.
+
+If you only passed the first parameter, the page number will be retrieved from the URL (the last segment of the page). If you didn't pass the second parameter you will only be able to output the previous and next page, without links to all the pages.
+
+Examples:
+
+```php
+$total_posts = $this->post_model->count(); // retrieve the total number of posts
+$posts = $this->post_model->paginate(10); // paginate with 10 rows per page
+echo $this->post_model->all_pages; // will output links to all pages like this model: "< 1 2 3 4 5 >". It will put a link if the page number is not the "current page"
+echo $this->post_model->previous_page; // will output link to the previous page like this model: "<". It will only put a link if there is a "previous page"
+echo $this->post_model->next_page; // will output link to the next page like this model: ">". It will only put a link if there is a "next page"
+```
+
 ##Relationships
 
 When you extend MY_Model, you can also setup relationships between the model and other models (as long as they are created and extend MY_Model). So, just before `parent::__construct();` you can also add:
@@ -492,6 +512,16 @@ $user = $this->user_model->get(array('username'=>'avenirer'));
 
 ###get_all($where = NULL)
 Same as the get() method but it can return more than one row
+
+###paginate($rows_per_page = 10, $total_rows = NULL, $page_number = 1)
+
+####Parameters
+* rows_per_page = 10 - the number of rows per page
+* total_rows = NULL - the total number of rows
+* page_number = 1 - current page number
+
+####Return
+Returns the results and created the links that can be retrieved by accessing "previous_page", "next_page" and "all_pages" properties
 
 ###count($where)
 Returns the number of rows.
