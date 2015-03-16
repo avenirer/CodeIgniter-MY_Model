@@ -95,6 +95,11 @@ class MY_Model extends CI_Model
     public $cache_driver = 'file';
     public $cache_prefix = 'mm';
     protected $_cache = array();
+    
+    /*pagination*/
+    public $next_page;
+    public $previous_page;
+    public $all_pages;
 
 
     /**
@@ -997,6 +1002,106 @@ class MY_Model extends CI_Model
     {
         isset($this->_database_connection) ? $this->load->database($this->_database_connection) : $this->load->database();
         $this->_database = $this->db;
+    }
+    
+    /*
+     * HELPER FUNCTIONS
+     */
+
+    public function paginate($rows_per_page, $total_rows = NULL, $page_number = 1)
+    {
+        $this->load->helper('url');
+        $segments = $this->uri->total_segments();
+        $uri_array = $this->uri->segment_array();
+        $page = $this->uri->segment($segments);
+        if(is_numeric($page))
+        {
+            $page_number = $page;
+        }
+        else
+        {
+            $page_number = $page_number;
+            $uri_array[] = $page_number;
+            ++$segments;
+        }
+        $next_page = $page_number+1;
+        $previous_page = $page_number-1;
+
+        if($page_number == 1)
+        {
+            $this->previous_page = '&lt;';
+        }
+        else
+        {
+            $uri_array[$segments] = $previous_page;
+            $uri_string = implode('/',$uri_array);
+            $this->previous_page = anchor($uri_string,'&lt;');
+        }
+        $uri_array[$segments] = $next_page;
+        $uri_string = implode('/',$uri_array);
+        if(isset($total_rows) && (ceil($total_rows/$rows_per_page) == $page_number))
+        {
+            $this->next_page = '&gt;';
+        }
+        else
+        {
+            $this->next_page = anchor($uri_string, '&gt');
+        }
+
+        $rows_per_page = (is_numeric($rows_per_page)) ? $rows_per_page : 10;
+
+        if(isset($total_rows))
+        {
+            $number_of_pages = ceil($total_rows/$rows_per_page);
+            $links = $this->previous_page;
+            for($i=1;$i<=$number_of_pages;$i++)
+            {
+                unset($uri_array[$segments]);
+                $uri_string = implode('/',$uri_array);
+                $links .= ' '.(($page_number==$i) ? $i : anchor($uri_string.'/'.$i,$i)).' ';
+            }
+            $links .= $this->next_page;
+            $this->all_pages = $links;
+        }
+
+
+        if(isset($this->_cache) && !empty($this->_cache))
+        {
+            $this->load->driver('cache');
+            $cache_name = $this->_cache['cache_name'].'_'.$page_number;
+            $seconds = $this->_cache['seconds'];
+        }
+
+        if(isset($this->_cache) && !empty($this->_cache))
+        {
+            $data = $this->cache->{$this->cache_driver}->get($cache_name);
+        }
+
+        if(isset($data) && $data !== FALSE)
+        {
+            return $data;
+        }
+        else
+        {
+            $this->trigger('before_get');
+            $this->limit($rows_per_page, (($page_number-1)*$rows_per_page));
+            $query = $this->_database->get($this->table);
+            if($query->num_rows() > 0)
+            {
+                $data = $query->{$this->_return_type(TRUE)}();
+                $data = $this->trigger('after_get', $data);
+                if(isset($cache_name) && isset($seconds))
+                {
+                    $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
+                    $this->_reset_cache($cache_name);
+                }
+                return $data;
+            }
+            else
+            {
+                return FALSE;
+            }
+        }
     }
 
 
