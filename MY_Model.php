@@ -211,7 +211,7 @@ class MY_Model extends CI_Model
             {
                 if (is_array($column_name_where))
                 {
-                    $this->where($column_name_where[0], $column_name_where[1]);
+                    $this->where($column_name_where);
                 } elseif (is_numeric($column_name_where)) {
                     $this->_database->where($this->primary, $column_name_where);
                 } else {
