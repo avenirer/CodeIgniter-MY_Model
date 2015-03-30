@@ -422,7 +422,7 @@ $newdata = array('username'=>'aveniro');
 $this->user_model->update($data,1);
 
 $newdata = array('username'=>'aveniro', 'email'=>'avenir.ro@gmail.ro');
-$this->user_model->update($data,array('email'=>'avenir.ro@gmail.com);
+$this->user_model->update($data,array('email'=>'avenir.ro@gmail.com'));
 
 $newdata = array('username'=>'aveniro', 'email'=>'avenir.ro@gmail.com');
 $this->user_model->update($data,'email');
