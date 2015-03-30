@@ -544,7 +544,7 @@ Allows the user to select only specific columns
 
 ###Examples
 ```php
-$users = $this->user_model->fields('username,password'->get_all();
+$users = $this->user_model->fields('username,password')->get_all();
 
 $users = $this->user_model->fields(array('users.username', 'users.password', 'group.name')->get_all();
 ```
