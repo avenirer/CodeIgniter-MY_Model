@@ -35,6 +35,10 @@
  *              By default, MY_Model uses the files to cache result.
  *              If you want to change the way it stores the cache, you can change the $cache_driver property to whatever CodeIgniter cache driver you want to use.
  *              Also, with $cache_prefix, you can prefix the name of the caches. by default any cache made by MY_Model starts with 'mm' + _ + "name chosen for cache"
+ *          $this->pagination_delimiters = array('<span>','</span>');
+ *              If you know you will use the paginate() method, you can change the delimiters between the pages links
+ *          $this->pagination_arrows = array('&lt;','&gt;');
+ *              You can also change the way the previous and next arrows look like.
  *
  *
  * 			parent::__construct();
