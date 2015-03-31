@@ -152,6 +152,7 @@ Don't you like how the links look? You can change them by modifing the following
 $this->pagination_delimiters = array('<span>','</span>');
 $this->pagination_arrows = array('&lt;','&gt;');
 ```
+Also, you can use the set_pagination_delimiters($delimiters) and set_pagination_arrows($arrows) methods, where $delimiters and $arrows are arrays.
 
 ##Relationships
 
