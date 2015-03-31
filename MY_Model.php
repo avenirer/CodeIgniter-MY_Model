@@ -1113,6 +1113,24 @@ class MY_Model extends CI_Model
             }
         }
     }
+    
+    public function set_pagination_delimiters($delimiters)
+    {
+        if(is_array($delimiters) && sizeof($delimiters)==2)
+        {
+            $this->pagination_delimiters = $delimiters;
+        }
+        return $this;
+    }
+    
+    public function set_pagination_arrows($arrows)
+    {
+        if(is_array($arrows) && sizeof($arrows)==2)
+        {
+            $this->pagination_arrows = $arrows;
+        }
+        return $this;
+    }
 
 
     public function __call($method, $arguments)
