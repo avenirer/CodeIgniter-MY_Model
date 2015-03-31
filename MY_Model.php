@@ -95,11 +95,13 @@ class MY_Model extends CI_Model
     public $cache_driver = 'file';
     public $cache_prefix = 'mm';
     protected $_cache = array();
-    
+
     /*pagination*/
     public $next_page;
     public $previous_page;
     public $all_pages;
+    public $pagination_delimiters = array('<span>','</span>');
+    public $pagination_arrows = array('&lt;','&gt;');
 
 
     /**
@@ -588,11 +590,11 @@ class MY_Model extends CI_Model
                     {
                         if ($type == 'has_one')
                         {
-                                $data[$key][$relation_key] = $sub_results[$value][0];
+                            $data[$key][$relation_key] = $sub_results[$value][0];
                         }
                         else
                         {
-                                $data[$key][$relation_key] = $sub_results[$value];
+                            $data[$key][$relation_key] = $sub_results[$value];
                         }
                     }
                 }
@@ -1003,7 +1005,7 @@ class MY_Model extends CI_Model
         isset($this->_database_connection) ? $this->load->database($this->_database_connection) : $this->load->database();
         $this->_database = $this->db;
     }
-    
+
     /*
      * HELPER FUNCTIONS
      */
@@ -1029,23 +1031,23 @@ class MY_Model extends CI_Model
 
         if($page_number == 1)
         {
-            $this->previous_page = '&lt;';
+            $this->previous_page = $this->pagination_delimiters[0].$this->pagination_arrows[0].$this->pagination_delimiters[1];
         }
         else
         {
             $uri_array[$segments] = $previous_page;
             $uri_string = implode('/',$uri_array);
-            $this->previous_page = anchor($uri_string,'&lt;');
+            $this->previous_page = anchor($uri_string,$this->pagination_delimiters[0].$this->pagination_arrows[0].$this->pagination_delimiters[1]);
         }
         $uri_array[$segments] = $next_page;
         $uri_string = implode('/',$uri_array);
         if(isset($total_rows) && (ceil($total_rows/$rows_per_page) == $page_number))
         {
-            $this->next_page = '&gt;';
+            $this->next_page = $this->pagination_delimiters[0].$this->pagination_arrows[1].$this->pagination_delimiters[1];
         }
         else
         {
-            $this->next_page = anchor($uri_string, '&gt');
+            $this->next_page = anchor($uri_string, $this->pagination_delimiters[0].$this->pagination_arrows[1].$this->pagination_delimiters[1]);
         }
 
         $rows_per_page = (is_numeric($rows_per_page)) ? $rows_per_page : 10;
@@ -1058,7 +1060,9 @@ class MY_Model extends CI_Model
             {
                 unset($uri_array[$segments]);
                 $uri_string = implode('/',$uri_array);
-                $links .= ' '.(($page_number==$i) ? $i : anchor($uri_string.'/'.$i,$i)).' ';
+                $links .= $this->pagination_delimiters[0];
+                $links .= (($page_number==$i) ? $i : anchor($uri_string.'/'.$i,$i));
+                $links .= $this->pagination_delimiters[1];
             }
             $links .= $this->next_page;
             $this->all_pages = $links;
@@ -1116,5 +1120,3 @@ class MY_Model extends CI_Model
         else echo 'No method with that name in MY_Model.';
     }
 }
-
-
