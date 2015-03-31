@@ -104,8 +104,8 @@ class MY_Model extends CI_Model
     public $next_page;
     public $previous_page;
     public $all_pages;
-    public $pagination_delimiters = array('<span>','</span>');
-    public $pagination_arrows = array('&lt;','&gt;');
+    public $pagination_delimiters;
+    public $pagination_arrows;
 
 
     /**
@@ -140,6 +140,8 @@ class MY_Model extends CI_Model
         $this->before_create[] = 'add_created';
         $this->before_update[] = 'add_updated';
         $this->before_soft_delete[] = 'add_deleted';
+        $this->pagination_delimiters = (isset($this->pagination_delimiters)) ? $this->pagination_delimiters : array('<span>','</span>');
+        $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
     }
 
     /**
