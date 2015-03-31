@@ -146,6 +146,12 @@ echo $this->post_model->all_pages; // will output links to all pages like this m
 echo $this->post_model->previous_page; // will output link to the previous page like this model: "<". It will only put a link if there is a "previous page"
 echo $this->post_model->next_page; // will output link to the next page like this model: ">". It will only put a link if there is a "next page"
 ```
+Don't you like how the links look? You can change them by modifing the following properties inside the models that extend the MY_Model():
+
+```php
+$this->pagination_delimiters = array('<span>','</span>');
+$this->pagination_arrows = array('&lt;','&gt;');
+```
 
 ##Relationships
 
