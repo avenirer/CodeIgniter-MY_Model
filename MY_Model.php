@@ -1060,18 +1060,24 @@ class MY_Model extends CI_Model
 
         if(isset($total_rows))
         {
-            $number_of_pages = ceil($total_rows/$rows_per_page);
-            $links = $this->previous_page;
-            for($i=1;$i<=$number_of_pages;$i++)
+            if($total_rows!=0)
             {
-                unset($uri_array[$segments]);
-                $uri_string = implode('/',$uri_array);
-                $links .= $this->pagination_delimiters[0];
-                $links .= (($page_number==$i) ? $i : anchor($uri_string.'/'.$i,$i));
-                $links .= $this->pagination_delimiters[1];
+                $number_of_pages = ceil($total_rows / $rows_per_page);
+                $links = $this->previous_page;
+                for ($i = 1; $i <= $number_of_pages; $i++) {
+                    unset($uri_array[$segments]);
+                    $uri_string = implode('/', $uri_array);
+                    $links .= $this->pagination_delimiters[0];
+                    $links .= (($page_number == $i) ? anchor($uri_string, $i) : anchor($uri_string . '/' . $i, $i));
+                    $links .= $this->pagination_delimiters[1];
+                }
+                $links .= $this->next_page;
+                $this->all_pages = $links;
             }
-            $links .= $this->next_page;
-            $this->all_pages = $links;
+            else
+            {
+                $this->all_pages = $this->pagination_delimiters[0].$this->pagination_delimiters[1];
+            }
         }
 
 
