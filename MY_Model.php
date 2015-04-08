@@ -275,7 +275,7 @@ class MY_Model extends CI_Model
         if(isset($where_col_array))
         {
             if (!is_array($where_col_array) && is_null($value)) {
-                $this->_database->where($this->primary, $where_col_array);
+                $this->_database->where(array($this->table.'.'$this->primary => $where_col_array));
             } elseif (isset($value) && !is_array($value)) {
                 $this->_database->where($where_col_array, $value);
             }
