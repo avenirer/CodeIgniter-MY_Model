@@ -580,7 +580,7 @@ class MY_Model extends CI_Model
             else
             {
                 $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'right');
-                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$this->primary.' = '.$this->table.'.'.$this->primary,'right');
+                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'right');
                 $sub_results = $this->_database->get($foreign_table)->result_array();
             }
 
