@@ -1103,11 +1103,9 @@ class MY_Model extends CI_Model
             $this->trigger('before_get');
             $this->where();
             $this->limit($rows_per_page, (($page_number-1)*$rows_per_page));
-            $query = $this->_database->get($this->table);
-            if($query->num_rows() > 0)
+            $data = $this->get_all();
+            if($data)
             {
-                $data = $query->{$this->_return_type(TRUE)}();
-                $data = $this->trigger('after_get', $data);
                 if(isset($cache_name) && isset($seconds))
                 {
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
