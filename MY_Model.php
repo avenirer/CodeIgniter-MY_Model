@@ -6,7 +6,7 @@
  * 		public function __construct()
  * 		{
  *          $this->_database_connection  = group_name or array() | OPTIONAL
- *              Sets the connection preferences (group name) set up in the database.php. If not set, it will use the
+ *              Sets the connection preferences (group name) set up in the database.php. If not trset, it will use the
  *              'default' (the $active_group) database connection.
  *          $this->table = table name | OPTIONAL (default: plural of model name)
  *              Sets the name of the table. If nothing none is passed, the table name will be the plural of the model name
@@ -755,7 +755,7 @@ class MY_Model extends CI_Model
                 $this->_database->where($this->_deleted_at_field.' IS NOT NULL', NULL, FALSE);
                 break;
             case 'without' :
-                $this->_database->where($this->_deleted_at_field, NULL);
+                $this->_database->where($this->_deleted_at_field.' IS NULL', NULL, FALSE);
                 break;
             case 'with' :
                 break;
