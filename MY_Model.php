@@ -138,7 +138,10 @@ class MY_Model extends CI_Model
         $this->_fetch_table();
         $this->_set_timestamps();
         $this->before_create[] = 'add_created';
+        $this->before_create[] = 'verify_table';
+        $this->before_get[] = 'verify_table';
         $this->before_update[] = 'add_updated';
+        $this->before_update[] = 'verify_table';
         $this->before_soft_delete[] = 'add_deleted';
         $this->pagination_delimiters = (isset($this->pagination_delimiters)) ? $this->pagination_delimiters : array('<span>','</span>');
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
@@ -1134,6 +1137,16 @@ class MY_Model extends CI_Model
         if(is_array($arrows) && sizeof($arrows)==2)
         {
             $this->pagination_arrows = $arrows;
+        }
+        return $this;
+    }
+    
+    private function verify_table()
+    {
+        if (!$this->_database->table_exists($this->table))
+        {
+            show_error('Table <strong>'.$this->table.'</strong> doesn\'t exist');
+            exit;
         }
         return $this;
     }
