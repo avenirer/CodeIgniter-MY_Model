@@ -74,6 +74,12 @@ class MY_Model extends CI_Model
 
     /**
      * @var array
+     * You can establish the fields of the table. If you won't these fields will be filled by MY_Model (with one query)
+     */
+    public $table_fields = array();
+
+    /**
+     * @var array
      * Sets fillable fields
      */
     public $fillable = array();
@@ -84,9 +90,7 @@ class MY_Model extends CI_Model
      */
     public $protected = array();
 
-    /** @var string
-     * Sets default id column
-     */
+    private $_can_be_filled = NULL;
 
 
     /** @var bool | array
@@ -160,6 +164,62 @@ class MY_Model extends CI_Model
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
     }
 
+    public function _get_table_fields()
+    {
+        if(empty($this->table_fields))
+        {
+            $this->table_fields = $this->_database->list_fields($this->table);
+        }
+        return TRUE;
+    }
+
+    public function fillable_fields()
+    {
+        if(!isset($this->_can_be_filled))
+        {
+            $this->_get_table_fields();
+            $no_protection = array();
+            foreach ($this->table_fields as $field) {
+                if (!in_array($field, $this->protected)) {
+                    $no_protection[] = $field;
+                }
+            }
+            if (!empty($this->fillable)) {
+                $can_fill = array();
+                foreach ($this->fillable as $field) {
+                    if (in_array($field, $no_protection)) {
+                        $can_fill[] = $field;
+                    }
+                }
+                $this->_can_be_filled = $can_fill;
+            } else {
+                $this->_can_be_filled = $no_protection;
+            }
+        }
+        return TRUE;
+    }
+
+    public function _prep_before_write($data)
+    {
+        $this->fillable_fields();
+        // We make sure we have the fields that can be filled
+        $can_fill = $this->_can_be_filled;
+
+        // Let's make sure we receive an array...
+        $data_as_array = (is_object($data)) ? (array)$data : $data;
+
+        $new_data = array();
+        foreach($data_as_array as $field => $value)
+        {
+            if(in_array($field,$can_fill))
+            {
+                $new_data[$field] = $value;
+            }
+        }
+        print_r($new_data);
+        exit;
+    }
+
     /**
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
@@ -168,8 +228,7 @@ class MY_Model extends CI_Model
      */
     public function insert($data)
     {
-        // First of all let's make sure we receive an array...
-        $data_as_array = (is_object($data)) ? (array)$data : $data;
+        $data_as_array = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = FALSE;
