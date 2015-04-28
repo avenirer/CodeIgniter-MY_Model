@@ -4,12 +4,12 @@
  *	class User_model extends MY_Model
  *	{
  *      public $table = 'users'; // Set the name of the table for this model.
+ *      public $primary_key = 'id'; // Set the primary key
  * 		public function __construct()
  * 		{
  *          $this->_database_connection  = group_name or array() | OPTIONAL
  *              Sets the connection preferences (group name) set up in the database.php. If not trset, it will use the
  *              'default' (the $active_group) database connection.
- *          $this->primary = unique key | OPTIONAL (default: 'id')
  *          $this->timestamps = TRUE | array('made_at','modified_at','removed_at')
  *              If set to TRUE tells MY_Model that the table has 'created_at','updated_at' (and 'deleted_at' if $this->soft_delete is set to TRUE)
  *              If given an array as parameter, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type)
@@ -63,12 +63,13 @@ class MY_Model extends CI_Model
      * Sets table name
      */
     public $table = NULL;
+    public $primary_key = NULL;
     protected $table_fields;
 
     /** @var string
      * Sets default id column
      */
-    protected $primary = 'id';
+
 
     /** @var bool | array
      * Enables created_at and updated_at fields
@@ -218,7 +219,7 @@ class MY_Model extends CI_Model
                 {
                     $this->where($column_name_where);
                 } elseif (is_numeric($column_name_where)) {
-                    $this->_database->where($this->primary, $column_name_where);
+                    $this->_database->where($this->primary_key, $column_name_where);
                 } else {
                     $column_value = (is_object($data)) ? $data->{$column_name_where} : $data[$column_name_where];
                     $this->_database->where($column_name_where, $column_value);
@@ -272,7 +273,7 @@ class MY_Model extends CI_Model
         if(isset($where_col_array))
         {
             if (!is_array($where_col_array) && is_null($value)) {
-                $this->_database->where(array($this->table.'.'.$this->primary => $where_col_array));
+                $this->_database->where(array($this->table.'.'.$this->primary_key => $where_col_array));
             } elseif (isset($value) && !is_array($value)) {
                 $this->_database->where($where_col_array, $value);
             }
@@ -320,7 +321,7 @@ class MY_Model extends CI_Model
 
             foreach($query->result() as $row)
             {
-                $to_update[] = array($this->primary => $row->{$this->primary});
+                $to_update[] = array($this->primary_key => $row->{$this->primary_key});
             }
             if(isset($to_update))
             {
@@ -328,7 +329,7 @@ class MY_Model extends CI_Model
                 {
                     $row = $this->trigger('before_soft_delete',$row);
                 }
-                $affected_rows = $this->update($to_update, $this->primary);
+                $affected_rows = $this->update($to_update, $this->primary_key);
 
                 $this->trigger('after_soft_delete',$to_update);
             }
@@ -546,7 +547,7 @@ class MY_Model extends CI_Model
     protected function join_temporary_results($data)
     {
         $data = json_decode(json_encode($data), TRUE);
-        if(array_key_exists($this->primary,$data))
+        if(array_key_exists($this->primary_key,$data))
         {
             $data = array($data);
         }
@@ -650,12 +651,12 @@ class MY_Model extends CI_Model
                             sort($tables);
                             $pivot_table = $tables[0].'_'.$tables[1];
                             $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary;
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
                         else
                         {
                             $foreign_key = (is_array($relation)) ? $relation[1] : singular($this->table) . '_id';
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
                         $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => $foreign_model_name, 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
                         ($option == 'has_many_pivot') ? ($this->_relationships[$key]['pivot_table'] = $pivot_table) : FALSE;
