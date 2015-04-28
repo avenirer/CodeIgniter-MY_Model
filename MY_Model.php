@@ -3,15 +3,12 @@
 /** how to extend MY_Model:
  *	class User_model extends MY_Model
  *	{
- *      public $table = 'users';
+ *      public $table = 'users'; // Set the name of the table for this model.
  * 		public function __construct()
  * 		{
  *          $this->_database_connection  = group_name or array() | OPTIONAL
  *              Sets the connection preferences (group name) set up in the database.php. If not trset, it will use the
  *              'default' (the $active_group) database connection.
- *          $this->table = table name | OPTIONAL (default: plural of model name)
- *              Sets the name of the table. If nothing none is passed, the table name will be the plural of the model name
- *              without the "_model" string (model name: User_model; table: users).
  *          $this->primary = unique key | OPTIONAL (default: 'id')
  *          $this->timestamps = TRUE | array('made_at','modified_at','removed_at')
  *              If set to TRUE tells MY_Model that the table has 'created_at','updated_at' (and 'deleted_at' if $this->soft_delete is set to TRUE)
