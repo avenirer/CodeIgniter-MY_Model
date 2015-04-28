@@ -5,6 +5,8 @@
  *	{
  *      public $table = 'users'; // Set the name of the table for this model.
  *      public $primary_key = 'id'; // Set the primary key
+ *      public $fillable = array(); // You can set an array with the fields that can be filled by insert/update
+ *      public $protected = array(); // ...Or you can set an array with the fields that cannot be filled by insert/update
  * 		public function __construct()
  * 		{
  *          $this->_database_connection  = group_name or array() | OPTIONAL
@@ -63,8 +65,24 @@ class MY_Model extends CI_Model
      * Sets table name
      */
     public $table = NULL;
+
+    /**
+     * @var null
+     * Sets PRIMARY KEY
+     */
     public $primary_key = NULL;
-    protected $table_fields;
+
+    /**
+     * @var array
+     * Sets fillable fields
+     */
+    public $fillable = array();
+
+    /**
+     * @var array
+     * Sets protected fields
+     */
+    public $protected = array();
 
     /** @var string
      * Sets default id column
