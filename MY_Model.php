@@ -3,6 +3,7 @@
 /** how to extend MY_Model:
  *	class User_model extends MY_Model
  *	{
+ *      public $table = 'users';
  * 		public function __construct()
  * 		{
  *          $this->_database_connection  = group_name or array() | OPTIONAL
@@ -135,7 +136,6 @@ class MY_Model extends CI_Model
         parent::__construct();
         $this->load->helper('inflector');
         $this->_set_connection();
-        $this->_fetch_table();
         $this->_set_timestamps();
         $this->before_create[] = 'add_created';
         $this->before_update[] = 'add_updated';
@@ -966,19 +966,6 @@ class MY_Model extends CI_Model
         return $row;
     }
 
-    /**
-     * private function _fetch_table()
-     *
-     * Sets the table name when called by the constructor
-     *
-     */
-    private function _fetch_table()
-    {
-        if (!isset($this->table))
-        {
-            $this->table = $this->_get_table_name(get_class($this));
-        }
-    }
     private function _get_table_name($model_name)
     {
         $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
@@ -1119,7 +1106,7 @@ class MY_Model extends CI_Model
             }
         }
     }
-    
+
     public function set_pagination_delimiters($delimiters)
     {
         if(is_array($delimiters) && sizeof($delimiters)==2)
@@ -1128,7 +1115,7 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
-    
+
     public function set_pagination_arrows($arrows)
     {
         if(is_array($arrows) && sizeof($arrows)==2)
@@ -1137,17 +1124,6 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
-    
-    private function verify_table()
-    {
-        if (!$this->_database->table_exists($this->table))
-        {
-            show_error('Table <strong>'.$this->table.'</strong> doesn\'t exist');
-            exit;
-        }
-        return $this;
-    }
-
 
     public function __call($method, $arguments)
     {
