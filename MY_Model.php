@@ -219,19 +219,20 @@ class MY_Model extends CI_Model
 
     public function _prep_after_read($data, $multi = TRUE)
     {
+        if($this->return_as == 'object')
+        {
+            $data = json_decode(json_encode($data), FALSE);
+        }
         if($multi === TRUE && sizeof($data)==1)
         {
-            $new_data = array([0] => $data);
+            $new_data = array();
+            $new_data[] = $data;
         }
         else
         {
             $new_data = $data;
         }
-        if($this->return_as == 'object')
-        {
-            $object = json_decode(json_encode($new_data), FALSE);
-            return $object;
-        }
+
         return $new_data;
     }
 
@@ -664,7 +665,7 @@ class MY_Model extends CI_Model
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
                     $this->_reset_cache($cache_name);
                 }
-                return $this->_prep_after_read($data,FALSE);
+                return $this->_prep_after_read($data,TRUE);
             }
             else
             {
