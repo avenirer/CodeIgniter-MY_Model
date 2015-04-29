@@ -350,10 +350,11 @@ class MY_Model extends CI_Model
      * @param null $operator_or_value - can receive a database operator or, if it has a field, the value to equal with
      * @param null $value - a value if it received a field name and an operator
      * @param bool $with_or - if set to true will create a or_where query type pr a or_like query type, depending on the operator
+     * @param bool $with_not - if set to true will also add "NOT" in the where
      * @param bool $custom_string - if set to true, will simply assume that $field_or_array is actually a string and pass it to the where query
      * @return $this
      */
-    public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $custom_string = FALSE)
+    public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
     {
         if(is_array($field_or_array))
         {
@@ -369,7 +370,8 @@ class MY_Model extends CI_Model
                     $operator_or_value = isset($where[1]) ? $where[1] : NULL;
                     $value = isset($where[2]) ? $where[2] : NULL;
                     $with_or = (isset($where[3])) ? TRUE : FALSE;
-                    $this->where($field, $operator_or_value, $value, $with_or);
+                    $with_not = (isset($where[4])) ? TRUE : FALSE;
+                    $this->where($field, $operator_or_value, $value, $with_or,$with_not);
                 }
             }
         }
@@ -381,6 +383,15 @@ class MY_Model extends CI_Model
         else
         {
             $where_or = 'where';
+        }
+
+        if($with_not == TRUE)
+        {
+            $not = '_not';
+        }
+        else
+        {
+            $not = '';
         }
 
         if($custom_string === TRUE)
@@ -401,17 +412,25 @@ class MY_Model extends CI_Model
         }
         elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && is_array($operator_or_value))
         {
-            $this->_database->{$where_or.'_in'}(array($this->table.'.'.$field_or_array => $operator_or_value));
+            $this->_database->{$where_or.$not.'_in'}(array($this->table.'.'.$field_or_array => $operator_or_value));
         }
         elseif(isset($field_or_array) && isset($operator_or_value) && isset($value))
         {
             if(strtolower($operator_or_value) == 'like') {
-                if ($with_or == TRUE) {
-                    $like_or = 'or_like';
-                } else {
-                    $like_or = 'like';
+                if($with_not === TRUE)
+                {
+                    $like = 'not_like';
                 }
-                $this->_database->{$like_or}($field_or_array, $value);
+                else
+                {
+                    $like = 'like';
+                }
+                if ($with_or === TRUE)
+                {
+                    $like = 'or_'.$like;
+                }
+                
+                $this->_database->{$like}($field_or_array, $value);
             }
             else
             {
