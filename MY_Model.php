@@ -357,13 +357,20 @@ class MY_Model extends CI_Model
     {
         if(is_array($field_or_array))
         {
-            foreach($field_or_array as $where)
+            $multi = FALSE;
+            foreach($field_or_array as $element) {
+                $multi = (is_array($element)) ? TRUE : FALSE;
+            }
+            if($multi === TRUE)
             {
-                $field = $where[0];
-                $operator_or_value = isset($where[1]) ? $where[1] : NULL;
-                $value = isset($where[2]) ? $where[2] : NULL;
-                $with_or = (isset($where[3])) ? TRUE : FALSE;
-                $this->where($field,$operator_or_value,$value,$with_or);
+                foreach ($field_or_array as $where)
+                {
+                    $field = $where[0];
+                    $operator_or_value = isset($where[1]) ? $where[1] : NULL;
+                    $value = isset($where[2]) ? $where[2] : NULL;
+                    $with_or = (isset($where[3])) ? TRUE : FALSE;
+                    $this->where($field, $operator_or_value, $value, $with_or);
+                }
             }
         }
 
@@ -383,6 +390,10 @@ class MY_Model extends CI_Model
         elseif(is_numeric($field_or_array))
         {
             $this->_database->{$where_or}(array($this->table.'.'.$this->primary_key => $field_or_array));
+        }
+        elseif(is_array($field_or_array) && !isset($operator_or_value))
+        {
+            $this->_database->where($field_or_array);
         }
         elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && !is_array($operator_or_value))
         {
