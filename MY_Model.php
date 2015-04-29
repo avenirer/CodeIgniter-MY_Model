@@ -224,15 +224,15 @@ class MY_Model extends CI_Model
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
      * @param $data
-     * @return str/array Returns id/ids of inserted rows
+     * @return int/array Returns id/ids of inserted rows
      */
     public function insert($data)
     {
-        $data_as_array = $this->_prep_before_write($data);
+        $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = FALSE;
-        foreach($data_as_array as $element)
+        foreach($data as $element)
         {
             $multi = (is_array($element)) ? TRUE : FALSE;
         }
@@ -252,16 +252,21 @@ class MY_Model extends CI_Model
         // else...
         else
         {
+            $return = array();
             foreach($data as $row)
             {
                 $row = $this->trigger('before_create',$row);
                 if($this->_database->insert($this->table,$row))
                 {
-                    $id[] = $this->_database->insert_id();
+                    $return[] = $this->_database->insert_id();
                 }
             }
-            $return = $this->trigger('after_create',$id);
-            return $return;
+            $after_create = array();
+            foreach($return as $id)
+            {
+                $after_create[] = $this->trigger('after_create', $id);
+            }
+            return $after_create;
         }
         return FALSE;
     }
