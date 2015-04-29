@@ -344,29 +344,71 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public function where($where)
+     * public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $custom_string = FALSE)
      * Sets a where method for the $this object
-     * @param $where_col_array
-     * @param $value = NULL a $value is needed if the first parameter is a column name.
-     * @return Returns $this object
+     * @param null $field_or_array - can receive a field name or an array with more wheres...
+     * @param null $operator_or_value - can receive a database operator or, if it has a field, the value to equal with
+     * @param null $value - a value if it received a field name and an operator
+     * @param bool $with_or - if set to true will create a or_where query type pr a or_like query type, depending on the operator
+     * @param bool $custom_string - if set to true, will simply assume that $field_or_array is actually a string and pass it to the where query
+     * @return $this
      */
-    public function where($where_col_array = NULL, $value = NULL)
+    public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $custom_string = FALSE)
     {
-        if(isset($where_col_array))
+        if(is_array($field_or_array))
         {
-            if (!is_array($where_col_array) && is_null($value)) {
-                $this->_database->where(array($this->table.'.'.$this->primary_key => $where_col_array));
-            } elseif (isset($value) && !is_array($value)) {
-                $this->_database->where($where_col_array, $value);
-            }
-            elseif (isset($value) && is_array($value))
+            foreach($field_or_array as $where)
             {
-                $this->_database->where_in($where_col_array,$value);
-            }
-            elseif (is_array($where_col_array)) {
-                $this->_database->where($where_col_array);
+                $field = $where[0];
+                $operator_or_value = isset($where[1]) ? $where[1] : NULL;
+                $value = isset($where[2]) ? $where[2] : NULL;
+                $with_or = (isset($where[3])) ? TRUE : FALSE;
+                $this->where($field,$operator_or_value,$value,$with_or);
             }
         }
+
+        if($with_or == TRUE)
+        {
+            $where_or = 'or_where';
+        }
+        else
+        {
+            $where_or = 'where';
+        }
+
+        if($custom_string === TRUE)
+        {
+            $this->_database->{$where_or}($field_or_array, NULL, FALSE);
+        }
+        elseif(is_numeric($field_or_array))
+        {
+            $this->_database->{$where_or}(array($this->table.'.'.$this->primary_key => $field_or_array));
+        }
+        elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && !is_array($operator_or_value))
+        {
+            $this->_database->{$where_or}(array($this->table.'.'.$field_or_array => $operator_or_value));
+        }
+        elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && is_array($operator_or_value))
+        {
+            $this->_database->{$where_or.'_in'}(array($this->table.'.'.$field_or_array => $operator_or_value));
+        }
+        elseif(isset($field_or_array) && isset($operator_or_value) && isset($value))
+        {
+            if(strtolower($operator_or_value) == 'like') {
+                if ($with_or == TRUE) {
+                    $like_or = 'or_like';
+                } else {
+                    $like_or = 'like';
+                }
+                $this->_database->{$like_or}($field_or_array, $value);
+            }
+            else
+            {
+                $this->_database->{$where_or}($field_or_array.' '.$operator_or_value, $value);
+            }
+
+        }
+
         if($this->soft_deletes===TRUE)
         {
             $this->_where_trashed();
