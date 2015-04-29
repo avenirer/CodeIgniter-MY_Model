@@ -157,8 +157,6 @@ class MY_Model extends CI_Model
         $this->load->helper('inflector');
         $this->_set_connection();
         $this->_set_timestamps();
-        $this->before_create[] = 'add_created';
-        $this->before_update[] = 'add_updated';
         $this->before_soft_delete[] = 'add_deleted';
         $this->pagination_delimiters = (isset($this->pagination_delimiters)) ? $this->pagination_delimiters : array('<span>','</span>');
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
