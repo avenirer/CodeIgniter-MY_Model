@@ -217,6 +217,24 @@ class MY_Model extends CI_Model
         return $new_data;
     }
 
+    public function _prep_after_read($data, $multi = TRUE)
+    {
+        if($multi === TRUE && sizeof($data)==1)
+        {
+            $new_data = array([0] => $data);
+        }
+        else
+        {
+            $new_data = $data;
+        }
+        if($this->return_as == 'object')
+        {
+            $object = json_decode(json_encode($new_data), FALSE);
+            return $object;
+        }
+        return $new_data;
+    }
+
     /**
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
@@ -595,14 +613,14 @@ class MY_Model extends CI_Model
             $query = $this->_database->get($this->table);
             if ($query->num_rows() == 1)
             {
-                $row = $query->{$this->_return_type(FALSE)}();
+                $row = $query->row_array();
                 $row = $this->trigger('after_get', $row);
                 if(isset($cache_name) && isset($seconds))
                 {
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
                     $this->_reset_cache($cache_name);
                 }
-                return $row;
+                return $this->_prep_after_read($row,FALSE);
             }
             return FALSE;
         }
@@ -639,14 +657,14 @@ class MY_Model extends CI_Model
             $query = $this->_database->get($this->table);
             if($query->num_rows() > 0)
             {
-                $data = $query->{$this->_return_type(TRUE)}();
+                $data = $query->result_array();
                 $data = $this->trigger('after_get', $data);
                 if(isset($cache_name) && isset($seconds))
                 {
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
                     $this->_reset_cache($cache_name);
                 }
-                return $data;
+                return $this->_prep_after_read($data,FALSE);
             }
             else
             {
@@ -1028,18 +1046,6 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * private function _return_type($multi = FALSE)
-     * returns the result either as array or as object depending on $this->return_as value. Also if $multi is set to TRUE returns more than one result
-     * @param bool $multi
-     * @return string
-     */
-    private function _return_type($multi = FALSE)
-    {
-        $method = ($multi) ? 'result' : 'row';
-        return ($this->return_as == 'array') ? $method . '_array' : $method;
-    }
-
-    /**
      * private function _set_timestamps()
      *
      * Sets the fields for the created_at, updated_at and deleted_at timestamps
@@ -1225,6 +1231,6 @@ class MY_Model extends CI_Model
             $this->where($column, $arguments);
             return $this;
         }
-        else echo 'No method with that name in MY_Model.';
+        else echo 'No method with that name ('.$method.') in MY_Model.';
     }
 }
