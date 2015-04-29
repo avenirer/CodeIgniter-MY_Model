@@ -344,7 +344,7 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $custom_string = FALSE)
+     * public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
      * Sets a where method for the $this object
      * @param null $field_or_array - can receive a field name or an array with more wheres...
      * @param null $operator_or_value - can receive a database operator or, if it has a field, the value to equal with
