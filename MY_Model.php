@@ -281,12 +281,12 @@ class MY_Model extends CI_Model
      */
     public function update($data, $column_name_where = NULL)
     {
-        // First of all let's make sure we receive an array...
-        $data_as_array = (is_object($data)) ? (array)$data : $data;
+        // Prepare the data...
+        $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = FALSE;
-        foreach($data_as_array as $element)
+        foreach($data as $element)
         {
             $multi = (is_array($element)) ? TRUE : FALSE;
         }
