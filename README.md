@@ -29,6 +29,10 @@ Extend your model classes from MY_Model and all the functionality will be baked 
 ```php
 class User_model extends MY_Model
 {
+	public $table = 'users'; // you MUST mention the table name
+	public $primary_key = 'id'; // you MUST mention the primary key
+	public $fillable = array(); // If you want, you can set an array with the fields that can be filled by insert/update
+	public $protected = array(); // ...Or you can set an array with the fields that cannot be filled by insert/update
 	public function __construct()
 	{
 		parent::__construct()
@@ -37,8 +41,6 @@ class User_model extends MY_Model
 ```
 If extended like that, MY_Model makes the following assumptions:
 
-* **the table name** is the plural of the model name without the **_model** or **_m** extension: if a model is called **User_model**, the table is assumed to be called **users**. That means that you have to call your models like **Table_model** or **Table_m**
-* **the primary key** is named "id". That means that every table must have "id" as primary key.
 * there are **at least a "created_at" and "updated_at" columns**.
 
 If you want, you can be original by changing the settings before the `parent::__construct();`
@@ -50,12 +52,6 @@ class User_model extends MY_Model
 		
 		// you can set the database connection that you want to use for this particular model, by passing the group connection name or a config array. By default will use the default connection
 		$this->_database_connection  = 'special_connection';
-		
-		// you can set a table name, if your model doesn't respect the assumptions made by MY_Model. If you don't set a table name, the name will be the plural of the model name without the "_model" or "_m" string (model name: User_model; table: users).
-		$this->table = 'tha_hood_table';
-		
-		// you can set a different primary key
-		$this->primary = 'my_key_is_more_unique';
 		
 		// you can disable the use of timestamps. This way, MY_Model won't try to set a created_at and updated_at value on create methods. Also, if you pass it an array as calue, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type if $this->soft_deletes is set to TRUE)
 		$this->timestamps = TRUE
