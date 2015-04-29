@@ -216,8 +216,7 @@ class MY_Model extends CI_Model
                 $new_data[$field] = $value;
             }
         }
-        print_r($new_data);
-        exit;
+        return $new_data;
     }
 
     /**
@@ -429,7 +428,7 @@ class MY_Model extends CI_Model
                 {
                     $like = 'or_'.$like;
                 }
-                
+
                 $this->_database->{$like}($field_or_array, $value);
             }
             else
@@ -1116,29 +1115,6 @@ class MY_Model extends CI_Model
             }
         }
         return $row;
-    }
-
-    private function _get_table_name($model_name)
-    {
-        $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
-        return $table_name;
-    }
-
-    /**
-     * protected function fetch_fields()
-     *
-     * Gets the table fields when called by the functions that need them
-     *
-     */
-    protected function fetch_fields()
-    {
-        if(empty($this->table_fields))
-        {
-            $fields = $this->_database->list_fields($this->table);
-            foreach ($fields as $field) {
-                $this->table_fields[] = $field;
-            }
-        }
     }
 
     /**
