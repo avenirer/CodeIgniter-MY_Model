@@ -301,6 +301,10 @@ class MY_Model extends CI_Model
         // if the array is not a multidimensional one...
         if($multi === FALSE)
         {
+            if($this->timestamps === TRUE || is_array($this->timestamps))
+            {
+                $data[$this->_updated_at_field] = date('Y-m-d H:i:s');
+            }
             $data = $this->trigger('before_update',$data);
             if(isset($column_name_where))
             {
@@ -328,6 +332,10 @@ class MY_Model extends CI_Model
             $rows = 0;
             foreach($data as $row)
             {
+                if($this->timestamps === TRUE || is_array($this->timestamps))
+                {
+                    $row[$this->_updated_at_field] = date('Y-m-d H:i:s');
+                }
                 $row = $this->trigger('before_update',$row);
                 if(is_array($column_name_where))
                 {
@@ -1048,31 +1056,6 @@ class MY_Model extends CI_Model
             $this->_deleted_at_field = (is_array($this->timestamps) && isset($this->timestamps[2])) ? $this->timestamps[2] : 'deleted_at';
         }
         return TRUE;
-    }
-
-    /**
-     *
-     * protected function add_created($row)
-     *
-     * Receives a row of data and appends to it a created_at field type returning the row
-     *
-     * @param $row
-     * @return mixed
-     */
-    protected function add_created($row)
-    {
-        if($this->timestamps === TRUE || is_array($this->timestamps))
-        {
-            if(is_object($row) && !isset($row->{$this->_created_at_field}))
-            {
-                $row->{$this->_created_at_field} = date('Y-m-d H:i:s');
-            }
-            elseif(!isset($row[$this->_created_at_field]))
-            {
-                $row[$this->_created_at_field] = date('Y-m-d H:i:s');
-            }
-        }
-        return $row;
     }
 
     /**
