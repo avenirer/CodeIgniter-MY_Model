@@ -111,6 +111,7 @@ class MY_Model extends CI_Model
     private $_relationships = array();
     public $has_one = array();
     public $has_many = array();
+    public $has_many_through = array();
     public $has_many_pivot = array();
     public $separate_subqueries = TRUE;
     private $_requested = array();
@@ -219,21 +220,38 @@ class MY_Model extends CI_Model
 
     public function _prep_after_read($data, $multi = TRUE)
     {
-        if($this->return_as == 'object')
-        {
-            $data = json_decode(json_encode($data), FALSE);
-        }
         if($multi === TRUE && sizeof($data)==1)
         {
-            $new_data = array();
             $new_data[] = $data;
         }
         else
         {
             $new_data = $data;
         }
-
+        if(!empty($this->_requested))
+        {
+            $new_data = $this->_get_requested($new_data);
+        }
+        if($this->return_as == 'object')
+        {
+            $object = json_decode(json_encode($new_data), FALSE);
+            return $object;
+        }
         return $new_data;
+        //unset($this);
+    }
+
+    protected function _get_requested($data)
+    {
+        foreach($this->_requested as $relation => $requested)
+        {
+            echo '<pre>';
+            print_r($this->_relationships[$relation]);
+            echo '</pre>';
+        }
+
+
+        exit;
     }
 
     /**
@@ -697,31 +715,10 @@ class MY_Model extends CI_Model
      * @param bool $separate_subqueries
      * @return $this
      */
-    public function with($requests,$separate_subqueries = TRUE)
+    public function with($relation,$conditions = NULL)
     {
         $this->_set_relationships();
-        $requests = explode('|', $requests);
-        if(!is_array($requests)) $requests[0] = $requests;
-        foreach($requests as $request)
-        {
-            if (array_key_exists($request, $this->_relationships))
-            {
-                $this->_requested[$request] = $request;
-            }
-        }
-        if($separate_subqueries === FALSE)
-        {
-            $this->separate_subqueries = FALSE;
-            foreach($this->_requested as $request)
-            {
-                if($this->_relationships[$request]['relation'] == 'has_one') $this->_has_one($request);
-            }
-        }
-        else
-        {
-            $this->after_get[] = 'join_temporary_results';
-        }
-        return $this;
+        $this->_requested[$relation] = $conditions;
     }
 
     /**
@@ -771,7 +768,11 @@ class MY_Model extends CI_Model
 
             if(isset($sub_results) && !empty($sub_results)) {
                 $subs = array();
-                foreach ($sub_results as $result) {
+                echo '<pre>';
+                echo print_r($sub_results);
+                echo '</pre>';
+                foreach ($sub_results as $result)
+                {
                     $subs[$result[$foreign_key]][] = $result;
                 }
                 $sub_results = $subs;
@@ -796,21 +797,6 @@ class MY_Model extends CI_Model
         return ($this->return_as == 'object') ? json_decode(json_encode($data), FALSE) : $data;
     }
 
-
-    /**
-     * private function _has_one($request)
-     *
-     * returns a joining of two tables depending on the $request relationship established in the constructor
-     * @param $request
-     * @return $this
-     */
-    private function _has_one($request)
-    {
-        $relation = $this->_relationships[$request];
-        $this->_database->join($relation['foreign_table'], $relation['foreign_table'].'.'.$relation['foreign_key'].' = '.$this->table.'.'.$relation['local_key'], 'left');
-        return TRUE;
-    }
-
     /**
      * private function _set_relationships()
      *
@@ -820,37 +806,26 @@ class MY_Model extends CI_Model
     {
         if(empty($this->_relationships))
         {
-            $options = array('has_one','has_many','has_many_pivot');
+            $options = array('has_one','has_many','has_many_pivot','has_many_through');
             foreach($options as $option)
             {
                 if(isset($this->{$option}) && !empty($this->{$option}))
                 {
                     foreach($this->{$option} as $key => $relation)
                     {
-                        $foreign_model = (is_array($relation)) ? $relation[0] : $relation;
-                        $foreign_model_name = strtolower($foreign_model);
-                        $this->load->model($foreign_model_name);
-                        $foreign_table = $this->{$foreign_model_name}->table;
-                        if($option=='has_many_pivot')
+                        $this->_relationships[$key] = array(
+                            'table' => $relation['table'],
+                            'local_key' => $relation['local_key'],
+                            'foreign_key' => $relation['foreign_key']);
+                        if(isset($relation['connector']))
                         {
-                            $tables = array($this->table, $foreign_table);
-                            sort($tables);
-                            $pivot_table = $tables[0].'_'.$tables[1];
-                            $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary;
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
+                            $this->_relationships[$key]['connector'] = $relation['connector'];
                         }
-                        else
-                        {
-                            $foreign_key = (is_array($relation)) ? $relation[1] : singular($this->table) . '_id';
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
-                        }
-                        $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => $foreign_model_name, 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
-                        ($option == 'has_many_pivot') ? ($this->_relationships[$key]['pivot_table'] = $pivot_table) : FALSE;
-
                     }
                 }
             }
         }
+        return TRUE;
     }
 
     /** END RELATIONSHIPS */
@@ -1230,6 +1205,12 @@ class MY_Model extends CI_Model
         {
             $column = substr($method,6);
             $this->where($column, $arguments);
+            return $this;
+        }
+        if(substr($method,0,5) == 'with_')
+        {
+            $relation = substr($method,5);
+            $this->with($relation,$arguments);
             return $this;
         }
         else echo 'No method with that name ('.$method.') in MY_Model.';
