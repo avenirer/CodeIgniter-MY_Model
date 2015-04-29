@@ -3,15 +3,15 @@
 /** how to extend MY_Model:
  *	class User_model extends MY_Model
  *	{
+ *      public $table = 'users'; // Set the name of the table for this model.
+ *      public $primary_key = 'id'; // Set the primary key
+ *      public $fillable = array(); // You can set an array with the fields that can be filled by insert/update
+ *      public $protected = array(); // ...Or you can set an array with the fields that cannot be filled by insert/update
  * 		public function __construct()
  * 		{
  *          $this->_database_connection  = group_name or array() | OPTIONAL
  *              Sets the connection preferences (group name) set up in the database.php. If not trset, it will use the
  *              'default' (the $active_group) database connection.
- *          $this->table = table name | OPTIONAL (default: plural of model name)
- *              Sets the name of the table. If nothing none is passed, the table name will be the plural of the model name
- *              without the "_model" string (model name: User_model; table: users).
- *          $this->primary = unique key | OPTIONAL (default: 'id')
  *          $this->timestamps = TRUE | array('made_at','modified_at','removed_at')
  *              If set to TRUE tells MY_Model that the table has 'created_at','updated_at' (and 'deleted_at' if $this->soft_delete is set to TRUE)
  *              If given an array as parameter, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type)
@@ -65,12 +65,33 @@ class MY_Model extends CI_Model
      * Sets table name
      */
     public $table = NULL;
-    protected $table_fields;
 
-    /** @var string
-     * Sets default id column
+    /**
+     * @var null
+     * Sets PRIMARY KEY
      */
-    protected $primary = 'id';
+    public $primary_key = NULL;
+
+    /**
+     * @var array
+     * You can establish the fields of the table. If you won't these fields will be filled by MY_Model (with one query)
+     */
+    public $table_fields = array();
+
+    /**
+     * @var array
+     * Sets fillable fields
+     */
+    public $fillable = array();
+
+    /**
+     * @var array
+     * Sets protected fields
+     */
+    public $protected = array();
+
+    private $_can_be_filled = NULL;
+
 
     /** @var bool | array
      * Enables created_at and updated_at fields
@@ -135,7 +156,6 @@ class MY_Model extends CI_Model
         parent::__construct();
         $this->load->helper('inflector');
         $this->_set_connection();
-        $this->_fetch_table();
         $this->_set_timestamps();
         $this->before_create[] = 'add_created';
         $this->before_update[] = 'add_updated';
@@ -144,20 +164,74 @@ class MY_Model extends CI_Model
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
     }
 
+    public function _get_table_fields()
+    {
+        if(empty($this->table_fields))
+        {
+            $this->table_fields = $this->_database->list_fields($this->table);
+        }
+        return TRUE;
+    }
+
+    public function fillable_fields()
+    {
+        if(!isset($this->_can_be_filled))
+        {
+            $this->_get_table_fields();
+            $no_protection = array();
+            foreach ($this->table_fields as $field) {
+                if (!in_array($field, $this->protected)) {
+                    $no_protection[] = $field;
+                }
+            }
+            if (!empty($this->fillable)) {
+                $can_fill = array();
+                foreach ($this->fillable as $field) {
+                    if (in_array($field, $no_protection)) {
+                        $can_fill[] = $field;
+                    }
+                }
+                $this->_can_be_filled = $can_fill;
+            } else {
+                $this->_can_be_filled = $no_protection;
+            }
+        }
+        return TRUE;
+    }
+
+    public function _prep_before_write($data)
+    {
+        $this->fillable_fields();
+        // We make sure we have the fields that can be filled
+        $can_fill = $this->_can_be_filled;
+
+        // Let's make sure we receive an array...
+        $data_as_array = (is_object($data)) ? (array)$data : $data;
+
+        $new_data = array();
+        foreach($data_as_array as $field => $value)
+        {
+            if(in_array($field,$can_fill))
+            {
+                $new_data[$field] = $value;
+            }
+        }
+        return $new_data;
+    }
+
     /**
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
      * @param $data
-     * @return str/array Returns id/ids of inserted rows
+     * @return int/array Returns id/ids of inserted rows
      */
     public function insert($data)
     {
-        // First of all let's make sure we receive an array...
-        $data_as_array = (is_object($data)) ? (array)$data : $data;
+        $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = FALSE;
-        foreach($data_as_array as $element)
+        foreach($data as $element)
         {
             $multi = (is_array($element)) ? TRUE : FALSE;
         }
@@ -165,6 +239,10 @@ class MY_Model extends CI_Model
         // if the array is not a multidimensional one...
         if($multi === FALSE)
         {
+            if($this->timestamps === TRUE || is_array($this->timestamps))
+            {
+                $data[$this->_created_at_field] = date('Y-m-d H:i:s');
+            }
             $data = $this->trigger('before_create',$data);
             if($this->_database->insert($this->table, $data))
             {
@@ -177,16 +255,25 @@ class MY_Model extends CI_Model
         // else...
         else
         {
+            $return = array();
             foreach($data as $row)
             {
+                if($this->timestamps === TRUE || is_array($this->timestamps))
+                {
+                    $row[$this->_created_at_field] = date('Y-m-d H:i:s');
+                }
                 $row = $this->trigger('before_create',$row);
                 if($this->_database->insert($this->table,$row))
                 {
-                    $id[] = $this->_database->insert_id();
+                    $return[] = $this->_database->insert_id();
                 }
             }
-            $return = $this->trigger('after_create',$id);
-            return $return;
+            $after_create = array();
+            foreach($return as $id)
+            {
+                $after_create[] = $this->trigger('after_create', $id);
+            }
+            return $after_create;
         }
         return FALSE;
     }
@@ -201,12 +288,12 @@ class MY_Model extends CI_Model
      */
     public function update($data, $column_name_where = NULL)
     {
-        // First of all let's make sure we receive an array...
-        $data_as_array = (is_object($data)) ? (array)$data : $data;
+        // Prepare the data...
+        $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = FALSE;
-        foreach($data_as_array as $element)
+        foreach($data as $element)
         {
             $multi = (is_array($element)) ? TRUE : FALSE;
         }
@@ -214,6 +301,10 @@ class MY_Model extends CI_Model
         // if the array is not a multidimensional one...
         if($multi === FALSE)
         {
+            if($this->timestamps === TRUE || is_array($this->timestamps))
+            {
+                $data[$this->_updated_at_field] = date('Y-m-d H:i:s');
+            }
             $data = $this->trigger('before_update',$data);
             if(isset($column_name_where))
             {
@@ -221,7 +312,7 @@ class MY_Model extends CI_Model
                 {
                     $this->where($column_name_where);
                 } elseif (is_numeric($column_name_where)) {
-                    $this->_database->where($this->primary, $column_name_where);
+                    $this->_database->where($this->primary_key, $column_name_where);
                 } else {
                     $column_value = (is_object($data)) ? $data->{$column_name_where} : $data[$column_name_where];
                     $this->_database->where($column_name_where, $column_value);
@@ -241,6 +332,10 @@ class MY_Model extends CI_Model
             $rows = 0;
             foreach($data as $row)
             {
+                if($this->timestamps === TRUE || is_array($this->timestamps))
+                {
+                    $row[$this->_updated_at_field] = date('Y-m-d H:i:s');
+                }
                 $row = $this->trigger('before_update',$row);
                 if(is_array($column_name_where))
                 {
@@ -264,29 +359,101 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public function where($where)
+     * public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
      * Sets a where method for the $this object
-     * @param $where_col_array
-     * @param $value = NULL a $value is needed if the first parameter is a column name.
-     * @return Returns $this object
+     * @param null $field_or_array - can receive a field name or an array with more wheres...
+     * @param null $operator_or_value - can receive a database operator or, if it has a field, the value to equal with
+     * @param null $value - a value if it received a field name and an operator
+     * @param bool $with_or - if set to true will create a or_where query type pr a or_like query type, depending on the operator
+     * @param bool $with_not - if set to true will also add "NOT" in the where
+     * @param bool $custom_string - if set to true, will simply assume that $field_or_array is actually a string and pass it to the where query
+     * @return $this
      */
-    public function where($where_col_array = NULL, $value = NULL)
+    public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
     {
-        if(isset($where_col_array))
+        if(is_array($field_or_array))
         {
-            if (!is_array($where_col_array) && is_null($value)) {
-                $this->_database->where(array($this->table.'.'.$this->primary => $where_col_array));
-            } elseif (isset($value) && !is_array($value)) {
-                $this->_database->where($where_col_array, $value);
+            $multi = FALSE;
+            foreach($field_or_array as $element) {
+                $multi = (is_array($element)) ? TRUE : FALSE;
             }
-            elseif (isset($value) && is_array($value))
+            if($multi === TRUE)
             {
-                $this->_database->where_in($where_col_array,$value);
-            }
-            elseif (is_array($where_col_array)) {
-                $this->_database->where($where_col_array);
+                foreach ($field_or_array as $where)
+                {
+                    $field = $where[0];
+                    $operator_or_value = isset($where[1]) ? $where[1] : NULL;
+                    $value = isset($where[2]) ? $where[2] : NULL;
+                    $with_or = (isset($where[3])) ? TRUE : FALSE;
+                    $with_not = (isset($where[4])) ? TRUE : FALSE;
+                    $this->where($field, $operator_or_value, $value, $with_or,$with_not);
+                }
             }
         }
+
+        if($with_or == TRUE)
+        {
+            $where_or = 'or_where';
+        }
+        else
+        {
+            $where_or = 'where';
+        }
+
+        if($with_not == TRUE)
+        {
+            $not = '_not';
+        }
+        else
+        {
+            $not = '';
+        }
+
+        if($custom_string === TRUE)
+        {
+            $this->_database->{$where_or}($field_or_array, NULL, FALSE);
+        }
+        elseif(is_numeric($field_or_array))
+        {
+            $this->_database->{$where_or}(array($this->table.'.'.$this->primary_key => $field_or_array));
+        }
+        elseif(is_array($field_or_array) && !isset($operator_or_value))
+        {
+            $this->_database->where($field_or_array);
+        }
+        elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && !is_array($operator_or_value))
+        {
+            $this->_database->{$where_or}(array($this->table.'.'.$field_or_array => $operator_or_value));
+        }
+        elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && is_array($operator_or_value))
+        {
+            $this->_database->{$where_or.$not.'_in'}(array($this->table.'.'.$field_or_array => $operator_or_value));
+        }
+        elseif(isset($field_or_array) && isset($operator_or_value) && isset($value))
+        {
+            if(strtolower($operator_or_value) == 'like') {
+                if($with_not === TRUE)
+                {
+                    $like = 'not_like';
+                }
+                else
+                {
+                    $like = 'like';
+                }
+                if ($with_or === TRUE)
+                {
+                    $like = 'or_'.$like;
+                }
+
+                $this->_database->{$like}($field_or_array, $value);
+            }
+            else
+            {
+                $this->_database->{$where_or}($field_or_array.' '.$operator_or_value, $value);
+            }
+
+        }
+
         if($this->soft_deletes===TRUE)
         {
             $this->_where_trashed();
@@ -323,7 +490,7 @@ class MY_Model extends CI_Model
 
             foreach($query->result() as $row)
             {
-                $to_update[] = array($this->primary => $row->{$this->primary});
+                $to_update[] = array($this->primary_key => $row->{$this->primary_key});
             }
             if(isset($to_update))
             {
@@ -331,7 +498,7 @@ class MY_Model extends CI_Model
                 {
                     $row = $this->trigger('before_soft_delete',$row);
                 }
-                $affected_rows = $this->update($to_update, $this->primary);
+                $affected_rows = $this->update($to_update, $this->primary_key);
 
                 $this->trigger('after_soft_delete',$to_update);
             }
@@ -549,7 +716,7 @@ class MY_Model extends CI_Model
     protected function join_temporary_results($data)
     {
         $data = json_decode(json_encode($data), TRUE);
-        if(array_key_exists($this->primary,$data))
+        if(array_key_exists($this->primary_key,$data))
         {
             $data = array($data);
         }
@@ -653,12 +820,12 @@ class MY_Model extends CI_Model
                             sort($tables);
                             $pivot_table = $tables[0].'_'.$tables[1];
                             $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary;
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
                         else
                         {
                             $foreign_key = (is_array($relation)) ? $relation[1] : singular($this->table) . '_id';
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary;
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
                         $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => $foreign_model_name, 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
                         ($option == 'has_many_pivot') ? ($this->_relationships[$key]['pivot_table'] = $pivot_table) : FALSE;
@@ -893,56 +1060,6 @@ class MY_Model extends CI_Model
 
     /**
      *
-     * protected function add_created($row)
-     *
-     * Receives a row of data and appends to it a created_at field type returning the row
-     *
-     * @param $row
-     * @return mixed
-     */
-    protected function add_created($row)
-    {
-        if($this->timestamps === TRUE || is_array($this->timestamps))
-        {
-            if(is_object($row) && !isset($row->{$this->_created_at_field}))
-            {
-                $row->{$this->_created_at_field} = date('Y-m-d H:i:s');
-            }
-            elseif(!isset($row[$this->_created_at_field]))
-            {
-                $row[$this->_created_at_field] = date('Y-m-d H:i:s');
-            }
-        }
-        return $row;
-    }
-
-    /**
-     *
-     * protected function add_updated($row)
-     *
-     * Receives a row of data and appends to it a updated_at field type returning the row
-     *
-     * @param $row
-     * @return mixed
-     */
-    protected function add_updated($row)
-    {
-        if($this->timestamps === TRUE || is_array($this->timestamps))
-        {
-            if(is_object($row) && !isset($row->{$this->_updated_at_field}))
-            {
-                $row->{$this->_updated_at_field} = date('Y-m-d H:i:s');
-            }
-            elseif(!isset($row[$this->_updated_at_field]))
-            {
-                $row[$this->_updated_at_field] = date('Y-m-d H:i:s');
-            }
-        }
-        return $row;
-    }
-
-    /**
-     *
      * protected function add_deleted($row)
      *
      * Receives a row of data and appends to it a deleted_at field type returning the row
@@ -964,42 +1081,6 @@ class MY_Model extends CI_Model
             }
         }
         return $row;
-    }
-
-    /**
-     * private function _fetch_table()
-     *
-     * Sets the table name when called by the constructor
-     *
-     */
-    private function _fetch_table()
-    {
-        if (!isset($this->table))
-        {
-            $this->table = $this->_get_table_name(get_class($this));
-        }
-    }
-    private function _get_table_name($model_name)
-    {
-        $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
-        return $table_name;
-    }
-
-    /**
-     * protected function fetch_fields()
-     *
-     * Gets the table fields when called by the functions that need them
-     *
-     */
-    protected function fetch_fields()
-    {
-        if(empty($this->table_fields))
-        {
-            $fields = $this->_database->list_fields($this->table);
-            foreach ($fields as $field) {
-                $this->table_fields[] = $field;
-            }
-        }
     }
 
     /**
@@ -1119,7 +1200,7 @@ class MY_Model extends CI_Model
             }
         }
     }
-    
+
     public function set_pagination_delimiters($delimiters)
     {
         if(is_array($delimiters) && sizeof($delimiters)==2)
@@ -1128,7 +1209,7 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
-    
+
     public function set_pagination_arrows($arrows)
     {
         if(is_array($arrows) && sizeof($arrows)==2)
@@ -1137,17 +1218,6 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
-    
-    private function verify_table()
-    {
-        if (!$this->_database->table_exists($this->table))
-        {
-            show_error('Table <strong>'.$this->table.'</strong> doesn\'t exist');
-            exit;
-        }
-        return $this;
-    }
-
 
     public function __call($method, $arguments)
     {
