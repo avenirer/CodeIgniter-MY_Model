@@ -250,6 +250,8 @@ class MY_Model extends CI_Model
             echo '</pre>';
         }
 
+        print_r($data);
+
 
         exit;
     }
