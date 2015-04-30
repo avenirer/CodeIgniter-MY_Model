@@ -158,7 +158,6 @@ class MY_Model extends CI_Model
         $this->_set_connection();
         $this->_set_timestamps();
         $this->_fetch_table();
-        $this->before_soft_delete[] = 'add_deleted';
         $this->pagination_delimiters = (isset($this->pagination_delimiters)) ? $this->pagination_delimiters : array('<span>','</span>');
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
     }
@@ -509,10 +508,10 @@ class MY_Model extends CI_Model
             {
                 foreach($to_update as &$row)
                 {
-                    $row = $this->trigger('before_soft_delete',$row);
+                    //$row = $this->trigger('before_soft_delete',$row);
+                    $row[$this->_deleted_at_field] = date('Y-m-d H:i:s');
                 }
                 $affected_rows = $this->update($to_update, $this->primary_key);
-
                 $this->trigger('after_soft_delete',$to_update);
             }
             return $affected_rows;
@@ -1060,31 +1059,6 @@ class MY_Model extends CI_Model
             $this->_deleted_at_field = (is_array($this->timestamps) && isset($this->timestamps[2])) ? $this->timestamps[2] : 'deleted_at';
         }
         return TRUE;
-    }
-
-    /**
-     *
-     * protected function add_deleted($row)
-     *
-     * Receives a row of data and appends to it a deleted_at field type returning the row
-     *
-     * @param $row
-     * @return mixed
-     */
-    protected function add_deleted($row)
-    {
-        if($this->timestamps === TRUE || is_array($this->timestamps))
-        {
-            if(is_object($row) && !isset($row->{$this->_deleted_at_field}))
-            {
-                $row->{$this->_deleted_at_field} = date('Y-m-d H:i:s');
-            }
-            elseif(!isset($row[$this->_deleted_at_field]))
-            {
-                $row[$this->_deleted_at_field] = date('Y-m-d H:i:s');
-            }
-        }
-        return $row;
     }
 
     /**
