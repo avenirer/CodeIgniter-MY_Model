@@ -228,7 +228,7 @@ class MY_Model extends CI_Model
         {
             $data = json_decode(json_encode($data), FALSE);
         }
-        return $data;
+        return ($multi === FALSE) ? $data[0] : $data;
     }
 
     /**
