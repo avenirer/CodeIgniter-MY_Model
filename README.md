@@ -272,15 +272,11 @@ class User_model extends MY_Model
     }
 }
 ```
-You can then access your related data using the `with()` method:
+You can then access your related data using the `with_*()` method:
 ```php
-$user = $this->user_model->with('phone')->with('posts')->get(1);
+$user = $this->user_model->with_phone()->with_posts()->get(1);
 ```
-You can also call the related data in one single string, by separating the relations with pipe:
-```php
-$user = $this->user_model->with('phone|address|posts')->get(1);
-```
-The related data will be embedded in the returned value having "phone", "address" and "posts" as keys.
+The related data will be embedded in the returned value having "phone", and "posts" as keys.
 ```php
 echo $user->phone->phone_number;
 
@@ -289,12 +285,6 @@ foreach ($user->posts as $post)
     echo $post->title;
 }
 ```
-If you have a one on one relationship, you can get the related data by joining tables so that no separate query is made. This is made by passing **FALSE** as second parameter for with() Also, you can make sure you don't have conflicting column names by chaining a `fields()` method to the query:
-```php
-$users = $this->user_model->with('phone',FALSE)->fields('users.id,users.username,phones.id as phone_id, phones.phone_number')->get_all();
-```
-You must take into consideration that if you don't do a join or have a many_to_many relationships, for each relation there is one separate query.
-
 ##Arrays vs Objects
 
 By default, MY_Model is setup to return objects. If you'd like to return results as array you can:
