@@ -70,7 +70,7 @@ class MY_Model extends CI_Model
      * @var null
      * Sets PRIMARY KEY
      */
-    public $primary_key = NULL;
+    public $primary_key = 'id';
 
     /**
      * @var array
@@ -157,6 +157,7 @@ class MY_Model extends CI_Model
         $this->load->helper('inflector');
         $this->_set_connection();
         $this->_set_timestamps();
+        $this->_fetch_table();
         $this->before_soft_delete[] = 'add_deleted';
         $this->pagination_delimiters = (isset($this->pagination_delimiters)) ? $this->pagination_delimiters : array('<span>','</span>');
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
@@ -215,6 +216,11 @@ class MY_Model extends CI_Model
             }
         }
         return $new_data;
+    }
+
+    public function _prep_before_read()
+    {
+
     }
 
     public function _prep_after_read($data, $multi = TRUE)
@@ -1215,6 +1221,26 @@ class MY_Model extends CI_Model
             $this->pagination_arrows = $arrows;
         }
         return $this;
+    }
+
+    /**
+     * private function _fetch_table()
+     *
+     * Sets the table name when called by the constructor
+     *
+     */
+    private function _fetch_table()
+    {
+        if (!isset($this->table))
+        {
+            $this->table = $this->_get_table_name(get_class($this));
+        }
+        return TRUE;
+    }
+    private function _get_table_name($model_name)
+    {
+        $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
+        return $table_name;
     }
 
     public function __call($method, $arguments)
