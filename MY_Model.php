@@ -1225,10 +1225,10 @@ class MY_Model extends CI_Model
             $this->where($column, $arguments);
             return $this;
         }
-        if(substr($method,0,5) == 'with_')
+        if(($method!='with_trashed') && (substr($method,0,5) == 'with_'))
         {
             $relation = substr($method,5);
-            $this->where($relation,$arguments);
+            $this->with($relation,$arguments);
             return $this;
         }
         else echo 'No method with that name ('.$method.') in MY_Model.';
