@@ -224,6 +224,8 @@ class MY_Model extends CI_Model
 
     public function _prep_after_read($data, $multi = TRUE)
     {
+        // let's join the subqueries...
+        $data = $this->join_temporary_results($data);
         if($this->return_as == 'object')
         {
             $data = json_decode(json_encode($data), FALSE);
@@ -692,18 +694,14 @@ class MY_Model extends CI_Model
      * @param bool $separate_subqueries
      * @return $this
      */
-    public function with($requests,$separate_subqueries = TRUE)
+    public function with($request,$arguments = NULL)
     {
         $this->_set_relationships();
-        $requests = explode('|', $requests);
-        if(!is_array($requests)) $requests[0] = $requests;
-        foreach($requests as $request)
+        if (array_key_exists($request, $this->_relationships))
         {
-            if (array_key_exists($request, $this->_relationships))
-            {
-                $this->_requested[$request] = $request;
-            }
+            $this->_requested[$request] = array('request'=>$request,'arguments'=>$arguments);
         }
+        /*
         if($separate_subqueries === FALSE)
         {
             $this->separate_subqueries = FALSE;
@@ -716,6 +714,7 @@ class MY_Model extends CI_Model
         {
             $this->after_get[] = 'join_temporary_results';
         }
+        */
         return $this;
     }
 
@@ -727,15 +726,10 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
-        $data = json_decode(json_encode($data), TRUE);
-        if(array_key_exists($this->primary_key,$data))
-        {
-            $data = array($data);
-        }
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
-            $relation = $this->_relationships[$request];
+            $relation = $this->_relationships[$request['request']];
             $this->load->model($relation['foreign_model']);
             $foreign_key = $relation['foreign_key'];
             $local_key = $relation['local_key'];
@@ -754,9 +748,7 @@ class MY_Model extends CI_Model
             }
             if(!isset($pivot_table))
             {
-                //echo '<strong>'.$relation['relation'].'</strong>';
                 $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
-                //if(isset($sub_results) && sizeof($sub_results)==1) $sub_results = $sub_results[0];
             }
             else
             {
