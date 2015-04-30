@@ -219,20 +219,11 @@ class MY_Model extends CI_Model
 
     public function _prep_after_read($data, $multi = TRUE)
     {
-        if($multi === TRUE && sizeof($data)==1)
-        {
-            $new_data = array([0] => $data);
-        }
-        else
-        {
-            $new_data = $data;
-        }
         if($this->return_as == 'object')
         {
-            $object = json_decode(json_encode($new_data), FALSE);
-            return $object;
+            $data = json_decode(json_encode($data), FALSE);
         }
-        return $new_data;
+        return $data;
     }
 
     /**
@@ -664,7 +655,7 @@ class MY_Model extends CI_Model
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
                     $this->_reset_cache($cache_name);
                 }
-                return $this->_prep_after_read($data,FALSE);
+                return $this->_prep_after_read($data,TRUE);
             }
             else
             {
@@ -758,7 +749,9 @@ class MY_Model extends CI_Model
             }
             if(!isset($pivot_table))
             {
+                //echo '<strong>'.$relation['relation'].'</strong>';
                 $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
+                //if(isset($sub_results) && sizeof($sub_results)==1) $sub_results = $sub_results[0];
             }
             else
             {
@@ -791,8 +784,9 @@ class MY_Model extends CI_Model
             }
             unset($this->_requested[$requested_key]);
         }
-        if(sizeof($data)==1) $data = $data[0];
-        return ($this->return_as == 'object') ? json_decode(json_encode($data), FALSE) : $data;
+        return $data;
+        //if(sizeof($data)==1) $data = $data[0];
+        //return ($this->return_as == 'object') ? json_decode(json_encode($data), FALSE) : $data;
     }
 
 
@@ -1229,6 +1223,12 @@ class MY_Model extends CI_Model
         {
             $column = substr($method,6);
             $this->where($column, $arguments);
+            return $this;
+        }
+        if(substr($method,0,5) == 'with_')
+        {
+            $relation = substr($method,5);
+            $this->where($relation,$arguments);
             return $this;
         }
         else echo 'No method with that name ('.$method.') in MY_Model.';
