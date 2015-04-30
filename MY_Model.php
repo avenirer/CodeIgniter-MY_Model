@@ -17,7 +17,7 @@
  *              If given an array as parameter, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type)
  *          $this->soft_deletes = FALSE
  *              Enables (TRUE) or disables (FALSE) the "soft delete" on records. Default is FALSE
- *          $this->return_as = 'object' | 'array'
+ *          $this->return_as = 'object' | 'array'p
  *              Allows the model to return the results as object or as array
  *          $this->has_one['phone'] = 'Phone_model' or $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
  *          $this->has_one['address'] = 'Address_model' or $this->has_one['address'] = array('Address_model','foreign_key','another_local_key');
@@ -739,11 +739,6 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
-        echo '<pre>';
-        print_r($this->_requested);
-        echo '</pre>';
-
-
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
