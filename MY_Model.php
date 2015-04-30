@@ -694,13 +694,26 @@ class MY_Model extends CI_Model
      * @param bool $separate_subqueries
      * @return $this
      */
-    public function with($request,$arguments = NULL)
+    public function with($request,$arguments = array())
     {
         $this->_set_relationships();
         if (array_key_exists($request, $this->_relationships))
         {
-            $this->_requested[$request] = array('request'=>$request,'arguments'=>$arguments);
+            $this->_requested[$request] = array('request'=>$request);
+            $parameters = array();
+
+            if(isset($arguments))
+            {
+                foreach($arguments as $argument)
+                {
+                    $elements = explode(':',$argument);
+                    $parameters[$elements[0]] = $elements[1];
+                }
+            }
+            $this->_requested[$request]['parameters'] = $parameters;
         }
+
+
         /*
         if($separate_subqueries === FALSE)
         {
@@ -726,6 +739,11 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
+        echo '<pre>';
+        print_r($this->_requested);
+        echo '</pre>';
+
+
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
@@ -748,7 +766,12 @@ class MY_Model extends CI_Model
             }
             if(!isset($pivot_table))
             {
-                $sub_results = $this->{$relation['foreign_model']}->as_array()->where($foreign_key, $local_key_values)->get_all();
+                $sub_results = $this->{$relation['foreign_model']}->as_array();
+                if(!empty($request['parameters']))
+                {
+                    $sub_results = (array_key_exists('fields',$request['parameters'])) ? $sub_results->fields($request['parameters']['fields']) : $sub_results;
+                }
+                $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
             }
             else
             {
