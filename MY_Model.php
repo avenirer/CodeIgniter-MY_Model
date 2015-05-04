@@ -207,11 +207,30 @@ class MY_Model extends CI_Model
         $data_as_array = (is_object($data)) ? (array)$data : $data;
 
         $new_data = array();
-        foreach($data_as_array as $field => $value)
+        $multi = FALSE;
+        foreach($data as $element)
         {
-            if(in_array($field,$can_fill))
+            $multi = (is_array($element)) ? TRUE : FALSE;
+        }
+        if($multi===FALSE)
+        {
+            foreach ($data_as_array as $field => $value)
             {
-                $new_data[$field] = $value;
+                if (in_array($field, $can_fill)) {
+                    $new_data[$field] = $value;
+                }
+            }
+        }
+        else
+        {
+            foreach($data_as_array as $key => $row)
+            {
+                foreach ($row as $field => $value)
+                {
+                    if (in_array($field, $can_fill)) {
+                        $new_data[$key][$field] = $value;
+                    }
+                }
             }
         }
         return $new_data;
