@@ -276,6 +276,18 @@ You can then access your related data using the `with_*()` method:
 ```php
 $user = $this->user_model->with_phone()->with_posts()->get(1);
 ```
+The `with_*()` method can accept parameters like 'fields' and 'where'.
+
+With the `fields:...` you can enumerate the fields you want returned.
+```php
+$user = $this->user_model->with_phone('fields:mobile_number')->get(1);
+```
+
+With the `where:...` you can pass a where clause that will be interpreted as string
+```php
+$user = $this->user_model->with_phone('fields:mobile_number', 'where:`phone_status`=\'active\'')->get(1);
+```
+
 The related data will be embedded in the returned value having "phone", and "posts" as keys.
 ```php
 echo $user->phone->phone_number;
