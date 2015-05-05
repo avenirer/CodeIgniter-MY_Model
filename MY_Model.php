@@ -633,6 +633,8 @@ class MY_Model extends CI_Model
                 $row = $query->row_array();
                 $row = $this->trigger('after_get', $row);
                 $row = $this->_prep_after_read($row,FALSE);
+                $row =  $this->_prep_after_read(array($row),FALSE);
+                $row = $row[0];
                 if(isset($cache_name) && isset($seconds))
                 {
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
