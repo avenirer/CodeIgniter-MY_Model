@@ -632,12 +632,13 @@ class MY_Model extends CI_Model
             {
                 $row = $query->row_array();
                 $row = $this->trigger('after_get', $row);
+                $row = $this->_prep_after_read($row,FALSE);
                 if(isset($cache_name) && isset($seconds))
                 {
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
                     $this->_reset_cache($cache_name);
                 }
-                return $this->_prep_after_read($row,FALSE);
+                return $row;
             }
             return FALSE;
         }
@@ -676,12 +677,13 @@ class MY_Model extends CI_Model
             {
                 $data = $query->result_array();
                 $data = $this->trigger('after_get', $data);
+                $data = $this->_prep_after_read($data,TRUE);
                 if(isset($cache_name) && isset($seconds))
                 {
                     $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
                     $this->_reset_cache($cache_name);
                 }
-                return $this->_prep_after_read($data,TRUE);
+                return $data;
             }
             else
             {
