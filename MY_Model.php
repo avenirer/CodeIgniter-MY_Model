@@ -424,7 +424,7 @@ class MY_Model extends CI_Model
             }
         }
 
-        if($with_or == TRUE)
+        if($with_or === TRUE)
         {
             $where_or = 'or_where';
         }
@@ -433,7 +433,7 @@ class MY_Model extends CI_Model
             $where_or = 'where';
         }
 
-        if($with_not == TRUE)
+        if($with_not === TRUE)
         {
             $not = '_not';
         }
@@ -458,9 +458,10 @@ class MY_Model extends CI_Model
         {
             $this->_database->{$where_or}(array($this->table.'.'.$field_or_array => $operator_or_value));
         }
-        elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && is_array($operator_or_value))
+        elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && is_array($operator_or_value) && !is_array($field_or_array))
         {
-            $this->_database->{$where_or.$not.'_in'}(array($this->table.'.'.$field_or_array => $operator_or_value));
+            $this->_database->{$where_or.$not.'_in'}($this->table.'.'.$field_or_array, $operator_or_value);
+
         }
         elseif(isset($field_or_array) && isset($operator_or_value) && isset($value))
         {
