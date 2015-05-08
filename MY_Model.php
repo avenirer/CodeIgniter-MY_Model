@@ -1137,7 +1137,7 @@ class MY_Model extends CI_Model
         {
             $uri_array[$segments] = $previous_page;
             $uri_string = implode('/',$uri_array);
-            $this->previous_page = anchor($uri_string,$this->pagination_delimiters[0].$this->pagination_arrows[0].$this->pagination_delimiters[1]);
+            $this->previous_page = $this->pagination_delimiters[0].anchor($uri_string,$this->pagination_arrows[0]).$this->pagination_delimiters[1];
         }
         $uri_array[$segments] = $next_page;
         $uri_string = implode('/',$uri_array);
@@ -1147,7 +1147,7 @@ class MY_Model extends CI_Model
         }
         else
         {
-            $this->next_page = anchor($uri_string, $this->pagination_delimiters[0].$this->pagination_arrows[1].$this->pagination_delimiters[1]);
+            $this->next_page = $this->pagination_delimiters[0].anchor($uri_string, $this->pagination_arrows[1]).$this->pagination_delimiters[1];
         }
 
         $rows_per_page = (is_numeric($rows_per_page)) ? $rows_per_page : 10;
