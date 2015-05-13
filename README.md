@@ -42,7 +42,7 @@ class User_model extends MY_Model
 If extended like that, MY_Model makes the following assumptions:
 
 * there are **at least a "created_at" and "updated_at" columns**.
-
+wh
 If you want, you can be original by changing the settings before the `parent::__construct();`
 ```php
 class User_model extends MY_Model
@@ -433,11 +433,11 @@ $newdata = array('username'=>'aveniro', 'email'=>'avenir.ro@gmail.com');
 $this->user_model->update($data,'email');
 ```
 
-###where($where_col_array, $value = NULL)
+###where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
 It sets a where condition to the query
 
 ####Parameters
-* $where_col_array, $value = NULL - if you want to look by an id you can simply pass the id; if you want to look for a value of a column, you can pass it as to parameters where('column','value');  if you have multiple columns for identifing a row you can pass it an array where(array('column1'=>'value1','column2'=>'value2')); if you have a "where in" type of query (multiple posible values for a column), you can pass it the name of the column as first parameter and an array of possible values as second parameter;
+* $field_or_array, $operator_or_value = NULL - if you want to look by an id you can simply pass the id; if you want to look for a value of a column, you can pass it as to parameters where('column','value');  if you have multiple columns for identifing a row you can pass it an array where(array('column1'=>'value1','column2'=>'value2')); if you have a "where in" type of query (multiple posible values for a column), you can pass it the name of the column as first parameter and an array of possible values as second parameter;
 
 ####Return
 Doesn't return anything, being a part of the query chain
@@ -457,7 +457,7 @@ $this->user_model->where('username',array('avenirer','aveniro')->get();
 ```
 
 ###where_*()
-There is also a "dynamic" where. That means that at any time you can write a where method that contains the name of the column:
+Although I wouldn't advise (there are some buggy things there...), there is also a "dynamic" where. That means that at any time you can write a where method that contains the name of the column:
 
 ```php
 $this->user_model->where_username('avenirer')->get(); // where the "username" value is avenirer
