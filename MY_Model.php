@@ -1019,6 +1019,18 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
+    
+    /**
+     * public function group_by($grouping_by)
+     * A wrapper to $this->_database->group_by()
+     * @param $grouping_by
+     * @return $this
+     */
+    public function group_by($grouping_by)
+    {
+        $this->_database->group_by($grouping_by);
+        return $this;
+    }
 
     /**
      * Return the next call as an array rather than an object
