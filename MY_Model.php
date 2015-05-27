@@ -17,7 +17,7 @@
  *              If given an array as parameter, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type)
  *          $this->soft_deletes = FALSE
  *              Enables (TRUE) or disables (FALSE) the "soft delete" on records. Default is FALSE
- *          $this->return_as = 'object' | 'array'p
+ *          $this->return_as = 'object' | 'array'
  *              Allows the model to return the results as object or as array
  *          $this->has_one['phone'] = 'Phone_model' or $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
  *          $this->has_one['address'] = 'Address_model' or $this->has_one['address'] = array('Address_model','foreign_key','another_local_key');
@@ -150,6 +150,8 @@ class MY_Model extends CI_Model
 
     private $_trashed = 'without';
 
+    private $_select = '*';
+
 
     public function __construct()
     {
@@ -245,6 +247,7 @@ class MY_Model extends CI_Model
     {
         // let's join the subqueries...
         $data = $this->join_temporary_results($data);
+        $this->_database->reset_query();
         if($this->return_as == 'object')
         {
             $data = json_decode(json_encode($data), FALSE);
@@ -404,6 +407,11 @@ class MY_Model extends CI_Model
      */
     public function where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
     {
+        if($this->soft_deletes===TRUE)
+        {
+            $this->_where_trashed();
+        }
+
         if(is_array($field_or_array))
         {
             $multi = FALSE;
@@ -421,6 +429,7 @@ class MY_Model extends CI_Model
                     $with_not = (isset($where[4])) ? TRUE : FALSE;
                     $this->where($field, $operator_or_value, $value, $with_or,$with_not);
                 }
+                return $this;
             }
         }
 
@@ -460,8 +469,9 @@ class MY_Model extends CI_Model
         }
         elseif(!isset($value) && isset($field_or_array) && isset($operator_or_value) && is_array($operator_or_value) && !is_array($field_or_array))
         {
+            //echo $field_or_array;
+            //exit;
             $this->_database->{$where_or.$not.'_in'}($this->table.'.'.$field_or_array, $operator_or_value);
-
         }
         elseif(isset($field_or_array) && isset($operator_or_value) && isset($value))
         {
@@ -486,11 +496,6 @@ class MY_Model extends CI_Model
                 $this->_database->{$where_or}($field_or_array.' '.$operator_or_value, $value);
             }
 
-        }
-
-        if($this->soft_deletes===TRUE)
-        {
-            $this->_where_trashed();
         }
         return $this;
     }
@@ -626,6 +631,7 @@ class MY_Model extends CI_Model
         else
         {
             $this->trigger('before_get');
+            $this->_database->select($this->_select);
             $this->where($where);
             $this->limit(1);
             $query = $this->_database->get($this->table);
@@ -633,7 +639,6 @@ class MY_Model extends CI_Model
             {
                 $row = $query->row_array();
                 $row = $this->trigger('after_get', $row);
-                $row = $this->_prep_after_read($row,FALSE);
                 $row =  $this->_prep_after_read(array($row),FALSE);
                 $row = $row[0];
                 if(isset($cache_name) && isset($seconds))
@@ -643,7 +648,10 @@ class MY_Model extends CI_Model
                 }
                 return $row;
             }
-            return FALSE;
+            else
+            {
+                return FALSE;
+            }
         }
     }
 
@@ -675,6 +683,7 @@ class MY_Model extends CI_Model
         {
             $this->trigger('before_get');
             $this->where($where);
+            $this->_database->select($this->_select);
             $query = $this->_database->get($this->table);
             if($query->num_rows() > 0)
             {
@@ -799,6 +808,7 @@ class MY_Model extends CI_Model
                 $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'right');
                 $this->_database->where_in($this->table.'.'.$local_key,$local_key_values);
                 $sub_results = $this->_database->get($foreign_table)->result_array();
+                $this->_database->reset_query();
             }
 
             if(isset($sub_results) && !empty($sub_results)) {
@@ -992,7 +1002,7 @@ class MY_Model extends CI_Model
         if(isset($fields))
         {
             $fields = (is_array($fields)) ? implode(',',$fields) : $fields;
-            $this->_database->select($fields);
+            $this->_select = $fields;
         }
         return $this;
     }
@@ -1017,18 +1027,6 @@ class MY_Model extends CI_Model
         {
             $this->_database->order_by($criteria, $order);
         }
-        return $this;
-    }
-    
-    /**
-     * public function group_by($grouping_by)
-     * A wrapper to $this->_database->group_by()
-     * @param $grouping_by
-     * @return $this
-     */
-    public function group_by($grouping_by)
-    {
-        $this->_database->group_by($grouping_by);
         return $this;
     }
 
@@ -1115,6 +1113,7 @@ class MY_Model extends CI_Model
      */
     private function _set_connection()
     {
+        //unset($this->db);
         isset($this->_database_connection) ? $this->load->database($this->_database_connection) : $this->load->database();
         $this->_database = $this->db;
     }
