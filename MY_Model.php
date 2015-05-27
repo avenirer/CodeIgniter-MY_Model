@@ -514,6 +514,18 @@ class MY_Model extends CI_Model
     }
 
     /**
+    -     * public function group_by($grouping_by)
+    -     * A wrapper to $this->_database->group_by()
+    -     * @param $grouping_by
+    -     * @return $this
+    -     */
+    public function group_by($grouping_by)
+    {
+        $this->_database->group_by($grouping_by);
+        return $this;
+    }
+
+    /**
      * public function delete($where)
      * Deletes data from table.
      * @param $where
