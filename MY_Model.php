@@ -15,7 +15,7 @@
  *          $this->timestamps = TRUE | array('made_at','modified_at','removed_at')
  *              If set to TRUE tells MY_Model that the table has 'created_at','updated_at' (and 'deleted_at' if $this->soft_delete is set to TRUE)
  *              If given an array as parameter, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type)
- *          $this->soft_deletes = FALSE
+ *          $this->soft_deletes = FALSE;
  *              Enables (TRUE) or disables (FALSE) the "soft delete" on records. Default is FALSE
  *          $this->return_as = 'object' | 'array'
  *              Allows the model to return the results as object or as array
