@@ -147,6 +147,24 @@ public function add_user()
 }
 ```
 
+If you have any doubts, this is how the view looks:
+
+```php
+<?php
+
+echo form_open();
+echo form_label('Username','username').':<br />';
+echo form_error('username');
+echo form_input('username',set_value('username')).'<br />';
+
+echo form_label('Email','email').':<br />';
+echo form_error('email');
+echo form_input('email',set_value('email'));
+
+echo form_submit('submit','Save user');
+echo form_close();
+```
+
 ##Caching
 
 If you want to cache the result for faster output, you can at any time use the MY_Model's caching. To do this you simply attach a set_cache('name') inside the query chain:
