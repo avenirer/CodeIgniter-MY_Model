@@ -95,6 +95,58 @@ class User_model extends MY_Model
 }
 ```
 
+##Inserting with form validation using from_form() method
+
+You can at any time directly insert values from forms into the tables. First of all make sure you have a fillable or a protected property, because you must make sure no-one interferes with your id's or whatever you use to uniquely identify the rows.
+
+After you've done this, you must set the rules. If you use the MY_Model's form validation, I advise you to write the rules inside your model. Below you can find an example of model:
+
+```php
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class User_model extends MY_Model
+{
+    //public $soft_deletes = TRUE;
+    public $has_one = array('phone' => 'Phone_model', 'address' => array('Address_model','user_id','id'));
+    public $has_many_pivot = array('posts' => array('Post_model','id','user_id'));
+    public $timestamps = FALSE;
+	public $protected = array('id');
+
+    function __construct()
+    {
+        parent::__construct();
+    }
+
+    public $rules = array(
+        'insert' => array(
+            'username' => array('field'=>'username','label'=>'Username','rules'=>'trim|required'),
+            'email' => array('field'=>'email','label'=>'Email','rules'=>'trim|valid_email|required')
+        )
+    );
+}
+```
+
+After setting the model this way, you are ready to go. So, in your controller you can go like this:
+
+```php
+public function add_user()
+{
+	$this->load->model('user_model');
+	$id = $this->user_model->from_form()->insert();
+	if($id === FALSE)
+	{
+		$this->load->view('user_form_view');
+	}
+	else
+	{
+		echo  $id;
+		//...whatever you want to do. the form was submitted and the data was inserted
+	}
+}
+```
+
 ##Caching
 
 If you want to cache the result for faster output, you can at any time use the MY_Model's caching. To do this you simply attach a set_cache('name') inside the query chain:
