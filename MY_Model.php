@@ -128,6 +128,9 @@ class MY_Model extends CI_Model
     public $pagination_delimiters;
     public $pagination_arrows;
 
+    /* validation */
+    private $validated = TRUE;
+
 
     /**
      * The various callbacks available to the model. Each are
@@ -255,14 +258,48 @@ class MY_Model extends CI_Model
         return $data;
     }
 
+    public function from_form($rules = NULL)
+    {
+        $this->load->library('form_validation');
+        if(!isset($rules))
+        {
+            $rules = $this->rules['insert'];
+        }
+        $this->form_validation->set_rules($rules);
+        if($this->form_validation->run())
+        {
+            $this->fillable_fields();
+            $this->validated = array();
+            foreach($this->_can_be_filled as $field)
+            {
+                $this->validated[$field] = $this->input->post($field);
+            }
+            return $this;
+        }
+        else
+        {
+            $this->validated = FALSE;
+            return $this;
+        }
+
+    }
+
     /**
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
      * @param $data
      * @return int/array Returns id/ids of inserted rows
      */
-    public function insert($data)
+    public function insert($data = NULL)
     {
+        if(!isset($data) && $this->validated!=FALSE)
+        {
+            $data = $this->validated;
+        }
+        else
+        {
+            return FALSE;
+        }
         $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
@@ -832,7 +869,7 @@ class MY_Model extends CI_Model
                         $the_select = implode(',',$select);
                         $this->_database->select($the_select);
                     }
-                    
+
                     if(array_key_exists('where',$request['parameters']))
                     {
                         $this->_database->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE);
