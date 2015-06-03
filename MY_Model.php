@@ -379,7 +379,7 @@ class MY_Model extends CI_Model
             $data = $this->validated;
             $this->validated = FALSE;
         }
-        else
+        elseif(!isset($data))
         {
             return FALSE;
         }
