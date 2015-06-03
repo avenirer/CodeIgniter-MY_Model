@@ -130,6 +130,7 @@ class MY_Model extends CI_Model
 
     /* validation */
     private $validated = TRUE;
+    private $row_fields_to_update = array();
 
 
     /**
@@ -258,8 +259,9 @@ class MY_Model extends CI_Model
         return $data;
     }
 
-    public function from_form($rules = NULL)
+    public function from_form($rules = NULL,$row_fields_to_update = array())
     {
+        $this->_get_table_fields();
         $this->load->library('form_validation');
         if(!isset($rules))
         {
@@ -273,6 +275,16 @@ class MY_Model extends CI_Model
             foreach($this->_can_be_filled as $field)
             {
                 $this->validated[$field] = $this->input->post($field);
+            }
+            
+            if(!empty($row_fields_to_update))
+            {
+                foreach ($row_fields_to_update as $field) {
+                    if (in_array($field, $this->table_fields)) {
+                        $this->row_fields_to_update[$field] = $this->input->post($field);
+                    }
+
+                }
             }
             return $this;
         }
@@ -295,6 +307,7 @@ class MY_Model extends CI_Model
         if(!isset($data) && $this->validated!=FALSE)
         {
             $data = $this->validated;
+            $this->validated = FALSE;
         }
         else
         {
@@ -359,8 +372,17 @@ class MY_Model extends CI_Model
      * @param $column_name_where
      * @return str/array Returns id/ids of inserted rows
      */
-    public function update($data, $column_name_where = NULL)
+    public function update($data = NULL, $column_name_where = NULL)
     {
+        if(!isset($data) && $this->validated!=FALSE)
+        {
+            $data = $this->validated;
+            $this->validated = FALSE;
+        }
+        else
+        {
+            return FALSE;
+        }
         // Prepare the data...
         $data = $this->_prep_before_write($data);
 
@@ -379,6 +401,11 @@ class MY_Model extends CI_Model
                 $data[$this->_updated_at_field] = date('Y-m-d H:i:s');
             }
             $data = $this->trigger('before_update',$data);
+            if($this->validated!=FALSE && !empty($this->row_fields_to_update))
+            {
+                $this->where($this->row_fields_to_update);
+                $this->row_fields_to_update = array();
+            }
             if(isset($column_name_where))
             {
                 if (is_array($column_name_where))
