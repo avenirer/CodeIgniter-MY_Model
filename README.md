@@ -179,7 +179,9 @@ echo form_submit('submit','Save user');
 echo form_close();
 ```
 
-##Caching
+##READ
+
+###Caching
 
 If you want to cache the result for faster output, you can at any time use the MY_Model's caching. To do this you simply attach a set_cache('name') inside the query chain:
 
@@ -233,6 +235,46 @@ $this->pagination_delimiters = array('<span>','</span>');
 $this->pagination_arrows = array('&lt;','&gt;');
 ```
 Also, you can use the set_pagination_delimiters($delimiters) and set_pagination_arrows($arrows) methods, where $delimiters and $arrows are arrays.
+
+##UPDATE
+###The update() method
+
+##DELETE
+###The delete() method
+
+###Soft Deletes
+
+By default, the delete mechanism works with an SQL DELETE statement. However, you might not want to destroy the data, you might instead want to perform a **'soft delete'**.
+
+If you enable soft deleting, the **deleted_at** row will be filled with the current date and time, rather than actually being removed from the database.
+
+You can enable soft delete in the constructor:
+```php
+$this->soft_deletes = TRUE;
+```
+Once you've enabled it whenever you do, for example, a `$this->user_model->delete(3);` the **delete()** method will only create a datetime in the **deleted_at** column of the user with id 3.
+
+If you really want to delete a row you can use `force_delete()` method:
+```php
+$this->user_model->force_delete(6);
+```
+You can also restore or "un-delete" a row by using the `restore()` method:
+```php
+$this->user_model->restore(3)
+```
+This will set to **NULL** the **deleted_at** value.
+
+Once you soft delete a row, that row won't appear in read results unless expressely asked to:
+
+For this, you have the following methods:
+
+* `with_trashed()` - will show all rows, including those that were soft deleted
+* `only_trashed()` - will show only the rows that were soft deleted
+
+You can also check if a row is **soft_deleted** by using `trashed()` method:
+```php
+$this->user_model->trashed(3); // will return TRUE or FALSE
+```
 
 ##Relationships
 
@@ -392,39 +434,7 @@ $users = $this->user_model->as_array()->get_all(); $posts = $this->post_model->a
 ```
 If you'd like all your calls to use the array methods, you can set the $return_type variable to array.
 
-##Soft Deletes
 
-By default, the delete mechanism works with an SQL DELETE statement. However, you might not want to destroy the data, you might instead want to perform a **'soft delete'**.
-
-If you enable soft deleting, the **deleted_at** row will be filled with the current date and time, rather than actually being removed from the database.
-
-You can enable soft delete in the constructor:
-```php
-$this->soft_deletes = TRUE;
-```
-Once you've enabled it whenever you do, for example, a `$this->user_model->delete(3);` the **delete()** method will only create a datetime in the **deleted_at** column of the user with id 3.
-
-If you really want to delete a row you can use `force_delete()` method:
-```php
-$this->user_model->force_delete(6);
-```
-You can also restore or "un-delete" a row by using the `restore()` method:
-```php
-$this->user_model->restore(3)
-```
-This will set to **NULL** the **deleted_at** value.
-
-Once you soft delete a row, that row won't appear in read results unless expressely asked to:
-
-For this, you have the following methods:
-
-* `with_trashed()` - will show all rows, including those that were soft deleted
-* `only_trashed()` - will show only the rows that were soft deleted
-
-You can also check if a row is **soft_deleted** by using `trashed()` method:
-```php
-$this->user_model->trashed(3); // will return TRUE or FALSE
-```
 ##Database Connection
 
 The class will automatically use the default database connection, and even load it for you if you haven't yet.
