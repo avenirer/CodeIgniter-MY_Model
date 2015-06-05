@@ -95,9 +95,23 @@ class User_model extends MY_Model
 }
 ```
 
-##Inserting with form validation using from_form() method
+##CREATE
 
-You can at any time directly insert values from forms into the tables. First of all make sure you have a fillable or a protected property, because you must make sure no-one interferes with your id's or whatever you use to uniquely identify the rows.
+###Inserting values
+
+You can insert values by using the **insert()** method, passing it an array or an object as parameter. You can also insert multiple rows of data by using a multidimensional array.
+
+```php
+<?php
+$insert_data = array('username'=>'avenirer','email'=>'email@email.com');
+$this->load->model('user_model');
+$this->user_model->insert($insert_data);
+?>
+```
+
+###Inserting directly from forms with form validation
+
+You can at any time directly insert values from forms into the tables using the **from_form()** method. First of all **make sure you have a fillable or a protected property (at least the primary key should be in there)**, because you must make sure no-one interferes with your id's or whatever you use to uniquely identify the rows.
 
 After you've done this, you must set the rules. If you use the MY_Model's form validation, I advise you to write the rules inside your model. Below you can find an example of model:
 
