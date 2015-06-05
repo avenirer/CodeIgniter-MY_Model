@@ -179,6 +179,15 @@ echo form_submit('submit','Save user');
 echo form_close();
 ```
 
+You can add additional values into database, values that are not taken from the form fields, by adding a second paramenter to the from_form() method:
+
+```php
+<?php
+...
+$id = $this->user_model->from_form(NULL,array('created_by'=>'1'))->insert();
+...
+```
+
 ##READ
 
 ###Caching
