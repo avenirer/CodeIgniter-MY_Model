@@ -259,7 +259,7 @@ class MY_Model extends CI_Model
         return $data;
     }
 
-    public function from_form($rules = NULL,$row_fields_to_update = array())
+    public function from_form($rules = NULL,$additional_values = array(), $row_fields_to_update = array())
     {
         $this->_get_table_fields();
         $this->load->library('form_validation');
@@ -279,7 +279,17 @@ class MY_Model extends CI_Model
                     $this->validated[$rule['field']] = $this->input->post($rule['field']);
                 }
             }
-
+            if(!empty($additional_values))
+            {
+                foreach($additional_values as $field => $value)
+                {
+                    if(in_array($field, $this->_can_be_filled))
+                    {
+                        $this->validated[$field] = $value;
+                    }
+                }
+            }
+            
             if(!empty($row_fields_to_update))
             {
                 foreach ($row_fields_to_update as $field) {
