@@ -272,9 +272,12 @@ class MY_Model extends CI_Model
         {
             $this->fillable_fields();
             $this->validated = array();
-            foreach($this->_can_be_filled as $field)
+            foreach($rules as $rule)
             {
-                $this->validated[$field] = $this->input->post($field);
+                if(in_array($rule['field'],$this->_can_be_filled))
+                {
+                    $this->validated[$rule['field']] = $this->input->post($rule['field']);
+                }
             }
 
             if(!empty($row_fields_to_update))
