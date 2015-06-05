@@ -276,7 +276,7 @@ class MY_Model extends CI_Model
             {
                 $this->validated[$field] = $this->input->post($field);
             }
-            
+
             if(!empty($row_fields_to_update))
             {
                 foreach ($row_fields_to_update as $field) {
@@ -891,7 +891,7 @@ class MY_Model extends CI_Model
                         $select = array();
                         foreach($fields as $field)
                         {
-                            $select[] = '`'.$foreign_table.'`.\''.trim($field).'\`';
+                            $select[] = '`'.$foreign_table.'`.`'.trim($field).'`';
                         }
                         $the_select = implode(',',$select);
                         $this->_database->select($the_select);
