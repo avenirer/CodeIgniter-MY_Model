@@ -1123,7 +1123,7 @@ class MY_Model extends CI_Model
     {
         if(isset($fields))
         {
-            $fields = (is_array($fields)) ? implode(',',$fields) : $fields;
+            $fields = (!is_array($fields)) ? explode(',',$fields) : $fields;
             if(!empty($fields))
             {
                 foreach($fields as &$field)
