@@ -1162,6 +1162,18 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
+	
+	 /**
+     * public function group_by($criteria)
+     * A wrapper to $this->_database->group_by()
+     * @param $criteria
+     * @return $this
+     */
+    public function group_by($criteria)
+    {
+        $this->_database->group_by($criteria);
+        return $this;
+    }
 
     /**
      * Return the next call as an array rather than an object
