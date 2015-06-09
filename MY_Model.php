@@ -260,17 +260,17 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public function from_form($rules = NULL,$additional_values = NULL, $row_fields_to_update = array())
-     * Gets data from form, after validating it and waits for an insert() or update() method in the query chain 
+     * public function from_form($rules = NULL,$additional_values = array(), $row_fields_to_update = array())
+     * Gets data from form, after validating it and waits for an insert() or update() method in the query chain
      * @param null $rules Gets the validation rules. If nothing is passed (NULL), will look for the validation rules
      * inside the model $rules public property
      * @param array $additional_values Accepts additional fields to be filled, fields that are not to be found inside
-     * the form. The additional values are inserted as an array with "field_name" => "field_value"
+     * the form. The values are inserted as an array with "field_name" => "field_value"
      * @param array $row_fields_to_update You can mention the fields from the form that can be used to identify
      * the row when doing an update
      * @return $this
      */
-    public function from_form($rules = NULL,$additional_values = NULL, $row_fields_to_update = array())
+    public function from_form($rules = NULL,$additional_values = array(), $row_fields_to_update = array())
     {
         $this->_get_table_fields();
         $this->load->library('form_validation');
@@ -290,7 +290,7 @@ class MY_Model extends CI_Model
                     $this->validated[$rule['field']] = $this->input->post($rule['field']);
                 }
             }
-            if(is_array($additional_values) && !empty($additional_values))
+            if(!empty($additional_values))
             {
                 foreach($additional_values as $field => $value)
                 {
@@ -919,6 +919,7 @@ class MY_Model extends CI_Model
                         }
                         $the_select = implode(',',$select);
                         $this->_database->select($the_select);
+                        $this->_database->select($foreign_table.'.'.$foreign_key);
                     }
 
                     if(array_key_exists('where',$request['parameters']))
@@ -1113,7 +1114,7 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public funciton fields($fields)
+     * public function fields($fields)
      * does a select() of the $fields
      * @param $fields the fields needed
      * @return $this
@@ -1123,6 +1124,17 @@ class MY_Model extends CI_Model
         if(isset($fields))
         {
             $fields = (is_array($fields)) ? implode(',',$fields) : $fields;
+            if(!empty($fields))
+            {
+                foreach($fields as &$field)
+                {
+                    $exploded = explode('.',$field);
+                    if(sizeof($exploded)<2)
+                    {
+                        $field = $this->table.'.'.$field;
+                    }
+                }
+            }
             $this->_select = $fields;
         }
         return $this;
