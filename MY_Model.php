@@ -616,7 +616,7 @@ class MY_Model extends CI_Model
     /**
      * public function delete($where)
      * Deletes data from table.
-     * @param $where
+     * @param $where primary_key(s) Can receive the primary key value or a list of primary keys as array()
      * @return Returns affected rows or false on failure
      */
     public function delete($where = NULL)
@@ -638,7 +638,7 @@ class MY_Model extends CI_Model
                     //$row = $this->trigger('before_soft_delete',$row);
                     $row[$this->_deleted_at_field] = date('Y-m-d H:i:s');
                 }
-                $affected_rows = $this->update($to_update, $this->primary_key);
+                $affected_rows = $this->_database->update_batch($this->table, $to_update, $this->primary_key);
                 $this->trigger('after_soft_delete',$to_update);
             }
             return $affected_rows;
