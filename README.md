@@ -573,6 +573,9 @@ Is a self explaining method...
 ###order_by($criteria, $order = 'ASC')
 Is a wrapper for $this->db->order_by()
 
+###group_by($grouping_by)
+Is a wrapper for $this->db->group_by()
+
 ###delete(where)
 It deletes or soft deletes (depending on your settings) rows, working like the native $this->db->delete().
 
