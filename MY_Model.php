@@ -1029,7 +1029,7 @@ class MY_Model extends CI_Model
                 $subs = array();
                 foreach ($sub_results as $result) {
                     $the_foreign_key = $result[$foreign_key];
-                    if(strstr($request['parameters']['fields'], $foreign_table.'.'.$foreign_key))
+                    if(isset($request['parameters']['fields']) && !strstr($request['parameters']['fields'], $foreign_table.'.'.$foreign_key))
                     {
                         unset($result->{$foreign_key});
                     }
