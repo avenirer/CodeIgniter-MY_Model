@@ -131,7 +131,7 @@ class MY_Model extends CI_Model
     /* validation */
     private $validated = TRUE;
     private $row_fields_to_update = array();
-
+    protected $validate_messages = array();
 
     /**
      * The various callbacks available to the model. Each are
@@ -279,6 +279,9 @@ class MY_Model extends CI_Model
             $rules = $this->rules['insert'];
         }
         $this->form_validation->set_rules($rules);
+        foreach ($this->validate_messages as $validate_message) {
+            $this->form_validation->set_message($validate_message['rule'], $validate_message['message']);
+        }
         if($this->form_validation->run())
         {
             $this->fillable_fields();
