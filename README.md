@@ -255,6 +255,13 @@ Also, you can use the set_pagination_delimiters($delimiters) and set_pagination_
 ##UPDATE
 ###The update() method
 
+###Updating from forms
+You can also update the model by using from_form() method. You specify which form inputs to be used as reference for the rows by using a third parameter for the method.
+
+```php
+$this->user_model->from_form(NULL,NULL,array('user_id')); // where user_id is an input element
+```
+
 ##DELETE
 ###The delete() method
 
