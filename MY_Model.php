@@ -270,7 +270,7 @@ class MY_Model extends CI_Model
      * the row when doing an update
      * @return $this
      */
-    public function from_form($rules = NULL,$additional_values = array(), $row_fields_to_update = array())
+    public function from_form($rules = NULL,$additional_values = NULL, $row_fields_to_update = array())
     {
         $this->_get_table_fields();
         $this->load->library('form_validation');
@@ -290,7 +290,7 @@ class MY_Model extends CI_Model
                     $this->validated[$rule['field']] = $this->input->post($rule['field']);
                 }
             }
-            if(!empty($additional_values))
+            if(isset($additional_values) && is_array($additional_values))
             {
                 foreach($additional_values as $field => $value)
                 {
@@ -301,7 +301,7 @@ class MY_Model extends CI_Model
                 }
             }
 
-            if(!empty($row_fields_to_update))
+            if(isset($row_fields_to_update) && is_array($row_fields_to_update))
             {
                 foreach ($row_fields_to_update as $field) {
                     if (in_array($field, $this->table_fields)) {
