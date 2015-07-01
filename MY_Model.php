@@ -915,7 +915,6 @@ class MY_Model extends CI_Model
             {
                 $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'inner');
                 $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'inner');
-                // testing
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
@@ -936,7 +935,6 @@ class MY_Model extends CI_Model
                         $this->_database->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE);
                     }
                 }
-                // end testing
                 $this->_database->where_in($this->table.'.'.$local_key,$local_key_values);
                 $sub_results = $this->_database->get($foreign_table)->result_array();
                 $this->_database->reset_query();
