@@ -731,6 +731,13 @@ class MY_Model extends CI_Model
         {
             $this->trigger('before_get');
             $this->_database->select($this->_select);
+            if(!empty($this->_requested))
+            {
+                foreach($this->_requested as $requested)
+                {
+                    $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                }
+            }
             $this->where($where);
             $this->limit(1);
             $query = $this->_database->get($this->table);
@@ -783,6 +790,13 @@ class MY_Model extends CI_Model
             $this->trigger('before_get');
             $this->where($where);
             $this->_database->select($this->_select);
+            if(!empty($this->_requested))
+            {
+                foreach($this->_requested as $requested)
+                {
+                    $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                }
+            }
             $query = $this->_database->get($this->table);
             if($query->num_rows() > 0)
             {
@@ -951,6 +965,7 @@ class MY_Model extends CI_Model
                     $subs[$the_foreign_key][] = $result;
                 }
                 $sub_results = $subs;
+
                 foreach($local_key_values as $key => $value)
                 {
                     if(array_key_exists($value,$sub_results))
