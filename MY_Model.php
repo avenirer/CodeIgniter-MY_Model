@@ -151,6 +151,7 @@ class MY_Model extends CI_Model
     protected $callback_parameters = array();
 
     protected $return_as = 'object';
+    protected $_dropdown_field = '';
 
     private $_trashed = 'without';
 
@@ -255,6 +256,15 @@ class MY_Model extends CI_Model
         if($this->return_as == 'object')
         {
             $data = json_decode(json_encode($data), FALSE);
+        }
+        
+        elseif($this->return_as == 'dropdown')
+        {
+            $data = array();
+            foreach($data as $row)
+            {
+                $dropdown[$row[$this->primary_key]] = $row[$this->_dropdown_field];
+            }
         }
         return $data;
     }
@@ -1206,6 +1216,13 @@ class MY_Model extends CI_Model
     {
         $this->return_as = 'object';
         return $this;
+    }
+
+    public function as_dropdown($field)
+    {
+        $this->return_as = 'dropdown';
+        $this->_dropdown_field = $field;
+        $this->_select(array($this->primary_key, $field));
     }
 
     public function set_cache($string, $seconds = 86400)
