@@ -260,11 +260,11 @@ class MY_Model extends CI_Model
         
         elseif($this->return_as == 'dropdown')
         {
-            $data = array();
             foreach($data as $row)
             {
                 $dropdown[$row[$this->primary_key]] = $row[$this->_dropdown_field];
             }
+            $data = $dropdown;
         }
         return $data;
     }
