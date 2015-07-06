@@ -1028,7 +1028,7 @@ class MY_Model extends CI_Model
                             $tables = array($this->table, $foreign_table);
                             sort($tables);
                             $pivot_table = $tables[0].'_'.$tables[1];
-                            $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary;
+                            $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary_key;
                             $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
                         else
