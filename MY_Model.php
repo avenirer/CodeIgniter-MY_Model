@@ -1223,6 +1223,7 @@ class MY_Model extends CI_Model
         $this->return_as = 'dropdown';
         $this->_dropdown_field = $field;
         $this->_select = array($this->primary_key, $field);
+        return $this;
     }
 
     public function set_cache($string, $seconds = 86400)
