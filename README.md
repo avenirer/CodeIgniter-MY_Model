@@ -197,6 +197,25 @@ $id = $this->user_model->from_form(NULL,array('created_by'=>'1'))->insert();
 
 ##READ
 
+###Arrays vs Objects
+
+By default, MY_Model is setup to return objects. If you'd like to return results as array you can:
+
+* either define `$this->return_as = 'array'` in the constructor
+* or add `as_array()` into the query chain:
+```php
+$users = $this->user_model->as_array()->get_all(); $posts = $this->post_model->as_object()->get_all();
+```
+If you'd like all your calls to use the array methods, you can set the $return_type variable to array.
+
+###Return as dropdown
+
+There are moments when you need to retrieve data to fill a select input type. For this we have a method called as_dropdown($field). This method will return an array having the primary keys as array keys and a $field as values:
+```php
+$categories = $this->category_model->as_dropdown('title)->get_all();
+echo form_dropdown($categories);
+```
+
 ###Caching
 
 If you want to cache the result for faster output, you can at any time use the MY_Model's caching. To do this you simply attach a set_cache('name') inside the query chain:
@@ -446,17 +465,6 @@ foreach ($user->posts as $post)
     echo $post->title;
 }
 ```
-##Arrays vs Objects
-
-By default, MY_Model is setup to return objects. If you'd like to return results as array you can:
-
-* either define `$this->return_as = 'array'` in the constructor
-* or add `as_array()` into the query chain:
-```php
-$users = $this->user_model->as_array()->get_all(); $posts = $this->post_model->as_object()->get_all();
-```
-If you'd like all your calls to use the array methods, you can set the $return_type variable to array.
-
 
 ##Database Connection
 
