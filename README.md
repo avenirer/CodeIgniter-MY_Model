@@ -212,7 +212,7 @@ If you'd like all your calls to use the array methods, you can set the $return_t
 
 There are moments when you need to retrieve data to fill a select input type. For this we have a method called as_dropdown($field). This method will return an array having the primary keys as array keys and a $field as values:
 ```php
-$categories = $this->category_model->as_dropdown('title)->get_all();
+$categories = $this->category_model->as_dropdown('title')->get_all();
 echo form_dropdown($categories);
 ```
 
