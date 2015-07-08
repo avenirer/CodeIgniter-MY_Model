@@ -15,10 +15,6 @@
 *********** Using somebody else's code and bitching when it goes wrong makes you a DONKEY dick. 
 *********** Fix the problem yourself. A non-dick would submit the fix back.
  * 
- * 
- * filename: Matches.php
- * This project started from a great idea posted by @veedeoo [veedeoo@gmail.com] on http://www.daniweb.com/web-development/php/code/477847/codeigniter-cli-trainer-script-creates-simple-application
- * License info: http://www.dbad-license.org/
  */
  
 /** how to extend MY_Model:
