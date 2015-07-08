@@ -958,8 +958,8 @@ class MY_Model extends CI_Model
             }
             else
             {
-                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'inner');
-                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'inner');
+                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'left');
+                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'left');
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
