@@ -752,6 +752,7 @@ class MY_Model extends CI_Model
 
         if(isset($data) && $data !== FALSE)
         {
+            $this->_database->reset_query();
             return $data;
         }
         else
@@ -810,6 +811,7 @@ class MY_Model extends CI_Model
 
         if(isset($data) && $data !== FALSE)
         {
+            $this->_database->reset_query();
             return $data;
         }
         else
