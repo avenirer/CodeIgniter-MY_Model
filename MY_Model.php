@@ -954,7 +954,6 @@ class MY_Model extends CI_Model
                     $sub_results = (array_key_exists('where',$request['parameters'])) ? $sub_results->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
                 }
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
-                print_r($sub_results);
             }
             else
             {
