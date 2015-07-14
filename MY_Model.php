@@ -888,7 +888,7 @@ class MY_Model extends CI_Model
                     }
                     else
                     {
-                        show_error('MY_Model: Parameters for with() method must be of the form: "with(\'where:...|fields:...\')');
+                        show_error('MY_Model: Parameters for with() method must be of the form: "...->with(\'where:...|fields:...\')"');
                     }
                 }
             }
