@@ -941,7 +941,6 @@ class MY_Model extends CI_Model
                 {
                     if(array_key_exists('fields',$request['parameters']))
                     {
-                        print_r($request['fields']);
                         $fields = explode(',',$request['parameters']['fields']);
                         $select = array();
                         foreach($fields as $field)
@@ -988,26 +987,31 @@ class MY_Model extends CI_Model
 
             if(isset($sub_results) && !empty($sub_results)) {
                 $subs = array();
+
                 foreach ($sub_results as $result) {
                     $the_foreign_key = $result[$foreign_key];
-                    $the_local_key = $result[singular($this->table).'_'.$local_key];
+                    if(isset($pivot_table))
+                    {
+                        $the_local_key = $result[singular($this->table) . '_' . $local_key];
+                        $subs[$the_local_key][$the_foreign_key] = $result;
+                    }
+                    else
+                    {
+                        $subs[$the_foreign_key] = $result;
+                    }
 
-                    $subs[$the_local_key][$the_foreign_key] = $result;
+
                 }
                 $sub_results = $subs;
+                print_r($sub_results);
+                print_r($local_key_values);
+
 
                 foreach($local_key_values as $value)
                 {
                     if(array_key_exists($value,$sub_results))
                     {
-                        if ($type == 'has_one')
-                        {
-                            $data[$key][$relation_key] = $sub_results[$value][0];
-                        }
-                        else
-                        {
-                            $data[$key][$relation_key] = $sub_results[$value];
-                        }
+                        $data[$key][$relation_key] = $sub_results[$value];
                     }
                 }
             }
