@@ -1011,7 +1011,7 @@ class MY_Model extends CI_Model
                 }
                 $sub_results = $subs;
 
-                foreach($local_key_values as $value)
+                foreach($local_key_values as $key => $value)
                 {
                     if(array_key_exists($value,$sub_results))
                     {
