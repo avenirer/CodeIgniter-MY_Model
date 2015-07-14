@@ -941,6 +941,7 @@ class MY_Model extends CI_Model
                 {
                     if(array_key_exists('fields',$request['parameters']))
                     {
+                        print_r($request['fields']);
                         $fields = explode(',',$request['parameters']['fields']);
                         $select = array();
                         foreach($fields as $field)
@@ -949,7 +950,8 @@ class MY_Model extends CI_Model
                         }
                         $the_select = implode(',',$select);
                     }
-                    $sub_results = (isset($the_select)) ? $sub_results->fields($the_select.','.$foreign_table.'.'.$foreign_key) : $sub_results;
+                    $sub_results = $sub_results->fields($foreign_table.'.'.$foreign_key);
+                    $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
                     $sub_results = (array_key_exists('where',$request['parameters'])) ? $sub_results->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
                 }
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
@@ -958,6 +960,8 @@ class MY_Model extends CI_Model
             {
                 $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'left');
                 $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'left');
+                $this->_database->select($foreign_table.'.'.$foreign_key);
+                $this->_database->select($pivot_table.'.'.singular($this->table).'_'.$local_key);
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
@@ -970,7 +974,6 @@ class MY_Model extends CI_Model
                         }
                         $the_select = implode(',',$select);
                         $this->_database->select($the_select);
-                        $this->_database->select($foreign_table.'.'.$foreign_key);
                     }
 
                     if(array_key_exists('where',$request['parameters']))
@@ -987,15 +990,13 @@ class MY_Model extends CI_Model
                 $subs = array();
                 foreach ($sub_results as $result) {
                     $the_foreign_key = $result[$foreign_key];
-                    if(isset($request['parameters']['fields']) && !strstr($request['parameters']['fields'], $foreign_key))
-                    {
-                        unset($result[$foreign_key]);
-                    }
-                    $subs[$the_foreign_key][] = $result;
+                    $the_local_key = $result[singular($this->table).'_'.$local_key];
+
+                    $subs[$the_local_key][$the_foreign_key] = $result;
                 }
                 $sub_results = $subs;
 
-                foreach($local_key_values as $key => $value)
+                foreach($local_key_values as $value)
                 {
                     if(array_key_exists($value,$sub_results))
                     {
