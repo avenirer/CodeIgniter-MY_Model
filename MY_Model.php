@@ -937,23 +937,24 @@ class MY_Model extends CI_Model
             if(!isset($pivot_table))
             {
                 $sub_results = $this->{$relation['foreign_model']}->as_array();
+                $select = array();
+                $select[] = '`'.$foreign_table.'`.`'.$foreign_key.'`';
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
                     {
                         $fields = explode(',',$request['parameters']['fields']);
-                        $select = array();
                         foreach($fields as $field)
                         {
                             $select[] = '`'.$foreign_table.'`.`'.trim($field).'`';
                         }
                         $the_select = implode(',',$select);
                     }
-                    $sub_results = $sub_results->fields($foreign_table.'.'.$foreign_key);
                     $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
                     $sub_results = (array_key_exists('where',$request['parameters'])) ? $sub_results->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
                 }
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
+                print_r($sub_results);
             }
             else
             {
@@ -1003,6 +1004,7 @@ class MY_Model extends CI_Model
 
                 }
                 $sub_results = $subs;
+
                 foreach($local_key_values as $value)
                 {
                     if(array_key_exists($value,$sub_results))
