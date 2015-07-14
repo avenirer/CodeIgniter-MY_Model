@@ -1003,10 +1003,6 @@ class MY_Model extends CI_Model
 
                 }
                 $sub_results = $subs;
-                print_r($sub_results);
-                print_r($local_key_values);
-
-
                 foreach($local_key_values as $value)
                 {
                     if(array_key_exists($value,$sub_results))
