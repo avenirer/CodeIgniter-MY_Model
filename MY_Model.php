@@ -882,7 +882,14 @@ class MY_Model extends CI_Model
                 foreach($arguments as $argument)
                 {
                     $elements = explode(':',$argument);
-                    $parameters[$elements[0]] = $elements[1];
+                    if(sizeof($elements)==2)
+                    {
+                        $parameters[$elements[0]] = $elements[1];
+                    }
+                    else
+                    {
+                        show_error('MY_Model: Parameters for with() method must be of the form: "with(\'where:...|fields:...\')');
+                    }
                 }
             }
             $this->_requested[$request]['parameters'] = $parameters;
