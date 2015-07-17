@@ -744,9 +744,6 @@ class MY_Model extends CI_Model
             $this->load->driver('cache');
             $cache_name = $this->_cache['cache_name'];
             $seconds = $this->_cache['seconds'];
-        }
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
             $data = $this->cache->{$this->cache_driver}->get($cache_name);
         }
 
@@ -802,10 +799,6 @@ class MY_Model extends CI_Model
             $this->load->driver('cache');
             $cache_name = $this->_cache['cache_name'];
             $seconds = $this->_cache['seconds'];
-        }
-
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
             $data = $this->cache->{$this->cache_driver}->get($cache_name);
         }
 
@@ -1398,10 +1391,6 @@ class MY_Model extends CI_Model
             $this->load->driver('cache');
             $cache_name = $this->_cache['cache_name'].'_'.$page_number;
             $seconds = $this->_cache['seconds'];
-        }
-
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
             $data = $this->cache->{$this->cache_driver}->get($cache_name);
         }
 
