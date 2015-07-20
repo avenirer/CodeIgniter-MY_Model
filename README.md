@@ -274,11 +274,50 @@ Also, you can use the set_pagination_delimiters($delimiters) and set_pagination_
 ##UPDATE
 ###The update() method
 
-###Updating from forms
-You can also update the model by using from_form() method. You specify which form inputs to be used as reference for the rows by using a third parameter for the method.
+####The basic update()
 
+The update() method is pretty much the same as the insert() method.
+
+To update some values you must pass an array with the columns as keys and their respective values as values of array. The second parameter can be either the id of the row or the column name used to identify the row:
+
+Update using row id:
+```php
+<?php
+$update_data = array('username'=>'avenirer','email'=>'email@email.com');
+$this->load->model('user_model');
+$this->user_model->update($update_data,2);
+?>
+```
+Update using column name:
+```php
+<?php
+$update_data = array('username'=>'avenirer','email'=>'email@email.com', 'id'=>'2');
+$this->load->model('user_model');
+$this->user_model->update($update_data,'email');
+?>
+```
+You can also pass a multidimensional array to change multiple rows. In this case the second parameter should be the name of the identifying column.
+
+####Update using the where() method
+
+Another method to do an update would be to use the update() method in conjuction with the where() method:
+```php
+<?php
+$update_data = array('username'=>'avenirer','email'=>'email@email.com');
+$this->load->model('user_model');
+$this->user_model->where('email','email@email.com')->update($update_data);
+?>
+```
+
+####Update directly from form using from_form() method
+
+The update can also be made directly from the form with validation, the same way as is done by the insert() method. The only difference would be that you need to specify which input field should be used as reference for the rows to be updated. You do this by passing a third parameter as array:
 ```php
 $this->user_model->from_form(NULL,NULL,array('user_id')); // where user_id is an input element
+```
+If you need to use another table field that is not in the form, in order to identify the row, you can pass it to the from_form() method as a second parameter:
+```php
+$id = $this->user_model->from_form(NULL,array('created_by'=>'1'), array('user_id))->update();
 ```
 
 ##DELETE
