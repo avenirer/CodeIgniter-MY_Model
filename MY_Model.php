@@ -1244,8 +1244,13 @@ class MY_Model extends CI_Model
         return $this;
     }
 
-    public function as_dropdown($field)
+    public function as_dropdown($field = NULL)
     {
+        if(!isset($field))
+        {
+            show_error('MY_Model: You must set a field to be set as value for the key: ...->as_dropdown(\'field\')->...');
+            exit;
+        }
         $this->return_as = 'dropdown';
         $this->_dropdown_field = $field;
         $this->_select = array($this->primary_key, $field);
