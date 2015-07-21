@@ -928,11 +928,16 @@ class MY_Model extends CI_Model
             $local_key_values = array();
             foreach($data as $key => $element)
             {
-                if(isset($element[$local_key]))
+                if(isset($element[$local_key]) and !empty($element[$local_key]))
                 {
                     $id = $element[$local_key];
                     $local_key_values[$key] = $id;
                 }
+            }
+            if(!$local_key_values)
+            {
+                $data[$key][$relation_key] = NULL;
+                continue;
             }
             if(!isset($pivot_table))
             {
