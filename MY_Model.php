@@ -942,7 +942,7 @@ class MY_Model extends CI_Model
             }
             if(!isset($pivot_table))
             {
-                $sub_results = $this->{$relation['foreign_model']}->as_array();
+                $sub_results = $this->{$relation['foreign_model']};
                 $select = array();
                 $select[] = '`'.$foreign_table.'`.`'.$foreign_key.'`';
                 if(!empty($request['parameters']))
@@ -995,10 +995,11 @@ class MY_Model extends CI_Model
                 $subs = array();
 
                 foreach ($sub_results as $result) {
-                    $the_foreign_key = $result[$foreign_key];
+                    $result_array = (array)$result;
+                    $the_foreign_key = $result_array[$foreign_key];
                     if(isset($pivot_table))
                     {
-                        $the_local_key = $result[singular($this->table) . '_' . $local_key];
+                        $the_local_key = $result_array[singular($this->table) . '_' . $local_key];
                         $subs[$the_local_key][$the_foreign_key] = $result;
                     }
                     else
