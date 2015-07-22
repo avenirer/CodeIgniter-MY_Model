@@ -914,6 +914,7 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
+        $order_by = array();
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
@@ -1017,7 +1018,27 @@ class MY_Model extends CI_Model
                     }
                 }
             }
+            if(array_key_exists('order_by',$request['parameters']))
+            {
+                $elements = explode(',', $request['parameters']['order_by']);
+                if(sizeof($elements)==2)
+                {
+                    $order_by[$relation_key] = array(trim($elements[0]), trim($elements[1]));
+                }
+                else
+                {                
+                    $order_by[$relation_key] = array(trim($elements[0]), 'desc');
+                }
+            }
             unset($this->_requested[$requested_key]);
+        }
+        if($order_by)
+        {
+            foreach($order_by as $field => $row)
+            {                
+                list($key, $value) = $row;
+                $data = $this->_build_sorter($data, $field, $key, $value);
+            }
         }
         return $data;
         //if(sizeof($data)==1) $data = $data[0];
@@ -1483,5 +1504,14 @@ class MY_Model extends CI_Model
             return $this;
         }
         else echo 'No method with that name ('.$method.') in MY_Model.';
+    }
+    
+    private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC') 
+    {
+        usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
+            return strtoupper($sort_by) ==  "DESC" ? ($a[$field][$order_by] < $b[$field][$order_by]) : ($a[$field][$order_by] > $b[$field][$order_by]);
+        }); 
+
+        return $data;
     }
 }
