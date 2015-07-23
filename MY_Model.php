@@ -1004,7 +1004,14 @@ class MY_Model extends CI_Model
                     }
                     else
                     {
-                        $subs[$the_foreign_key] = $result;
+                        if($type=='has_one')
+                        {
+                         $subs[$the_foreign_key] = $result;
+                        }
+                        else
+                        {
+                         $subs[$the_foreign_key][] = $result;
+                        }
                     }
 
 
