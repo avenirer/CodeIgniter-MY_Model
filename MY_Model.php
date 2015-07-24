@@ -423,7 +423,7 @@ class MY_Model extends CI_Model
      * @param $column_name_where
      * @return str/array Returns id/ids of inserted rows
      */
-    public function update($data = NULL, $column_name_where = NULL)
+    public function update($data = NULL, $column_name_where = NULL, $escape = TRUE)
     {
         if(!isset($data) && $this->validated!=FALSE)
         {
@@ -469,11 +469,23 @@ class MY_Model extends CI_Model
                     $this->_database->where($column_name_where, $column_value);
                 }
             }
-            if($this->_database->update($this->table, $data))
+            if($escape)
             {
-                $affected = $this->_database->affected_rows();
-                $return = $this->trigger('after_update',$affected);
-                return $return;
+                if($this->_database->update($this->table, $data))
+                {
+                    $affected = $this->_database->affected_rows();
+                    $return = $this->trigger('after_update',$affected);
+                    return $return;
+                }
+            }
+            else
+            {
+                if($this->_database->set($data, null, FALSE)->update($this->table))
+                {
+                    $affected = $this->_database->affected_rows();
+                    $return = $this->trigger('after_update',$affected);
+                    return $return;
+                }
             }
             return FALSE;
         }
@@ -497,9 +509,19 @@ class MY_Model extends CI_Model
                     $column_value = (is_object($row)) ? $row->{$column_name_where} : $row[$column_name_where];
                     $this->_database->where($column_name_where, $column_value);
                 }
-                if($this->_database->update($this->table,$row))
+                if($escape)
                 {
-                    $rows++;
+                    if($this->_database->update($this->table,$row))
+                    {
+                        $rows++;
+                    }
+                }
+                else
+                {
+                    if($this->_database->set($row, null, FALSE)->update($this->table))
+                    {
+                        $rows++;
+                    }
                 }
             }
             $affected = $rows;
