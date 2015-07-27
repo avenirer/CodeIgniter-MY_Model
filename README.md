@@ -134,7 +134,6 @@ class User_model extends MY_Model
     }
 
     public $rules = array(
-        'insert' => array(
             'username' => array('field'=>'username',
             			'label'=>'Username',
             			'rules'=>'trim|required'),
@@ -144,7 +143,6 @@ class User_model extends MY_Model
             			'errors' => array ('required' => 'Error Message rule "required" for field email',
             				'trim' = > 'Error message for rule "trim" for field email',
             				'valid_email' = > 'Error message for rule "valid_email" for field email'))
-        )
     );
 }
 ```

@@ -303,7 +303,7 @@ class MY_Model extends CI_Model
         $this->load->library('form_validation');
         if(!isset($rules))
         {
-            $rules = $this->rules['insert'];
+            $rules = $this->rules;
         }
         $this->form_validation->set_rules($rules);
         if($this->form_validation->run())
