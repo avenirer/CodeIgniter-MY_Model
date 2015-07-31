@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 /*
 * Copyright (C) 2014 @avenirer [avenir.ro@gmail.com]
-* Everyone is permitted to copy and distribute verbatim or modified copies of this license document, 
+* Everyone is permitted to copy and distribute verbatim or modified copies of this license document,
 * and changing it is allowed as long as the name is changed.
 * DON'T BE A DICK PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 *
@@ -11,12 +11,12 @@
 ********* 1b. Selling the unmodified original with no work done what-so-ever, that's REALLY being a dick.
 ********* 1c. Modifying the original work to contain hidden harmful content. That would make you a PROPER dick.
 ***** If you become rich through modifications, related works/services, or supporting the original work, share the love. Only a dick would make loads off this work and not buy the original works creator(s) a pint.
-***** Code is provided with no warranty. 
-*********** Using somebody else's code and bitching when it goes wrong makes you a DONKEY dick. 
+***** Code is provided with no warranty.
+*********** Using somebody else's code and bitching when it goes wrong makes you a DONKEY dick.
 *********** Fix the problem yourself. A non-dick would submit the fix back.
- * 
+ *
  */
- 
+
 /** how to extend MY_Model:
  *	class User_model extends MY_Model
  *	{
@@ -274,7 +274,7 @@ class MY_Model extends CI_Model
         {
             $data = json_decode(json_encode($data), FALSE);
         }
-        
+
         elseif($this->return_as == 'dropdown')
         {
             foreach($data as $row)
@@ -297,7 +297,7 @@ class MY_Model extends CI_Model
      * the row when doing an update
      * @return $this
      */
-    public function from_form($rules = NULL,$additional_values = NULL, $row_fields_to_update = array())
+    public function from_form($rules = NULL,$additional_values = array(), $row_fields_to_update = array())
     {
         $this->_get_table_fields();
         $this->load->library('form_validation');
@@ -317,7 +317,7 @@ class MY_Model extends CI_Model
                     $this->validated[$rule['field']] = $this->input->post($rule['field']);
                 }
             }
-            if(isset($additional_values) && is_array($additional_values) && !empty($additional_values))
+            if(!empty($additional_values))
             {
                 foreach($additional_values as $field => $value)
                 {
@@ -330,11 +330,16 @@ class MY_Model extends CI_Model
 
             if(!empty($row_fields_to_update))
             {
-                foreach ($row_fields_to_update as $field) {
+                foreach ($row_fields_to_update as $key => $field) {
                     if (in_array($field, $this->table_fields)) {
                         $this->row_fields_to_update[$field] = $this->input->post($field);
                     }
-
+                    else if (in_array($key, $this->table_fields)){
+                        $this->row_fields_to_update[$key] = $field;
+                    }
+                    else {
+                        continue;
+                    }
                 }
             }
             return $this;
@@ -452,7 +457,7 @@ class MY_Model extends CI_Model
                 $data[$this->_updated_at_field] = date('Y-m-d H:i:s');
             }
             $data = $this->trigger('before_update',$data);
-            if($this->validated!=FALSE && !empty($this->row_fields_to_update))
+            if($this->validated === FALSE && count($this->row_fields_to_update))
             {
                 $this->where($this->row_fields_to_update);
                 $this->row_fields_to_update = array();
@@ -1022,24 +1027,17 @@ class MY_Model extends CI_Model
                     if(isset($pivot_table))
                     {
                         $the_local_key = $result_array[singular($this->table) . '_' . $local_key];
-                        if(isset($relation['get_relate']) and $relation['get_relate'] === true)
-                        {
-                            $subs[$the_local_key][$the_foreign_key] = $this->{$relation['foreign_model']}->where($local_key, $result[$local_key])->get();
-                        }
-                        else
-                        {
-                            $subs[$the_local_key][$the_foreign_key] = $result;
-                        }
+                        $subs[$the_local_key][$the_foreign_key] = $result;
                     }
                     else
                     {
                         if($type=='has_one')
                         {
-                         $subs[$the_foreign_key] = $result;
+                            $subs[$the_foreign_key] = $result;
                         }
                         else
                         {
-                         $subs[$the_foreign_key][] = $result;
+                            $subs[$the_foreign_key][] = $result;
                         }
                     }
 
@@ -1063,7 +1061,7 @@ class MY_Model extends CI_Model
                     $order_by[$relation_key] = array(trim($elements[0]), trim($elements[1]));
                 }
                 else
-                {                
+                {
                     $order_by[$relation_key] = array(trim($elements[0]), 'desc');
                 }
             }
@@ -1072,7 +1070,7 @@ class MY_Model extends CI_Model
         if($order_by)
         {
             foreach($order_by as $field => $row)
-            {                
+            {
                 list($key, $value) = $row;
                 $data = $this->_build_sorter($data, $field, $key, $value);
             }
@@ -1132,7 +1130,7 @@ class MY_Model extends CI_Model
                         }
                         $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => $foreign_model_name, 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
                         ($option == 'has_many_pivot') ? ($this->_relationships[$key]['pivot_table'] = $pivot_table) : FALSE;
-                        ($option == 'has_many_pivot' && isset($relation[3])) ? ($this->_relationships[$key]['get_relate'] = TRUE) : FALSE;
+
                     }
                 }
             }
@@ -1542,12 +1540,12 @@ class MY_Model extends CI_Model
         }
         else echo 'No method with that name ('.$method.') in MY_Model.';
     }
-    
-    private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC') 
+
+    private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC')
     {
         usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
             return strtoupper($sort_by) ==  "DESC" ? ($a[$field][$order_by] < $b[$field][$order_by]) : ($a[$field][$order_by] > $b[$field][$order_by]);
-        }); 
+        });
 
         return $data;
     }
