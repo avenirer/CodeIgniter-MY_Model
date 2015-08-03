@@ -1540,7 +1540,11 @@ class MY_Model extends CI_Model
             $this->with($relation,$arguments);
             return $this;
         }
-        else echo 'No method with that name ('.$method.') in MY_Model.';
+        $parent_class = get_parent_class($class_name);
+        if (($parent_class !== false && !method_exists($parent_class, $method))
+        {
+         echo 'No method with that name ('.$method.') in MY_Model or CI_Model.';
+        }
     }
     
     private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC') 
