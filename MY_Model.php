@@ -1540,7 +1540,7 @@ class MY_Model extends CI_Model
             $this->with($relation,$arguments);
             return $this;
         }
-        $parent_class = get_parent_class($class_name);
+        $parent_class = get_parent_class($this);
         if (($parent_class !== false && !method_exists($parent_class, $method) && !method_exists($this,$method))
         {
          echo 'No method with that name ('.$method.') in MY_Model or CI_Model.';
