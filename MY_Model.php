@@ -1060,6 +1060,10 @@ class MY_Model extends CI_Model
                     }
                 }
             }
+            else
+            {
+                $data[$key][$relation_key] = NULL;
+            }
             if(array_key_exists('order_by',$request['parameters']))
             {
                 $elements = explode(',', $request['parameters']['order_by']);
