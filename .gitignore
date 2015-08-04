@@ -9,3 +9,5 @@ language
 helpers
 views/errors
 .htaccess
+controllers/Matches.php
+views/matches_templates
