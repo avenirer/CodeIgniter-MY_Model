@@ -424,8 +424,9 @@ class MY_Model extends CI_Model
     /**
      * public function update($data)
      * Updates data into table. Can receive an array or a multidimensional array depending on what kind of update we're talking about.
-     * @param $data
-     * @param $column_name_where
+     * @param array $data
+     * @param array|int $column_name_where
+     * @param bool $escape should the values be escaped or not - defaults to true
      * @return str/array Returns id/ids of inserted rows
      */
     public function update($data = NULL, $column_name_where = NULL, $escape = TRUE)
