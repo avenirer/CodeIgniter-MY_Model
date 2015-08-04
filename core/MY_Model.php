@@ -1087,8 +1087,6 @@ class MY_Model extends CI_Model
             }
         }
         return $data;
-        //if(sizeof($data)==1) $data = $data[0];
-        //return ($this->return_as == 'object') ? json_decode(json_encode($data), FALSE) : $data;
     }
 
 
