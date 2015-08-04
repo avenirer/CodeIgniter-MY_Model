@@ -1550,7 +1550,7 @@ class MY_Model extends CI_Model
             return $this;
         }
         $parent_class = get_parent_class($this);
-        if ($parent_class !== false && !method_exists($parent_class, $method) && !method_exists($this,$method))
+        if ($parent_class !== FALSE && !method_exists($parent_class, $method) && !method_exists($this,$method))
         {
          echo 'No method with that name ('.$method.') in MY_Model or CI_Model.';
         }
@@ -1563,5 +1563,15 @@ class MY_Model extends CI_Model
         });
 
         return $data;
+    }
+
+
+    /**
+     * Verifies if an array is associative or not
+     * @param array $array
+     * @return bool
+     */
+    private function _is_assoc(array $array) {
+        return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 }
