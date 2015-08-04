@@ -30,6 +30,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php print_r($user_where);?>
         </pre>
 
+        <h2><a href="#">$this->user_model->where(array('username'=>'administrator','password'=>'mypass'))->get()</a></h2>
+        <pre>
+            <?php print_r($user_where_pass);?>
+        </pre>
+
         <h2><a href="#">$this->user_model->as_array()->get(1)</a></h2>
         <pre>
             <?php print_r($user_as_array);?>

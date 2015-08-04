@@ -23,6 +23,7 @@ class Test extends CI_Controller {
         $this->load->model('user_model');
         $data['user'] = $this->user_model->get(1);
         $data['user_where'] = $this->user_model->where('username','avenirer')->get();
+        $data['user_where_pass'] = $this->user_model->where(array('username'=>'administrator','password'=>'mypass'))->get();
         $data['user_as_array'] = $this->user_model->as_array()->get(1);
         $data['users'] = $this->user_model->get_all();
         $data['users_as_array'] = $this->user_model->as_array()->get_all();

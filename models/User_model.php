@@ -13,7 +13,7 @@ class User_model extends MY_Model
         $insert_data = array(
             array(
                 'username' => 'user1',
-                'password' => 'nopass',
+                'password' => 'mypass',
                 'email' => 'user1@user.com'
             ),
             array(
@@ -28,7 +28,7 @@ class User_model extends MY_Model
             ),
             array(
                 'username' => 'administrator',
-                'password' => 'nopass',
+                'password' => 'mypass',
                 'email' => 'user4@user.com'
             ),
             array(
