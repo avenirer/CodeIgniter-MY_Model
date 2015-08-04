@@ -322,6 +322,13 @@ If you need to use another table field that is not in the form, in order to iden
 $id = $this->user_model->from_form(NULL,array('created_by'=>'1'), array('user_id'))->update();
 ```
 
+####Update custom string with disabled escaping
+
+You can prevent escaping content by passing an optional third argument, and setting it to FALSE:
+```php
+$this->user_model->update(array('views'=>'views+1'), 1, FALSE);
+```
+
 ##DELETE
 ###The delete() method
 
@@ -465,6 +472,18 @@ class Post_model extends MY_Model
 }
 ```
 
+####Get relation data on many to many relationship
+
+You get data only related key ids on many to many relationships. If you set as TRUE 4th parameter, you will get related data not only keys.
+
+```php
+class Posts_Model extends MY_Model 
+{
+    public $table = 'posts';
+    public $has_many_pivot = array('categories' => array('Categories_model', 'id', 'id', TRUE));
+}
+```
+
 ##Working with relationships
 
 Every table has a way to interact with other tables. So if your model has relationships with other models, you can define those relationships:
@@ -505,6 +524,13 @@ foreach ($user->posts as $post)
 {
     echo $post->title;
 }
+```
+
+####Order by relationship data
+
+You can order the result by related data column.
+```php
+$this->post_model->with_user("order_by:views,desc");
 ```
 
 ##Database Connection
