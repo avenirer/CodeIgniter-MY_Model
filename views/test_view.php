@@ -8,8 +8,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <style type="text/css" rel="stylesheet">
         html, body {font-family:sans-serif;}
         h2 a {text-decoration: none; color: #009900; font-size: 14px;}
-        pre {font-size: 10px; background-color: #f9f9f9; border:1px solid #4F5155; padding: 10px;}
+        pre {font-size: 10px; background-color: #f9f9f9; border:1px solid #4F5155; padding: 10px; display:none;}
     </style>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 </head>
 <body>
 
@@ -45,6 +46,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
 </div>
-
+<script>
+    $("h2 a").click(function(){
+        $(this).parent().next("pre").toggle("fast");
+    });
+</script>
 </body>
 </html>
