@@ -22,12 +22,12 @@ class User_model extends MY_Model
                 'email' => 'user2@user.com'
             ),
             array(
-                'username' => 'user3',
+                'username' => 'avenirer',
                 'password' => 'nopass',
                 'email' => 'user3@user.com'
             ),
             array(
-                'username' => 'user4',
+                'username' => 'administrator',
                 'password' => 'nopass',
                 'email' => 'user4@user.com'
             ),

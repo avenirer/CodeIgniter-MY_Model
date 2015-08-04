@@ -25,6 +25,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php print_r($user);?>
         </pre>
 
+        <h2><a href="#">$this->user_model->where('username','avenirer')->get()</a></h2>
+        <pre>
+            <?php print_r($user_where);?>
+        </pre>
+
         <h2><a href="#">$this->user_model->as_array()->get(1)</a></h2>
         <pre>
             <?php print_r($user_as_array);?>
@@ -50,6 +55,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     $("h2 a").click(function(){
         $(this).parent().next("pre").toggle("fast");
     });
+    $("pre").click(function(){
+        $(this).toggle("fast");
+    })
 </script>
 </body>
 </html>
