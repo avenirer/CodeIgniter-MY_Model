@@ -25,6 +25,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php print_r($user);?>
         </pre>
 
+        <h2><a href="#">$this->user_model->with_details('fields:first_name,last_name')->get(1)</a></h2>
+        <pre>
+            <?php print_r($user_with);?>
+        </pre>
+
         <h2><a href="#">$this->user_model->where('username','avenirer')->get()</a></h2>
         <pre>
             <?php print_r($user_where);?>
@@ -44,6 +49,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <pre>
             <?php print_r($users);?>
         </pre>
+
+        <h2><a href="#">$this->user_model->with_details('fields:first_name,last_name,address')->get_all()</a></h2>
+        <pre>
+            <?php print_r($users_with);?>
+        </pre>
+
+        <h2><a href="#">$this->user_model->with_details('fields:first_name,last_name,address|where:`first_name`=\'Admin\'')->get_all();</a></h2>
+        <pre>
+            <?php print_r($users_with_and_where);?>
+        </pre>
+
+        <h2><a href="#">$this->user_model->where(array('password'=>'nopass'))->get_all()</a></h2>
+        <pre>
+            <?php print_r($users_where_pass);?>
+        </pre>
+
         <h2><a href="#">$this->user_model->as_array()->get_all()</a></h2>
         <pre>
             <?php print_r($users_as_array);?>

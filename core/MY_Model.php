@@ -986,7 +986,11 @@ class MY_Model extends CI_Model
                         $the_select = implode(',',$select);
                     }
                     $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
-                    $sub_results = (array_key_exists('where',$request['parameters'])) ? $sub_results->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
+                    if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
+                    {
+                        $the_where = array_key_exists('where', $request['parameters']) ? 'where' : 'non_exclusive_where';
+                    }
+                    $sub_results = isset($the_where) ? $sub_results->where($request['parameters'][$the_where],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
                 }
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
             }
@@ -1010,9 +1014,11 @@ class MY_Model extends CI_Model
                         $this->_database->select($the_select);
                     }
 
-                    if(array_key_exists('where',$request['parameters']))
+                    if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
-                        $this->_database->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE);
+                        $the_where = array_key_exists('where',$request['parameters']) ? 'where' : 'non_exclusive_where';
+
+                        $this->_database->where($request['parameters'][$the_where],NULL,NULL,FALSE,FALSE,TRUE);
                     }
                 }
                 $this->_database->where_in($this->table.'.'.$local_key,$local_key_values);
@@ -1040,12 +1046,9 @@ class MY_Model extends CI_Model
                     }
                     else
                     {
-                        if($type=='has_one')
-                        {
+                        if ($type == 'has_one') {
                             $subs[$the_foreign_key] = $result;
-                        }
-                        else
-                        {
+                        } else {
                             $subs[$the_foreign_key][] = $result;
                         }
                     }
@@ -1059,6 +1062,13 @@ class MY_Model extends CI_Model
                     if(array_key_exists($value,$sub_results))
                     {
                         $data[$key][$relation_key] = $sub_results[$value];
+                    }
+                    else
+                    {
+                        if(array_key_exists('where',$request['parameters']))
+                        {
+                            unset($data[$key]);
+                        }
                     }
                 }
             }

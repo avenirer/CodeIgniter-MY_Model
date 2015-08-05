@@ -504,17 +504,23 @@ You can then access your related data using the `with_*()` method:
 ```php
 $user = $this->user_model->with_phone()->with_posts()->get(1);
 ```
-The `with_*()` method can accept parameters like 'fields' and 'where'.
+The `with_*()` method can accept parameters like 'fields', 'where', and 'non_exclusivist_where'.
 
 With the `fields:...` you can enumerate the fields you want returned.
 ```php
 $user = $this->user_model->with_phone('fields:mobile_number')->get(1);
 ```
 
-With the `where:...` you can pass a where clause that will be interpreted as string
+With the `where:...` you can pass a where clause that will be interpreted as string.
+
+The where clause is an *exclusivist* one. That means that it will retrieve only results that are complying to the subresult's where: if a `users` table has relationship with an `details` table, and you set a `where` clause inside the with_*() method that looks only for the results that have `first_name` of `John` in the `details` table, the final results that will be returned will only those users from the `users` table that have a related first_name inside the `details` table of `John`.
 ```php
 $user = $this->user_model->with_phone('fields:mobile_number', 'where:`phone_status`=\'active\'')->get(1);
 ```
+
+A `non_exclusivist_where` would return all the main results and only the additional subresults appended to the main results.
+
+*NB: You won't be able to add an exclusive and a non-exclusive where in the same time*
 
 The related data will be embedded in the returned value having "phone", and "posts" as keys.
 ```php
