@@ -886,8 +886,8 @@ class MY_Model extends CI_Model
     /**
      * public function with($requests)
      * allows the user to retrieve records from other interconnected tables depending on the relations defined before the constructor
-     * @param string $requests
-     * @param bool $separate_subqueries
+     * @param string $request
+     * @param array $arguments
      * @return $this
      */
     public function with($request,$arguments = array())
@@ -902,14 +902,15 @@ class MY_Model extends CI_Model
             {
                 foreach($arguments as $argument)
                 {
-                    $elements = explode(':',$argument);
-                    if(sizeof($elements)==2)
+                    $requested_operations = explode('|',$argument);
+                    foreach($requested_operations as $operation)
                     {
-                        $parameters[$elements[0]] = $elements[1];
-                    }
-                    else
-                    {
-                        show_error('MY_Model: Parameters for with() method must be of the form: "...->with(\'where:...|fields:...\')"');
+                        $elements = explode(':', $operation);
+                        if (sizeof($elements) == 2) {
+                            $parameters[$elements[0]] = $elements[1];
+                        } else {
+                            show_error('MY_Model: Parameters for with_*() method must be of the form: "...->with_*(\'where:...|fields:...\')"');
+                        }
                     }
                 }
             }
