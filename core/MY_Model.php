@@ -271,12 +271,7 @@ class MY_Model extends CI_Model
         // let's join the subqueries...
         $data = $this->join_temporary_results($data);
         $this->_database->reset_query();
-        if($this->return_as == 'object')
-        {
-            $data = json_decode(json_encode($data), FALSE);
-        }
-
-        elseif(isset($this->return_as_dropdown) && $this->return_as_dropdown == 'dropdown')
+        if(isset($this->return_as_dropdown) && $this->return_as_dropdown == 'dropdown')
         {
             foreach($data as $row)
             {
@@ -284,6 +279,10 @@ class MY_Model extends CI_Model
             }
             $data = $dropdown;
             $this->return_as_dropdown = NULL;
+        }
+        elseif($this->return_as == 'object')
+        {
+            $data = json_decode(json_encode($data), FALSE);
         }
         return $data;
     }
