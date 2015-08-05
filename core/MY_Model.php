@@ -283,6 +283,7 @@ class MY_Model extends CI_Model
                 $dropdown[$row[$this->primary_key]] = $row[$this->_dropdown_field];
             }
             $data = $dropdown;
+            $this->return_as_dropdown = NULL;
         }
         return $data;
     }
