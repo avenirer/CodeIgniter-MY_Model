@@ -168,6 +168,7 @@ class MY_Model extends CI_Model
     protected $callback_parameters = array();
 
     protected $return_as = 'object';
+    protected $return_as_dropdown = NULL;
     protected $_dropdown_field = '';
 
     private $_trashed = 'without';
@@ -275,7 +276,7 @@ class MY_Model extends CI_Model
             $data = json_decode(json_encode($data), FALSE);
         }
 
-        elseif($this->return_as == 'dropdown')
+        elseif(isset($this->return_as_dropdown) && $this->return_as_dropdown == 'dropdown')
         {
             foreach($data as $row)
             {
@@ -1358,7 +1359,7 @@ class MY_Model extends CI_Model
             show_error('MY_Model: You must set a field to be set as value for the key: ...->as_dropdown(\'field\')->...');
             exit;
         }
-        $this->return_as = 'dropdown';
+        $this->return_as_dropdown = 'dropdown';
         $this->_dropdown_field = $field;
         $this->_select = array($this->primary_key, $field);
         return $this;
