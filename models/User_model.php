@@ -8,6 +8,7 @@ class User_model extends MY_Model
         $this->has_one['details'] = 'User_details_model';
         // $this->has_one['details'] = array('User_details_model','user_id','id');
         // $this->has_one['details'] = array('model'=>'User_details_model','foreign_key'=>'user_id','local_key'=>'id');
+        $this->has_many['posts'] = 'Post_model';
 
 		parent::__construct();
 	}

@@ -978,14 +978,28 @@ class MY_Model extends CI_Model
                 {
                     if(array_key_exists('fields',$request['parameters']))
                     {
-                        $fields = explode(',',$request['parameters']['fields']);
-                        foreach($fields as $field)
+                        if($request['parameters']['fields'] == '*count*')
                         {
-                            $select[] = '`'.$foreign_table.'`.`'.trim($field).'`';
+                            $the_select = '*count*';
+                            $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
+                            $sub_results = $sub_results->fields($foreign_key);
                         }
-                        $the_select = implode(',',$select);
+                        else
+                        {
+                            $fields = explode(',', $request['parameters']['fields']);
+                            foreach ($fields as $field)
+                            {
+                                $select[] = '`' . $foreign_table . '`.`' . trim($field) . '`';
+                            }
+                            $the_select = implode(',', $select);
+                            $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
+                        }
+
                     }
-                    $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
+                    if($request['parameters']['fields']=='*count*')
+                    {
+                        $sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
+                    }
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
                         $the_where = array_key_exists('where', $request['parameters']) ? 'where' : 'non_exclusive_where';
@@ -1004,14 +1018,21 @@ class MY_Model extends CI_Model
                 {
                     if(array_key_exists('fields',$request['parameters']))
                     {
-                        $fields = explode(',',$request['parameters']['fields']);
-                        $select = array();
-                        foreach($fields as $field)
+                        if($request['parameters']['fields'] == '*count*')
                         {
-                            $select[] = '`'.$foreign_table.'`.`'.trim($field).'`';
+                            $this->_database->select('COUNT(`'.$foreign_table.'`*) as counted_rows, `' . $foreign_table . '`.`' . $foreign_key . '`', FALSE);
                         }
-                        $the_select = implode(',',$select);
-                        $this->_database->select($the_select);
+                        else
+                        {
+
+                            $fields = explode(',', $request['parameters']['fields']);
+                            $select = array();
+                            foreach ($fields as $field) {
+                                $select[] = '`' . $foreign_table . '`.`' . trim($field) . '`';
+                            }
+                            $the_select = implode(',', $select);
+                            $this->_database->select($the_select);
+                        }
                     }
 
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
@@ -1263,19 +1284,28 @@ class MY_Model extends CI_Model
     {
         if(isset($fields))
         {
-            $fields = (!is_array($fields)) ? explode(',',$fields) : $fields;
-            if(!empty($fields))
+            if($fields == '*count*')
             {
-                foreach($fields as &$field)
+                $this->_select = '';
+                $this->_database->select('COUNT(*) AS counted_rows',FALSE);
+            }
+            else
+            {
+                $this->_select = array();
+                $fields = (!is_array($fields)) ? explode(',', $fields) : $fields;
+                if (!empty($fields))
                 {
-                    $exploded = explode('.',$field);
-                    if(sizeof($exploded)<2)
+                    foreach ($fields as &$field)
                     {
-                        $field = $this->table.'.'.$field;
+                        $exploded = explode('.', $field);
+                        if (sizeof($exploded) < 2)
+                        {
+                            $field = $this->table . '.' . $field;
+                        }
                     }
                 }
+                $this->_select = $fields;
             }
-            $this->_select = $fields;
         }
         return $this;
     }

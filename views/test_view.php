@@ -30,6 +30,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php print_r($user_with);?>
         </pre>
 
+        <h2><a href="#">$this->user_model->with_details('fields:*count*')->get(1)</a></h2>
+        <pre>
+            <?php print_r($user_with_count);?>
+        </pre>
+
         <h2><a href="#">$this->user_model->where('username','avenirer')->get()</a></h2>
         <pre>
             <?php print_r($user_where);?>
@@ -55,9 +60,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <?php print_r($users_with);?>
         </pre>
 
-        <h2><a href="#">$this->user_model->with_details('fields:first_name,last_name,address|where:`first_name`=\'Admin\'')->get_all();</a></h2>
+        <h2><a href="#">$this->user_model->with_details('fields:*count*')->get_all()</a></h2>
+        <pre>
+            <?php print_r($users_with_count);?>
+        </pre>
+
+        <h2><a href="#">$this->user_model->with_posts('fields:*count*')->get_all()</a></h2>
+        <pre>
+            <?php print_r($users_with_count_many);?>
+        </pre>
+
+        <h2><a href="#">$this->user_model->with_details('fields:first_name,last_name,address|where:`first_name`=\'Admin\'')->get_all()<br />...OR...<br />$this->user_model->with_details('fields:first_name,last_name,address','where:`first_name`=\'Admin\'')->get_all()</a></h2>
         <pre>
             <?php print_r($users_with_and_where);?>
+        </pre>
+
+        <h2><a href="#">$this->user_model->with_details('fields:first_name,last_name,address|non_exclusive_where:`first_name`=\'Admin\'')->get_all()<br />...OR...<br /> $this->user_model->with_details('fields:first_name,last_name,address','non_exclusive_where:`first_name`=\'Admin\'')->get_all()</a></h2>
+        <pre>
+            <?php print_r($users_with_and_non_exclusive_where);?>
         </pre>
 
         <h2><a href="#">$this->user_model->where(array('password'=>'nopass'))->get_all()</a></h2>
