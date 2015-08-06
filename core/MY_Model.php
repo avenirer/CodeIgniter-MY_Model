@@ -952,10 +952,15 @@ class MY_Model extends CI_Model
             $this->load->model($relation['foreign_model']);
             $foreign_key = $relation['foreign_key'];
             $local_key = $relation['local_key'];
-            (isset($relation['pivot_table'])) ? $pivot_table = $relation['pivot_table'] : FALSE;
             $foreign_table = $relation['foreign_table'];
             $type = $relation['relation'];
             $relation_key = $relation['relation_key'];
+            if($type=='many_to_many_pivot')
+            {
+                $pivot_table = $relation['pivot_table'];
+            }
+
+
             $local_key_values = array();
             foreach($data as $key => $element)
             {
@@ -1160,6 +1165,11 @@ class MY_Model extends CI_Model
                             $foreign_model_name = strtolower($foreign_model);
                             $this->load->model($foreign_model_name);
                             $foreign_table = $this->{$foreign_model_name}->table;
+                            $foreign_key = $this->{$foreign_model_name}->primary_key;
+                            $local_key = $this->primary_key;
+                            $pivot_local_key = $this->table.'_'.$local_key;
+                            $pivot_foreign_key = $foreign_table.'_'.$foreign_key;
+                            $get_relate = FALSE;
 
                         }
                         else
