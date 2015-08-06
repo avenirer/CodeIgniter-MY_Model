@@ -1167,7 +1167,7 @@ class MY_Model extends CI_Model
                             if($this->_is_assoc($relation))
                             {
                                 $foreign_model = $relation['model'];
-                                if(isset($relation['foreign_table']))
+                                if(array_key_exists('foreign_table',$relation))
                                 {
                                     $foreign_table = $relation['foreign_table'];
                                 }
@@ -1179,28 +1179,35 @@ class MY_Model extends CI_Model
                                 }
                                 $foreign_key = $relation['foreign_key'];
                                 $local_key = $relation['local_key'];
+                                if($option=='has_many_pivot')
+                                {
+                                    $pivot_table = $relation['pivot_table'];
+                                    $get_relate = (array_key_exists('get_relate',$relation) && ($relation['get_relate']===TRUE)) ? TRUE : FALSE;
+                                }
                             }
                             else
                             {
                                 $foreign_model = $relation[0];
                                 $foreign_key = $relation[1];
                                 $local_key = $relation[2];
+                                if($option=='has_many_pivot')
+                                {
+                                    $get_relate = (isset($relation[3]) && ($relation[3]===TRUE())) ? TRUE : FALSE;
+                                }
                             }
 
                         }
 
-                        if($option=='has_many_pivot')
+                        if($option=='has_many_pivot' && !isset($pivot_table))
                         {
                             $tables = array($this->table, $foreign_table);
                             sort($tables);
                             $pivot_table = $tables[0].'_'.$tables[1];
-                            $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary_key;
-                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
 
                         $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => strtolower($foreign_model), 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
                         ($option == 'has_many_pivot') ? ($this->_relationships[$key]['pivot_table'] = $pivot_table) : FALSE;
-                        ($option == 'has_many_pivot' && isset($relation[3])) ? ($this->_relationships[$key]['get_relate'] = TRUE) : FALSE;
+                        if($option == 'has_many_pivot') $this->_relationships[$key]['get_relate'] = $get_relate;
                     }
                 }
             }
