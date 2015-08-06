@@ -368,15 +368,32 @@ $this->user_model->trashed(3); // will return TRUE or FALSE
 
 ##Relationships
 
-When you extend MY_Model, you can also setup relationships between the model and other models (as long as they are created and extend MY_Model). So, just before `parent::__construct();` you can also add:
+###Creating relationships
+
+When you extend MY_Model, you can also setup relationships between the model and other models. There are multiple ways of creating relations between tables:
+
+####The right way
+
+Before `parent::__construct();` you add:
+
 ```php
-$this->has_one['phone'] = 'Phone_model'
-// if the Phone_model doesn't extend the MY_Model, you can manually define the relationship by using an array
+$this->has_one['phone'] = array('model'=>'Phone_model','table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
+```
+
+####The semi-fast way
+
+In the semi-fast way, you can simply pass the model, the foreign key and the local key (mind the order). The table name will be taken from the related model:
+
+```php
 $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
+```
 
-$this->has_one['address'] = 'Address_model'
+####The fast and dirty way
 
-$this->has_many['posts'] = array('Posts_model','foreign_key','another_local_key');
+The fast and dirty way will simply need the related model name. All else will be taken from the model (I wouldn't advise this solution)
+
+```php
+$this->has_one['address'] = 'Address_model';
 ```
 
 ###Has One (one to one) relationship (property)
