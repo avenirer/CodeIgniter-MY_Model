@@ -1161,14 +1161,6 @@ class MY_Model extends CI_Model
                             $this->load->model($foreign_model_name);
                             $foreign_table = $this->{$foreign_model_name}->table;
 
-                            if($option=='has_many_pivot')
-                            {
-                                $tables = array($this->table, $foreign_table);
-                                sort($tables);
-                                $pivot_table = $tables[0].'_'.$tables[1];
-                                $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary_key;
-                                $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
-                            }
                         }
                         else
                         {
@@ -1195,6 +1187,15 @@ class MY_Model extends CI_Model
                                 $local_key = $relation[2];
                             }
 
+                        }
+
+                        if($option=='has_many_pivot')
+                        {
+                            $tables = array($this->table, $foreign_table);
+                            sort($tables);
+                            $pivot_table = $tables[0].'_'.$tables[1];
+                            $foreign_key = (is_array($relation)) ? $relation[1] : $this->{$foreign_model_name}->primary_key;
+                            $local_key = (is_array($relation) && isset($relation[2])) ? $relation[2] : $this->primary_key;
                         }
 
                         $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => strtolower($foreign_model), 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);

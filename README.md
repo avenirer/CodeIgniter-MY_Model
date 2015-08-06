@@ -377,7 +377,7 @@ When you extend MY_Model, you can also setup relationships between the model and
 Before `parent::__construct();` you add:
 
 ```php
-$this->has_one['phone'] = array('model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
+$this->has_one['phone'] = array('foreign_model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
 ```
 
 ####The semi-fast way
@@ -407,7 +407,7 @@ class User_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['phone'] = array('model'=>'Phone_model','foreign_table'=>'phones','foreign_key','local_key'=>'id');
+		$this->has_one['phone'] = array('model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
 	}
  }
  ```
@@ -420,7 +420,7 @@ class Phone_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = array('User_model','id','user_id');
+		$this->has_one['user'] = array('model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','local_key'=>'user_id');
 	}
 }
 ```
@@ -435,7 +435,7 @@ class User_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_many['posts'] = 'Post_model';
+		$this->has_many['posts'] = array('model'=>'Post_model','foreign_table'=>'posts','foreign_key'=>'author_id','local_key'=>'id');
 	}
  }
  ```
@@ -448,7 +448,7 @@ class Post_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = array('User_model','id','user_id');
+		$this->has_one['user'] = array('model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','foreign_key'=>'user_id');
 	}
 }
 ```
