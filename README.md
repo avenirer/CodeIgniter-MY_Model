@@ -377,7 +377,7 @@ When you extend MY_Model, you can also setup relationships between the model and
 Before `parent::__construct();` you add:
 
 ```php
-$this->has_one['phone'] = array('model'=>'Phone_model','table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
+$this->has_one['phone'] = array('model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
 ```
 
 ####The semi-fast way
@@ -407,7 +407,7 @@ class User_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['phone'] = 'Phone_model';
+		$this->has_one['phone'] = array('model'=>'Phone_model','foreign_table'=>'phones','foreign_key','local_key'=>'id');
 	}
  }
  ```

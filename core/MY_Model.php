@@ -1175,9 +1175,9 @@ class MY_Model extends CI_Model
                             if($this->_is_assoc($relation))
                             {
                                 $foreign_model = $relation['model'];
-                                if(isset($relation['table']))
+                                if(isset($relation['foreign_table']))
                                 {
-                                    $foreign_table = $relation['table'];
+                                    $foreign_table = $relation['foreign_table'];
                                 }
                                 else
                                 {
