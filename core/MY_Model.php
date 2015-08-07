@@ -1364,6 +1364,10 @@ class MY_Model extends CI_Model
                 $this->_select = $fields;
             }
         }
+        else
+        {
+            $this->_select = NULL;
+        }
         return $this;
     }
 
