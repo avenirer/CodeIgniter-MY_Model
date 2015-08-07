@@ -784,7 +784,10 @@ class MY_Model extends CI_Model
         else
         {
             $this->trigger('before_get');
-            $this->_database->select($this->_select);
+            if($this->_select)
+            {
+                $this->_database->select($this->_select);
+            }
             if(!empty($this->_requested))
             {
                 foreach($this->_requested as $requested)
@@ -840,7 +843,10 @@ class MY_Model extends CI_Model
         {
             $this->trigger('before_get');
             $this->where($where);
-            $this->_database->select($this->_select);
+            if($this->_select)
+            {
+                $this->_database->select($this->_select);
+            }
             if(!empty($this->_requested))
             {
                 foreach($this->_requested as $requested)
