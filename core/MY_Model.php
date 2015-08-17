@@ -439,6 +439,7 @@ class MY_Model extends CI_Model
         }
         elseif(!isset($data))
         {
+            $this->_database->reset_query();
             return FALSE;
         }
         // Prepare the data...
