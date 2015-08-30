@@ -1198,7 +1198,7 @@ class MY_Model extends CI_Model
                                 if($option=='has_many_pivot')
                                 {
                                     $pivot_table = $relation['pivot_table'];
-                                    $pivot_local_key = (array_key_exists('pivot_local_key',$relation)) ? $relation['pivot_local_table'] : $this->table.'_'.$this->primary_key;
+                                    $pivot_local_key = (array_key_exists('pivot_local_key',$relation)) ? $relation['pivot_local_key'] : $this->table.'_'.$this->primary_key;
                                     $pivot_foreign_key = (array_key_exists('pivot_foreign_key',$relation)) ? $relation['pivot_foreign_key'] : $foreign_table.'_'.$foreign_key;
                                     $get_relate = (array_key_exists('get_relate',$relation) && ($relation['get_relate']===TRUE)) ? TRUE : FALSE;
                                 }
