@@ -913,7 +913,7 @@ class MY_Model extends CI_Model
                     $requested_operations = explode('|',$argument);
                     foreach($requested_operations as $operation)
                     {
-                        $elements = explode(':', $operation);
+                        $elements = explode(':', $operation, 2);
                         if (sizeof($elements) == 2) {
                             $parameters[$elements[0]] = $elements[1];
                         } else {
