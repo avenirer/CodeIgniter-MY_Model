@@ -883,7 +883,10 @@ class MY_Model extends CI_Model
      */
     public function count($where = NULL)
     {
-        $this->where($where);
+        if(isset($where))
+        {
+            $this->where($where);
+        }
         $this->_database->from($this->table);
         $number_rows = $this->_database->count_all_results();
         return $number_rows;
