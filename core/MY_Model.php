@@ -677,7 +677,10 @@ class MY_Model extends CI_Model
      */
     public function delete($where = NULL)
     {
-        $this->where($where);
+        if(isset($where))
+        {
+            $this->where($where);
+        }
         $affected_rows = 0;
         if($this->soft_deletes === TRUE)
         {
@@ -717,7 +720,10 @@ class MY_Model extends CI_Model
      */
     public function force_delete($where = NULL)
     {
-        $this->where($where);
+        if(isset($where))
+        {
+            $this->where($where);
+        }
         if($this->_database->delete($this->table))
         {
             return $this->_database->affected_rows();
@@ -734,7 +740,10 @@ class MY_Model extends CI_Model
     public function restore($where = NULL)
     {
         $this->with_trashed();
-        $this->where($where);
+        if(isset($where))
+        {
+            $this->where($where);
+        }
         if($affected_rows = $this->_database->update($this->table,array($this->_deleted_at_field=>NULL)))
         {
             return $affected_rows;
@@ -751,7 +760,10 @@ class MY_Model extends CI_Model
     public function trashed($where = NULL)
     {
         $this->only_trashed();
-        $this->where($where);
+        if(isset($where))
+        {
+            $this->where($where);
+        }
         $this->limit(1);
         $query = $this->_database->get($this->table);
         if($query->num_rows() == 1)
@@ -796,7 +808,10 @@ class MY_Model extends CI_Model
                     $this->_database->select($this->_relationships[$requested['request']]['local_key']);
                 }
             }
-            $this->where($where);
+            if(isset($where))
+            {
+                $this->where($where);
+            }
             $this->limit(1);
             $query = $this->_database->get($this->table);
             if ($query->num_rows() == 1)
@@ -843,7 +858,10 @@ class MY_Model extends CI_Model
         else
         {
             $this->trigger('before_get');
-            $this->where($where);
+            if(isset($where))
+            {
+                $this->where($where);
+            }
             if($this->_select)
             {
                 $this->_database->select($this->_select);
