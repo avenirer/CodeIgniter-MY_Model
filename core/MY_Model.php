@@ -986,6 +986,7 @@ class MY_Model extends CI_Model
             if($type=='many_to_many_pivot')
             {
                 $pivot_table = $relation['pivot_table'];
+                $pivot_local_key = $relation['pivot_local_key'];
             }
 
 
@@ -1076,7 +1077,7 @@ class MY_Model extends CI_Model
                         $this->_database->where($request['parameters'][$the_where],NULL,NULL,FALSE,FALSE,TRUE);
                     }
                 }
-                $this->_database->where_in($this->table.'.'.$local_key,$local_key_values);
+                $this->_database->where_in($pivot_table.'.'.$pivot_local_key,$local_key_values);
                 $sub_results = $this->_database->get($foreign_table)->result_array();
                 $this->_database->reset_query();
             }
