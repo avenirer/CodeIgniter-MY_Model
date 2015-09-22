@@ -862,6 +862,10 @@ class MY_Model extends CI_Model
             {
                 $this->where($where);
             }
+            elseif($this->soft_deletes===TRUE)
+            {
+                $this->_where_trashed();
+            }
             if($this->_select)
             {
                 $this->_database->select($this->_select);
