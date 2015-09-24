@@ -19,7 +19,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<div id="body">
 		<p>The page you are seeing is just an example of what the models can do with the help of MY_Model.</p>
-
+<!--
         <h2><a href="#">$this->user_model->get(1)</a></h2>
         <pre>
             <?php print_r($user);?>
@@ -92,6 +92,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <h2><a href="#">$this->user_model->as_dropdown('username')->get_all()</a></h2>
         <pre>
             <?php print_r($users_as_dropdown);?>
+        </pre>-->
+        <h2><a href="#">$this->article_model->with_authors('fields:username')->get_all()</a></h2>
+        <pre>
+            <?php print_r($articles_with_authors);?>
         </pre>
 	</div>
 

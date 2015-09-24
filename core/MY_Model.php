@@ -987,10 +987,11 @@ class MY_Model extends CI_Model
             $foreign_table = $relation['foreign_table'];
             $type = $relation['relation'];
             $relation_key = $relation['relation_key'];
-            if($type=='many_to_many_pivot')
+            if($type=='has_many_pivot')
             {
                 $pivot_table = $relation['pivot_table'];
                 $pivot_local_key = $relation['pivot_local_key'];
+                $pivot_foreign_key = $relation['pivot_foreign_key'];
             }
 
 
@@ -1049,10 +1050,10 @@ class MY_Model extends CI_Model
             }
             else
             {
-                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'left');
-                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'left');
+                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.$pivot_foreign_key, 'left');
+                $this->_database->join($this->table, $pivot_table.'.'.$pivot_local_key.' = '.$this->table.'.'.$local_key,'left');
                 $this->_database->select($foreign_table.'.'.$foreign_key);
-                $this->_database->select($pivot_table.'.'.singular($this->table).'_'.$local_key);
+                $this->_database->select($pivot_table.'.'.$pivot_local_key);
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
