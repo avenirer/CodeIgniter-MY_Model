@@ -476,7 +476,9 @@ class User_model extends MY_Model
 		        doesn't respect the format of "singularlocaltable_primarykey", then you must set it. In the next title
 		        you will see how a pivot table should be set, if you want to  skip these keys */
 		    'pivot_foreign_key'=>'post_id', /* this is also optional, the same as above, but for foreign table's keys */
-		    'foreign_key'=>'id');
+		    'foreign_key'=>'id',
+		    'get_relate'=>FALSE /* another optional setting, which is explained below */
+		);
 	}
  }
 ```
@@ -519,11 +521,24 @@ class Post_model extends MY_Model
 
 You get data only related key ids on many to many relationships. If you set as TRUE 4th parameter, you will get related data not only keys.
 
+For this you only have to add another key named 'get_relate' and set it to true:
+
 ```php
 class Posts_Model extends MY_Model 
 {
     public $table = 'posts';
-    public $has_many_pivot = array('categories' => array('Categories_model', 'id', 'id', TRUE));
+    public has_many_pivot['posts'] = array(
+           		    'model'=>'Post_model',
+           		    'pivot_table'=>'posts_users',
+           		    'local_key'=>'id',
+           		    'pivot_local_key'=>'user_id', /* this is the related key in the pivot table to the local key
+           		        this is an optional key, but if your column name inside the pivot table
+           		        doesn't respect the format of "singularlocaltable_primarykey", then you must set it. In the next title
+           		        you will see how a pivot table should be set, if you want to  skip these keys */
+           		    'pivot_foreign_key'=>'post_id', /* this is also optional, the same as above, but for foreign table's keys */
+           		    'foreign_key'=>'id',
+           		    'get_relate'=>FALSE /* another optional setting, which is explained below */
+           		);
 }
 ```
 
