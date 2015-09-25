@@ -23,7 +23,6 @@ class Test extends CI_Controller {
         $this->output->enable_profiler(TRUE);
         $this->load->model('user_model');
         $this->load->model('article_model');
-        /*
         $data['user'] = $this->user_model->get(1);
         $data['user_with'] = $this->user_model->with_details('fields:first_name,last_name')->get(1);
         $data['user_with_count'] = $this->user_model->with_details('fields:*count*')->get(1);
@@ -39,7 +38,6 @@ class Test extends CI_Controller {
         $data['users_where_pass'] = $this->user_model->where(array('password'=>'nopass'))->get_all();
         $data['users_as_array'] = $this->user_model->as_array()->get_all();
         $data['users_as_dropdown'] = $this->user_model->as_dropdown('username')->get_all();
-        */
         $data['articles_with_authors'] = $this->article_model->with_authors('fields:username')->get_all();
 		$this->load->view('test_view',$data);
 	}
