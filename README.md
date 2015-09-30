@@ -366,6 +366,12 @@ You can also check if a row is **soft_deleted** by using `trashed()` method:
 $this->user_model->trashed(3); // will return TRUE or FALSE
 ```
 
+###The observers for the delete() method
+
+The before_soft_delete and before_delete observers offer the ID's of the rows that are about to be (soft) deleted. At the end of the callback you should return the array of ID's.
+
+The after_soft_delete and after_delete are also returning the ID's of the rows that you wanted deleted (Not those that have been deleted, so take care...). The one difference is that the array will also contain a key named "affected_rows" that will have the number of affected rows as value.
+
 ##Relationships
 
 ###Creating relationships

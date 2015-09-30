@@ -677,6 +677,27 @@ class MY_Model extends CI_Model
      */
     public function delete($where = NULL)
     {
+        if(!empty($before_delete) || !empty($before_soft_delete) || !empty($after_delete) || !empty($after_soft_delete))
+        {
+            $to_update = array();
+            if(isset($where))
+            {
+                $this->where($where);
+            }
+            $query = $this->_database->get($this->table);
+            foreach($query->result() as $row)
+            {
+                $to_update[] = array($this->primary_key => $row->{$this->primary_key});
+            }
+            if(!empty($before_soft_delete))
+            {
+                $to_update = $this->trigger('before_soft_delete',$to_update);
+            }
+            if(!empty($before_delete))
+            {
+                $to_update = $this->trigger('before_delete',$to_update);
+            }
+        }
         if(isset($where))
         {
             $this->where($where);
@@ -684,20 +705,16 @@ class MY_Model extends CI_Model
         $affected_rows = 0;
         if($this->soft_deletes === TRUE)
         {
-            $query = $this->_database->get($this->table);
-
-            foreach($query->result() as $row)
-            {
-                $to_update[] = array($this->primary_key => $row->{$this->primary_key});
-            }
             if(isset($to_update))
             {
+
                 foreach($to_update as &$row)
                 {
                     //$row = $this->trigger('before_soft_delete',$row);
                     $row[$this->_deleted_at_field] = date('Y-m-d H:i:s');
                 }
                 $affected_rows = $this->_database->update_batch($this->table, $to_update, $this->primary_key);
+                $to_update['affected_rows'] = $affected_rows;
                 $this->trigger('after_soft_delete',$to_update);
             }
             return $affected_rows;
@@ -706,7 +723,14 @@ class MY_Model extends CI_Model
         {
             if($this->_database->delete($this->table))
             {
-                return $this->_database->affected_rows();
+                $affected_rows = $this->_database->affected_rows();
+                if(!empty($after_delete))
+                {
+                    $to_update['affected_rows'] = $affected_rows;
+                    $to_update = $this->trigger('after_delete',$to_update);
+                    $affected_rows = $to_update;
+                }
+                return $affected_rows;
             }
         }
         return FALSE;
