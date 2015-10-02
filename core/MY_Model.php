@@ -284,6 +284,10 @@ class MY_Model extends CI_Model
         {
             $data = json_decode(json_encode($data), FALSE);
         }
+        if(isset($this->_select))
+		{
+			unset($this->_select);
+		}
         return $data;
     }
 
@@ -890,7 +894,7 @@ class MY_Model extends CI_Model
             {
                 $this->_where_trashed();
             }
-            if($this->_select)
+            if(isset($this->_select))
             {
                 $this->_database->select($this->_select);
             }
