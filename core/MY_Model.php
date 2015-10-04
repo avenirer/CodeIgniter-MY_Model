@@ -284,10 +284,12 @@ class MY_Model extends CI_Model
         {
             $data = json_decode(json_encode($data), FALSE);
         }
+        /*
         if(isset($this->_select))
 		{
 			unset($this->_select);
 		}
+		*/
         return $data;
     }
 
