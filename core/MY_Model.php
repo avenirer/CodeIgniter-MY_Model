@@ -683,7 +683,7 @@ class MY_Model extends CI_Model
      */
     public function delete($where = NULL)
     {
-        if(!empty($before_delete) || !empty($before_soft_delete) || !empty($after_delete) || !empty($after_soft_delete))
+        if(!empty($before_delete) || !empty($before_soft_delete) || !empty($after_delete) || !empty($after_soft_delete) || ($this->soft_deletes === TRUE))
         {
             $to_update = array();
             if(isset($where))
