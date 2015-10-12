@@ -34,6 +34,8 @@
  *              If given an array as parameter, it tells MY_Model, that the first element is a created_at field type, the second element is a updated_at field type (and the third element is a deleted_at field type)
  *          $this->soft_deletes = FALSE;
  *              Enables (TRUE) or disables (FALSE) the "soft delete" on records. Default is FALSE
+ *          $this->timestamps_format = 'Y-m-d H:i:s'
+ *              You can at any time change the way the timestamp is created (the default is the MySQL standard datetime format) by modifying this variable. You can choose between whatever format is acceptable by the php function date() (default is 'Y-m-d H:i:s'), or 'timestamp' (UNIX timestamp)
  *          $this->return_as = 'object' | 'array'
  *              Allows the model to return the results as object or as array
  *          $this->has_one['phone'] = 'Phone_model' or $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
@@ -114,6 +116,7 @@ class MY_Model extends CI_Model
      * Enables created_at and updated_at fields
      */
     protected $timestamps = TRUE;
+    protected $timestamps_format = 'Y-m-d H:i:s';
 
     protected $_created_at_field;
     protected $_updated_at_field;
@@ -388,9 +391,9 @@ class MY_Model extends CI_Model
         // if the array is not a multidimensional one...
         if($multi === FALSE)
         {
-            if($this->timestamps === TRUE || is_array($this->timestamps))
+            if($this->timestamps !== FALSE)
             {
-                $data[$this->_created_at_field] = date('Y-m-d H:i:s');
+                $data[$this->_created_at_field] = $this->_the_timestamp();
             }
             $data = $this->trigger('before_create',$data);
             if($this->_database->insert($this->table, $data))
@@ -407,9 +410,9 @@ class MY_Model extends CI_Model
             $return = array();
             foreach($data as $row)
             {
-                if($this->timestamps === TRUE || is_array($this->timestamps))
+                if($this->timestamps !== FALSE)
                 {
-                    $row[$this->_created_at_field] = date('Y-m-d H:i:s');
+                    $row[$this->_created_at_field] = $this->_the_timestamp();
                 }
                 $row = $this->trigger('before_create',$row);
                 if($this->_database->insert($this->table,$row))
@@ -461,9 +464,9 @@ class MY_Model extends CI_Model
         // if the array is not a multidimensional one...
         if($multi === FALSE)
         {
-            if($this->timestamps === TRUE || is_array($this->timestamps))
+            if($this->timestamps !== FALSE)
             {
-                $data[$this->_updated_at_field] = date('Y-m-d H:i:s');
+                $data[$this->_updated_at_field] = $this->_the_timestamp();
             }
             $data = $this->trigger('before_update',$data);
             if($this->validated === FALSE && count($this->row_fields_to_update))
@@ -509,9 +512,9 @@ class MY_Model extends CI_Model
             $rows = 0;
             foreach($data as $row)
             {
-                if($this->timestamps === TRUE || is_array($this->timestamps))
+                if($this->timestamps !== FALSE)
                 {
-                    $row[$this->_updated_at_field] = date('Y-m-d H:i:s');
+                    $row[$this->_updated_at_field] = $this->_the_timestamp();
                 }
                 $row = $this->trigger('before_update',$row);
                 if(is_array($column_name_where))
@@ -717,7 +720,7 @@ class MY_Model extends CI_Model
                 foreach($to_update as &$row)
                 {
                     //$row = $this->trigger('before_soft_delete',$row);
-                    $row[$this->_deleted_at_field] = date('Y-m-d H:i:s');
+                    $row[$this->_deleted_at_field] = $this->_the_timestamp();
                 }
                 $affected_rows = $this->_database->update_batch($this->table, $to_update, $this->primary_key);
                 $to_update['affected_rows'] = $affected_rows;
@@ -1539,13 +1542,31 @@ class MY_Model extends CI_Model
      */
     private function _set_timestamps()
     {
-        if($this->timestamps === TRUE || is_array($this->timestamps))
+        if($this->timestamps !== FALSE)
         {
             $this->_created_at_field = (is_array($this->timestamps) && isset($this->timestamps[0])) ? $this->timestamps[0] : 'created_at';
             $this->_updated_at_field = (is_array($this->timestamps) && isset($this->timestamps[1])) ? $this->timestamps[1] : 'updated_at';
             $this->_deleted_at_field = (is_array($this->timestamps) && isset($this->timestamps[2])) ? $this->timestamps[2] : 'deleted_at';
         }
         return TRUE;
+    }
+
+    /**
+     * private function _the_timestamp()
+     *
+     * returns a value representing the date/time depending on the timestamp format choosed
+     * @return string
+     */
+    private function _the_timestamp()
+    {
+        if($this->timestamps_format=='timestamp')
+        {
+            return time();
+        }
+        else
+        {
+            return date($this->timestamps_format);
+        }
     }
 
     /**
