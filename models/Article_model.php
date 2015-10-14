@@ -6,7 +6,7 @@ class Article_model extends MY_Model
         $this->table = 'articles';
         $this->primary_key = 'id';
         $this->has_many_pivot['authors'] = array(
-            'model'=>'User_model',
+            'foreign_model'=>'User_model',
             'pivot_table'=>'articles_users',
             'local_key'=>'id',
             'pivot_local_key'=>'article_id',
