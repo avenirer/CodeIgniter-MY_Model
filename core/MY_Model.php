@@ -311,7 +311,14 @@ class MY_Model extends CI_Model
         $this->load->library('form_validation');
         if(!isset($rules))
         {
-            $rules = $this->rules;
+            if(empty($row_fields_to_update))
+            {
+                $rules = $this->rules['insert'];
+            }
+            else
+            {
+                $rules = $this->rules['update'];
+            }
         }
         $this->form_validation->set_rules($rules);
         if($this->form_validation->run())
