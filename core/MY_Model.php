@@ -1062,6 +1062,8 @@ class MY_Model extends CI_Model
                             $the_select = '*count*';
                             $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
                             $sub_results = $sub_results->fields($foreign_key);
+                            // missing control array_key_exists in previous version, so adding here
+                            $sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
                         }
                         else
                         {
@@ -1075,10 +1077,7 @@ class MY_Model extends CI_Model
                         }
 
                     }
-                    if($request['parameters']['fields']=='*count*')
-                    {
-                        $sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
-                    }
+                    
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
                         $the_where = array_key_exists('where', $request['parameters']) ? 'where' : 'non_exclusive_where';
