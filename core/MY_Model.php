@@ -568,7 +568,10 @@ class MY_Model extends CI_Model
     {
         if($this->soft_deletes===TRUE)
         {
-            $this->_where_trashed();
+        	if(debug_backtrace()[1]['function']!='force_delete')
+        	{
+        		$this->_where_trashed();
+        	}
         }
 
         if(is_array($field_or_array))
