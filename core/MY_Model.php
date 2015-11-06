@@ -1078,9 +1078,12 @@ class MY_Model extends CI_Model
                         }
 
                     }
-                    if($request['parameters']['fields']=='*count*')
+                    if(array_key_exists('fields',$request['parameters']))
                     {
-                        $sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
+                    	if($request['parameters']['fields']=='*count*')
+                    	{
+                        	$sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
+                    	}
                     }
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
