@@ -708,11 +708,17 @@ class MY_Model extends CI_Model
             }
             if(!empty($this->before_soft_delete))
             {
-                $to_update = $this->trigger('before_soft_delete',$to_update);
+            	foreach($to_update as &$row)
+            	{
+            		$row = $this->trigger('before_soft_delete',$row);
+            	}
             }
             if(!empty($this->before_delete))
             {
-                $to_update = $this->trigger('before_delete',$to_update);
+            	foreach($to_update as &$row)
+            	{
+            		$row = $this->trigger('before_delete',$row);
+            	}
             }
         }
         if(isset($where))
