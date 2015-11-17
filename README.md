@@ -438,7 +438,7 @@ class User_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['phone'] = array('model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
+		$this->has_one['phone'] = array('foreign_model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
 	}
  }
  ```
@@ -451,7 +451,7 @@ class Phone_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = array('model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','local_key'=>'user_id');
+		$this->has_one['user'] = array('foreign_model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','local_key'=>'user_id');
 	}
 }
 ```
@@ -466,7 +466,7 @@ class User_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_many['posts'] = array('model'=>'Post_model','foreign_table'=>'posts','foreign_key'=>'author_id','local_key'=>'id');
+		$this->has_many['posts'] = array('foreign_model'=>'Post_model','foreign_table'=>'posts','foreign_key'=>'author_id','local_key'=>'id');
 	}
  }
  ```
@@ -479,7 +479,7 @@ class Post_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = array('model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','foreign_key'=>'user_id');
+		$this->has_one['user'] = array('foreign_model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','foreign_key'=>'user_id');
 	}
 }
 ```
@@ -499,7 +499,7 @@ class User_model extends MY_Model
 	function __construct()
 	{
 		$this->has_many_pivot['posts'] = array(
-		    'model'=>'Post_model',
+		    'foreign_model'=>'Post_model',
 		    'pivot_table'=>'posts_users',
 		    'local_key'=>'id',
 		    'pivot_local_key'=>'user_id', /* this is the related key in the pivot table to the local key
@@ -559,7 +559,7 @@ class Posts_Model extends MY_Model
 {
     public $table = 'posts';
     public has_many_pivot['posts'] = array(
-           		    'model'=>'Post_model',
+           		    'foreign_model'=>'Post_model',
            		    'pivot_table'=>'posts_users',
            		    'local_key'=>'id',
            		    'pivot_local_key'=>'user_id', /* this is the related key in the pivot table to the local key
