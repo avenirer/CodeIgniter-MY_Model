@@ -188,6 +188,12 @@ class MY_Model extends CI_Model
         $this->_fetch_table();
         $this->pagination_delimiters = (isset($this->pagination_delimiters)) ? $this->pagination_delimiters : array('<span>','</span>');
         $this->pagination_arrows = (isset($this->pagination_arrows)) ? $this->pagination_arrows : array('&lt;','&gt;');
+        /* These below are implementation examples for before_create and before_update triggers.
+        Their respective functions - add_creator() and add_updater() - can be found at the end of the model.
+        They add user id on create and update. If you comment this out don't forget to do the same for the methods()
+        $this->before_create[]='add_creator';
+        $this->before_create[]='add_updater';
+        */
     }
 
     public function _get_table_fields()
@@ -1775,4 +1781,20 @@ class MY_Model extends CI_Model
     private function _is_assoc(array $array) {
         return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
+    
+    /*
+    public function add_creator($data)
+    {
+    	$data['created_by'] = $_SESSION['user_id'];
+    	return $data;
+    }
+    */
+    
+    /*
+    public function add_updater($data)
+    {
+	    $data['updated_by'] = $_SESSION['user_id'];
+	    return $data;
+    }
+    */
 }
