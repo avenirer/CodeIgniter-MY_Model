@@ -349,9 +349,9 @@ $id = $this->user_model->from_form(NULL,array('created_by'=>'1'), array('user_id
 
 ####Update custom string with disabled escaping
 
-You can prevent escaping content by passing an optional third argument, and setting it to FALSE:
+You can prevent escaping content by passing an optional third argument, and setting it to FALSE (the second parameter is a where condition set as an array - you can set it to NULL):
 ```php
-$this->user_model->update(array('views'=>'views+1'), 1, FALSE);
+$this->user_model->update(array('views'=>'views+1'), array('id'=>'1'), FALSE);
 ```
 
 ##DELETE
