@@ -353,6 +353,7 @@ You can prevent escaping content by passing an optional third argument, and sett
 ```php
 $this->user_model->update(array('views'=>'views+1'), array('id'=>'1'), FALSE);
 ```
+**TAKE CARE:** This doesn't work with values that have space inside unless you set quotes on them. So I would rather not use this (Maybe in future I will change the way this works)
 
 ##DELETE
 ###The delete() method
