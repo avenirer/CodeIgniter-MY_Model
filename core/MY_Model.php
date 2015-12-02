@@ -1128,6 +1128,20 @@ class MY_Model extends CI_Model
                             $this->_database->select($the_select);
                         }
                     }
+			/*
+			to access column data on pivot_table itself with parameter 
+			like with_*('pivot_fields|column1,column2)'
+			*/
+                    if(array_key_exists('pivot_fields',$request['parameters']))
+                    {
+                        $fields = explode(',', $request['parameters']['pivot_fields']);
+                        $select = array();
+                        foreach ($fields as $field) {
+                            $select[] = '`' . $pivot_table . '`.`' . trim($field) . '`';
+                        }
+                        $the_select = implode(',', $select);
+                        $this->_database->select($the_select);
+                    }
 
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
