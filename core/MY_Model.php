@@ -1525,6 +1525,7 @@ class MY_Model extends CI_Model
     public function set_cache($string, $seconds = 86400)
     {
         $prefix = (strlen($this->cache_prefix)>0) ? $this->cache_prefix.'_' : '';
+        $prefix .= $this->table.'_';
         $this->_cache = array('cache_name' => $prefix.$string,'seconds'=>$seconds);
         return $this;
     }
