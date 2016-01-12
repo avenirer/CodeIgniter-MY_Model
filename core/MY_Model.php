@@ -826,6 +826,7 @@ class MY_Model extends CI_Model
         return FALSE;
     }
 
+
     /**
      * public function get()
      * Retrieves one row from table.
@@ -834,13 +835,7 @@ class MY_Model extends CI_Model
      */
     public function get($where = NULL)
     {
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
-            $this->load->driver('cache');
-            $cache_name = $this->_cache['cache_name'];
-            $seconds = $this->_cache['seconds'];
-            $data = $this->cache->{$this->cache_driver}->get($cache_name);
-        }
+        $data = $this->_get_from_cache();
 
         if(isset($data) && $data !== FALSE)
         {
@@ -873,11 +868,7 @@ class MY_Model extends CI_Model
                 $row = $this->trigger('after_get', $row);
                 $row =  $this->_prep_after_read(array($row),FALSE);
                 $row = $row[0];
-                if(isset($cache_name) && isset($seconds))
-                {
-                    $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
-                    $this->_reset_cache($cache_name);
-                }
+                $this->_write_to_cache($row);
                 return $row;
             }
             else
@@ -895,13 +886,7 @@ class MY_Model extends CI_Model
      */
     public function get_all($where = NULL)
     {
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
-            $this->load->driver('cache');
-            $cache_name = $this->_cache['cache_name'];
-            $seconds = $this->_cache['seconds'];
-            $data = $this->cache->{$this->cache_driver}->get($cache_name);
-        }
+        $data = $this->_get_from_cache();
 
         if(isset($data) && $data !== FALSE)
         {
@@ -936,11 +921,7 @@ class MY_Model extends CI_Model
                 $data = $query->result_array();
                 $data = $this->trigger('after_get', $data);
                 $data = $this->_prep_after_read($data,TRUE);
-                if(isset($cache_name) && isset($seconds))
-                {
-                    $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
-                    $this->_reset_cache($cache_name);
-                }
+                $this->_write_to_cache($data);
                 return $data;
             }
             else
@@ -1511,6 +1492,34 @@ class MY_Model extends CI_Model
         $this->_dropdown_field = $field;
         $this->_select = array($this->primary_key, $field);
         return $this;
+    }
+
+    protected function _get_from_cache($cache_name = NULL)
+    {
+        if(isset($cache_name) || (isset($this->_cache) && !empty($this->_cache)))
+        {
+            $this->load->driver('cache');
+            $cache_name = isset($cache_name) ? $cache_name : $this->_cache['cache_name'];
+            $data = $this->cache->{$this->cache_driver}->get($cache_name);
+            return $data;
+        }
+    }
+
+    protected function _write_to_cache($data, $cache_name = NULL)
+    {
+        if(isset($cache_name) || (isset($this->_cache) && !empty($this->_cache)))
+        {
+            $this->load->driver('cache');
+            $cache_name = isset($cache_name) ? $cache_name : $this->_cache['cache_name'];
+            $seconds = $this->_cache['seconds'];
+            if(isset($cache_name) && isset($seconds))
+            {
+                $this->cache->{$this->cache_driver}->save($cache_name, $data, $seconds);
+                $this->_reset_cache($cache_name);
+                return TRUE;
+            }
+            return FALSE;
+        }
     }
 
     public function set_cache($string, $seconds = 86400)
