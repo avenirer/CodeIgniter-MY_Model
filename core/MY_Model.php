@@ -932,13 +932,13 @@ class MY_Model extends CI_Model
     }
     
     /**
-     * public function get_as_field()
+     * public function fetch_field()
      * Retrieves one field of a row from table.
      * @param string $field
      * @param mixed $where
      * @return string
      */
-    public function get_as_field($field = NULL, $where = NULL)
+    public function fetch_field($field = NULL, $where = NULL)
     {
         if(is_null($field) || is_null($where))
         {
