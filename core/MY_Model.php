@@ -930,7 +930,25 @@ class MY_Model extends CI_Model
             }
         }
     }
-
+    
+    /**
+     * public function get_as_field()
+     * Retrieves one field of a row from table.
+     * @param string $field
+     * @param mixed $where
+     * @return string
+     */
+    public function get_as_field($field = NULL, $where = NULL)
+    {
+        if(is_null($field) || is_null($where))
+        {
+            return FALSE;
+        }
+        $value = $this->fields($field)->get($where);
+        $value = is_object($value)?(array)$value:$value;
+        return $value[$field];
+    }
+    
     /**
      * public function count()
      * Retrieves number of rows from table.
