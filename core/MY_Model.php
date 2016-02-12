@@ -1325,11 +1325,11 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public function reset($connection_group = NULL)
+     * public function reset_connection($connection_group = NULL)
      * Resets the connection to the default used for all the model
      * @return obj
      */
-    public function reset()
+    public function reset_connection()
     {
         if(isset($connection_group))
         {
