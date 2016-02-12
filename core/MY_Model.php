@@ -932,12 +932,12 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * public function count()
+     * public function count_rows()
      * Retrieves number of rows from table.
      * @param null $where
      * @return integer
      */
-    public function count($where = NULL)
+    public function count_rows($where = NULL)
     {
         if(isset($where))
         {
