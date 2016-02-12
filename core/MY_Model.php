@@ -241,11 +241,7 @@ class MY_Model extends CI_Model
         $data_as_array = (is_object($data)) ? (array)$data : $data;
 
         $new_data = array();
-        $multi = FALSE;
-        foreach($data as $element)
-        {
-            $multi = (is_array($element)) ? TRUE : FALSE;
-        }
+        $multi = $this->is_multidimensional($data);
         if($multi===FALSE)
         {
             foreach ($data_as_array as $field => $value)
@@ -393,11 +389,7 @@ class MY_Model extends CI_Model
         $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
-        $multi = FALSE;
-        foreach($data as $element)
-        {
-            $multi = (is_array($element)) ? TRUE : FALSE;
-        }
+        $multi = $this->is_multidimensional($data);
 
         // if the array is not a multidimensional one...
         if($multi === FALSE)
@@ -441,6 +433,27 @@ class MY_Model extends CI_Model
         return FALSE;
     }
 
+    /*
+     * public function is_multidimensional($array)
+     * Verifies if an array is multidimensional or not;
+     * @param array $array
+     * @return bool return TRUE if the array is a multidimensional one
+     */
+    public function is_multidimensional($array)
+    {
+        if(is_array($array))
+        {
+            foreach($array as $element)
+            {
+                if(is_array($element))
+                {
+                    return TRUE;
+                }
+            }
+        }
+        return FALSE;
+    }
+
 
     /**
      * public function update($data)
@@ -466,11 +479,7 @@ class MY_Model extends CI_Model
         $data = $this->_prep_before_write($data);
 
         //now let's see if the array is a multidimensional one (multiple rows insert)
-        $multi = FALSE;
-        foreach($data as $element)
-        {
-            $multi = (is_array($element)) ? TRUE : FALSE;
-        }
+        $multi = $this->is_multidimensional($data);
 
         // if the array is not a multidimensional one...
         if($multi === FALSE)
@@ -582,10 +591,7 @@ class MY_Model extends CI_Model
 
         if(is_array($field_or_array))
         {
-            $multi = FALSE;
-            foreach($field_or_array as $element) {
-                $multi = (is_array($element)) ? TRUE : FALSE;
-            }
+            $multi = $this->is_multidimensional($field_or_array);
             if($multi === TRUE)
             {
                 foreach ($field_or_array as $where)
