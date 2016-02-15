@@ -1136,7 +1136,7 @@ class MY_Model extends CI_Model
                     $the_foreign_key = $result_array[$foreign_key];
                     if(isset($pivot_table))
                     {
-                        $the_local_key = $result_array[singular($this->table) . '_' . $local_key];
+                        $the_local_key = $result_array[$pivot_local_key];
                         if(isset($get_relate) and $get_relate === TRUE)
                         {
                             $subs[$the_local_key][$the_foreign_key] = $this->{$relation['foreign_model']}->where($local_key, $result[$local_key])->get();
