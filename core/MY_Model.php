@@ -54,6 +54,8 @@
  *              By default, MY_Model uses the files to cache result.
  *              If you want to change the way it stores the cache, you can change the $cache_driver property to whatever CodeIgniter cache driver you want to use.
  *              Also, with $cache_prefix, you can prefix the name of the caches. by default any cache made by MY_Model starts with 'mm' + _ + "name chosen for cache"
+ *          $this->delete_cache_on_save = FALSE
+ *              If you use caching often and you don't want to be forced to delete cache manually, you can enable $this->delete_cache_on_save by setting it to TRUE. If set to TRUE the model will auto-delete all cache related to the model's table whenever you write/update/delete data from that table.
  *          $this->pagination_delimiters = array('<span>','</span>');
  *              If you know you will use the paginate() method, you can change the delimiters between the pages links
  *          $this->pagination_arrows = array('&lt;','&gt;');
@@ -140,6 +142,7 @@ class MY_Model extends CI_Model
     public $cache_driver = 'file';
     public $cache_prefix = 'mm';
     protected $_cache = array();
+    public $delete_cache_on_save = FALSE;
 
     /*pagination*/
     public $next_page;
@@ -264,6 +267,20 @@ class MY_Model extends CI_Model
             }
         }
         return $new_data;
+    }
+
+    /*
+     * public function _prep_after_write()
+     * this function simply deletes the cache related to the model's table if $this->delete_cache_on_save is set to TRUE
+     * It should be called by any "save" method
+     */
+    public function _prep_after_write()
+    {
+        if($this->delete_cache_on_save===TRUE)
+        {
+            $this->delete_cache('*');
+        }
+        return TRUE;
     }
 
     public function _prep_before_read()
@@ -401,6 +418,7 @@ class MY_Model extends CI_Model
             $data = $this->trigger('before_create',$data);
             if($this->_database->insert($this->table, $data))
             {
+                $this->_prep_after_write();
                 $id = $this->_database->insert_id();
                 $return = $this->trigger('after_create',$id);
                 return $return;
@@ -423,6 +441,7 @@ class MY_Model extends CI_Model
                     $return[] = $this->_database->insert_id();
                 }
             }
+            $this->_prep_after_write();
             $after_create = array();
             foreach($return as $id)
             {
@@ -510,6 +529,7 @@ class MY_Model extends CI_Model
             {
                 if($this->_database->update($this->table, $data))
                 {
+                    $this->_prep_after_write();
                     $affected = $this->_database->affected_rows();
                     $return = $this->trigger('after_update',$affected);
                     return $return;
@@ -519,6 +539,7 @@ class MY_Model extends CI_Model
             {
                 if($this->_database->set($data, null, FALSE)->update($this->table))
                 {
+                    $this->_prep_after_write();
                     $affected = $this->_database->affected_rows();
                     $return = $this->trigger('after_update',$affected);
                     return $return;
@@ -562,6 +583,7 @@ class MY_Model extends CI_Model
                 }
             }
             $affected = $rows;
+            $this->_prep_after_write();
             $return = $this->trigger('after_update',$affected);
             return $return;
         }
@@ -750,6 +772,7 @@ class MY_Model extends CI_Model
                 }
                 $affected_rows = $this->_database->update_batch($this->table, $to_update, $this->primary_key);
                 $to_update['affected_rows'] = $affected_rows;
+                $this->_prep_after_write();
                 $this->trigger('after_soft_delete',$to_update);
             }
             return $affected_rows;
@@ -765,6 +788,7 @@ class MY_Model extends CI_Model
                     $to_update = $this->trigger('after_delete',$to_update);
                     $affected_rows = $to_update;
                 }
+                $this->_prep_after_write();
                 return $affected_rows;
             }
         }
@@ -785,6 +809,7 @@ class MY_Model extends CI_Model
         }
         if($this->_database->delete($this->table))
         {
+            $this->_prep_after_write();
             return $this->_database->affected_rows();
         }
         return FALSE;
@@ -805,6 +830,7 @@ class MY_Model extends CI_Model
         }
         if($affected_rows = $this->_database->update($this->table,array($this->_deleted_at_field=>NULL)))
         {
+            $this->_prep_after_write();
             return $affected_rows;
         }
         return FALSE;
@@ -1564,7 +1590,7 @@ class MY_Model extends CI_Model
                     break;
                 }
             }
-            $mask = (isset($string)) ? $path.$prefix.$string : $path.$prefix.'*';
+            $mask = (isset($string)) ? $path.$prefix.$string : $path.$this->cache_prefix.'_*';
             array_map('unlink', glob($mask));
         }
         return $this;

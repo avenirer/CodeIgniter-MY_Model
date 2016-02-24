@@ -39,6 +39,10 @@ class Test extends CI_Controller {
         $data['users_as_array'] = $this->user_model->as_array()->get_all();
         $data['users_as_dropdown'] = $this->user_model->as_dropdown('username')->get_all();
         $data['articles_with_authors'] = $this->article_model->with_authors('fields:username')->get_all();
+        $data['articles_with_authors_and_cache'] = $this->article_model->with_authors('fields:username')->set_cache('articles_with_authors')->get_all();
+        //$this->article_model->delete_cache('*');
+        $data['user_with'] = $this->user_model->with_details('fields:first_name,last_name')->set_cache('get_users_with_details')->get(1);
 		$this->load->view('test_view',$data);
+
 	}
 }

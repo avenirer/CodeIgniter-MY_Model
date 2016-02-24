@@ -249,7 +249,7 @@ If you want to cache the result for faster output, you can at any time use the M
 $this->load->model('user_model');
 $users = $this->user_model->as_array()->set_cache('get_all_users')->get_all();
 ```
-The code above will create a cache file named mm_get_all_users. If you want the cache to have a time limit, you can pass a second parameter that represents the number of seconds:
+The code above will create a cache file named mm_users_get_all_users. If you want the cache to have a time limit, you can pass a second parameter that represents the number of seconds:
 
 ```php
 $users = $this->user_model->as_array()->set_cache('get_all_users',3600)->get_all();
@@ -261,12 +261,29 @@ Whenever you want, you can delete the cache "manually" by using the delete_cache
 There are three ways you can delete the cache:
 
 * `delete_cache('get_all_users')` deletes a certain cache;
-* `delete_cache('users_*')` deletes the caches that start with 'mm_users_' (where 'mm_' is the prefix used by MY_Model);
+* `delete_cache('*')` deletes the caches that start with 'mm_users_' (where 'mm_users' is the prefix used by MY_Model in conjuction with your model's table name);
 * `delete_cache()` deletes all cache that start with 'mm_' (where 'mm_' is the prefix used by MY_Model).
 
 Example:
 ```php
 $this->user_model->delete_cache('get_all_users');
+```
+
+####Auto-delete caching
+
+You can set the model in a way so that the cache will be deleted automatically whenever you write/update/delete data from your model's table. This way you won't need to do it manually. You can have this enabled by setting the delete_cache_on_save property to TRUE in the constructor:
+
+```php
+class User_model extends MY_Model
+{
+    //public $soft_deletes = TRUE;
+    public $delete_cache_on_save = TRUE;
+
+    function __construct()
+    {
+        parent::__construct();
+    }
+    ...
 ```
 
 ##Pagination
