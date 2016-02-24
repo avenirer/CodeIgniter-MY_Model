@@ -1096,7 +1096,7 @@ class MY_Model extends CI_Model
                             $fields = explode(',', $request['parameters']['fields']);
                             foreach ($fields as $field)
                             {
-                                $select[] = '`' . $foreign_table . '`.`' . trim($field) . '`';
+                                $select[] = (strpos($field,'.')===FALSE) ? '`' . $foreign_table . '`.`' . trim($field) . '`' : trim($field);
                             }
                             $the_select = implode(',', $select);
                             $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
