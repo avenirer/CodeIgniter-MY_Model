@@ -664,7 +664,7 @@ You can also change the database connection on a per request basis. For example,
 ```php
 $this->user_model->on('write_conn')->delete(3);
 ```
-After this, I would advise you to do a `$this->user_model->reset();` in order to reset the database connection to the model's (or application's) default.
+After this, I would advise you to do a `$this->user_model->reset_connection();` in order to reset the database connection to the model's (or application's) default.
 
 ##Observers##
 
@@ -897,7 +897,7 @@ $users = $this->user_model->only_trashed()->get_all;
 ###on($connection_group)
 Sets a connection group for the current chain query
 
-###reset()
+###reset_connection()
 Resets the connection to the database to the one that is set for the model or the default connection
 
 Enjoy using my MY_Model and please report any issues or try some pull requests. Thank you
