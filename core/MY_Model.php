@@ -762,7 +762,7 @@ class MY_Model extends CI_Model
         $affected_rows = 0;
         if($this->soft_deletes === TRUE)
         {
-            if(isset($to_update))
+            if(isset($to_update)&& count($to_update) > 0)
             {
 
                 foreach($to_update as &$row)
