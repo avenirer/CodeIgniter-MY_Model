@@ -1001,11 +1001,11 @@ class MY_Model extends CI_Model
             {
                 foreach($arguments as $argument)
                 {
-					if(is_array($argument))
+			        if(is_array($argument))
                     {
-						foreach($argument as $k => $v)
+				        foreach($argument as $k => $v)
                         {
-							$parameters[$k] = $v;
+					        $parameters[$k] = $v;
                          }
                     }
                     else 
