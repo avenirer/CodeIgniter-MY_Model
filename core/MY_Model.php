@@ -1001,16 +1001,26 @@ class MY_Model extends CI_Model
             {
                 foreach($arguments as $argument)
                 {
-                    $requested_operations = explode('|',$argument);
-                    foreach($requested_operations as $operation)
+			        if(is_array($argument))
                     {
-                        $elements = explode(':', $operation, 2);
-                        if (sizeof($elements) == 2) {
-                            $parameters[$elements[0]] = $elements[1];
-                        } else {
-                            show_error('MY_Model: Parameters for with_*() method must be of the form: "...->with_*(\'where:...|fields:...\')"');
-                        }
+				        foreach($argument as $k => $v)
+                        {
+					        $parameters[$k] = $v;
+                         }
                     }
+                    else 
+                    {
+						$requested_operations = explode('|',$argument);
+						foreach($requested_operations as $operation)
+						{
+							$elements = explode(':', $operation, 2);
+							if (sizeof($elements) == 2) {
+								$parameters[$elements[0]] = $elements[1];
+							} else {
+								show_error('MY_Model: Parameters for with_*() method must be of the form: "...->with_*(\'where:...|fields:...\')"');
+							}
+						}
+					}
                 }
             }
             $this->_requested[$request]['parameters'] = $parameters;
@@ -1104,15 +1114,34 @@ class MY_Model extends CI_Model
 
                     }
                     if(array_key_exists('fields',$request['parameters']) && ($request['parameters']['fields']=='*count*'))
-	            {
-	               	$sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
-	            }
+					{
+						$sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
+					}
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
                         $the_where = array_key_exists('where', $request['parameters']) ? 'where' : 'non_exclusive_where';
                     }
                     $sub_results = isset($the_where) ? $sub_results->where($request['parameters'][$the_where],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
+                    //Add nested relation   
+					if(array_key_exists('with',$request['parameters']))
+					{
+						// Do we have many nested relation
+						if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0]))
+						{
+							foreach ($request['parameters']['with'] as $with)
+							{
+								$with_relation = array_shift($with);
+								$sub_results->with($with_relation, array($with));
+							}
+						}
+						else // single nested relation
+						{
+							$with_relation = array_shift($request['parameters']['with']);
+							$sub_results->with($with_relation,array($request['parameters']['with']));
+						}
+					}
                 }
+                
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
             }
             else
