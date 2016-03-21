@@ -613,7 +613,7 @@ You can then access your related data using the `with_*()` method:
 ```php
 $user = $this->user_model->with_phone()->with_posts()->get(1);
 ```
-The `with_*()` method can accept parameters like 'fields', 'where', and 'non_exclusivist_where'.
+The `with_*()` method can accept parameters like 'fields', 'where', and 'non_exclusive_where'.
 
 With the `fields:...` you can enumerate the fields you want returned.
 ```php
@@ -628,12 +628,12 @@ Take note that you can retrieve the count as `counted_rows` (do a print_r() and 
 
 With the `where:...` you can pass a where clause that will be interpreted as string.
 
-The where clause is an *exclusivist* one. That means that it will retrieve only results that are complying to the subresult's where: if a `users` table has relationship with an `details` table, and you set a `where` clause inside the with_*() method that looks only for the results that have `first_name` of `John` in the `details` table, the final results that will be returned will only those users from the `users` table that have a related first_name inside the `details` table of `John`.
+The where clause is an *exclusivist* one. That means that it will retrieve only results that are complying to the subresult's where. If a `users` table has relationship with a `details` table, and you set a `where` clause inside the with_*() method, that `where:...` looks only for the results that have `first_name` of `John` in the `details` table, the final results that will be returned will only be those users from the `users` table that have a related first_name inside the `details` table of `John`.
 ```php
 $user = $this->user_model->with_phone('fields:mobile_number', 'where:`phone_status`=\'active\'')->get(1);
 ```
 
-A `non_exclusivist_where` would return all the main results and only the additional subresults appended to the main results.
+A `non_exclusive_where` would return all the main results and only the additional subresults appended to the main results.
 
 *NB: You won't be able to add an exclusive and a non-exclusive where in the same time*
 
