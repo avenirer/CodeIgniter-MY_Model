@@ -654,7 +654,11 @@ Sometimes you need to order the results coming from the with_*() method. In orde
 ```php
 $this->author_model->with_posts('fields:...|order_inside:published_at desc')->get_all();
 ```
-A query like the one above should return all the authors with their respective posts ordered by the publish date.
+A query like the one above should return all the authors with their respective posts ordered by the publish date. You can also have more than one order inside parameters:
+
+```php
+$this->author_model->with_posts('fields:...|order_inside:published_at desc, readings asc')->get_all();
+```
 
 ####Order THE MAIN RESULT by the relationship data
 
