@@ -647,12 +647,22 @@ foreach ($user->posts as $post)
 }
 ```
 
-####Order by relationship data
+####Order the results of the relastionship results
 
-You can order the result by related data column.
+Sometimes you need to order the results coming from the with_*() method. In order do this, you can use the order_inside parameter like below:
+
 ```php
-$this->post_model->with_user("order_by:views,desc");
+$this->author_model->with_posts('fields:...|order_inside:published_at desc')->get_all();
 ```
+A query like the one above should return all the authors with their respective posts ordered by the publish date.
+
+####Order THE MAIN RESULT by the relationship data
+
+You can order the main result by using a field that can be found inside a relationship column.
+```php
+$this->post_model->with_author("order_by:username,asc")->get_all();
+```
+The code above will order all the posts by the username of the authors (ascending).
 
 ##Database Connection
 
