@@ -1859,7 +1859,7 @@ class MY_Model extends CI_Model
     }
     private function _get_table_name($model_name)
     {
-        $table_name = plural(preg_replace('/(_m|_model|mdl)?$/', '', strtolower($model_name)));
+        $table_name = plural(preg_replace('/(_m|_model|_mdl)?$/', '', strtolower($model_name)));
         return $table_name;
     }
 
