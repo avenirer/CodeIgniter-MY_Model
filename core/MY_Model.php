@@ -1887,10 +1887,25 @@ class MY_Model extends CI_Model
     private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC')
     {
         usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
-            return strtoupper($sort_by) ==  "DESC" ? ($a[$field][$order_by] < $b[$field][$order_by]) : ($a[$field][$order_by] > $b[$field][$order_by]);
+            $array_a = $this->object_to_array($a[$field]);
+            $array_b = $this->object_to_array($b[$field]);
+            return strtoupper($sort_by) ==  "DESC" ? ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] < $array_b[$order_by]) : -1) : ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] > $array_b[$order_by]) : -1);
         });
 
         return $data;
+    }
+
+    public function object_to_array( $object )
+    {
+        if( !is_object( $object ) && !is_array( $object ) )
+        {
+            return $object;
+        }
+        if( is_object( $object ) )
+        {
+            $object = get_object_vars( $object );
+        }
+        return array_map( array($this,'object_to_array'), $object );
     }
 
 
