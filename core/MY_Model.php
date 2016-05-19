@@ -1334,8 +1334,13 @@ class MY_Model extends CI_Model
                         if(!is_array($relation))
                         {
                             $foreign_model = $relation;
+                            $sub_folders = null;
+                            if ($model = explode('/', $foreign_model)) {
+                                $foreign_model = end($model);
+                                $sub_folders = str_replace($foreign_model, null, implode('/', $model));
+                            }
                             $foreign_model_name = strtolower($foreign_model);
-                            $this->load->model($foreign_model_name);
+                            $this->load->model($sub_folders . $foreign_model_name);
                             $foreign_table = $this->{$foreign_model_name}->table;
                             $foreign_key = $this->{$foreign_model_name}->primary_key;
                             $local_key = $this->primary_key;
@@ -1356,7 +1361,12 @@ class MY_Model extends CI_Model
                                 else
                                 {
                                     $foreign_model_name = strtolower($foreign_model);
-                                    $this->load->model($foreign_model_name);
+                                    $sub_folders = null;
+                                    if ($model = explode('/', $foreign_model)) {
+                                        $foreign_model = end($model);
+                                        $sub_folders = str_replace($foreign_model, null, implode('/', $model));
+                                    }
+                                    $this->load->model($sub_folders . $foreign_model_name);
                                     $foreign_table = $this->{$foreign_model_name}->table;
                                 }
                                 $foreign_key = $relation['foreign_key'];
@@ -1372,8 +1382,13 @@ class MY_Model extends CI_Model
                             else
                             {
                                 $foreign_model = $relation[0];
+                                $sub_folders = null;
+                                if ($model = explode('/', $foreign_model)) {
+                                    $foreign_model = end($model);
+                                    $sub_folders = str_replace($foreign_model, null, implode('/', $model));
+                                }
                                 $foreign_model_name = strtolower($foreign_model);
-                                $this->load->model($foreign_model_name);
+                                $this->load->model($sub_folders . $foreign_model_name);
                                 $foreign_table = $this->{$foreign_model_name}->table;
                                 $foreign_key = $relation[1];
                                 $local_key = $relation[2];
