@@ -905,7 +905,7 @@ class MY_Model extends CI_Model
             }
             else
             {
-                return FALSE;
+                return array();
             }
         }
     }
