@@ -863,6 +863,27 @@ class MY_Model extends CI_Model
      * public function get()
      * Retrieves one row from table.
      * @param null $where
+     * @param null $redirect - redirection url
+     * @return redirect
+     */
+    function getOrFail($id = NULL, $redirect = null)
+    {
+        if (!$result = $this->get($id)) {
+            if ($redirect) {
+                redirect($redirect, 'refresh');
+            } else {
+                show_404();
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * public function get()
+     * Retrieves one row from table.
+     * @param null $where
      * @return mixed
      */
     public function get($where = NULL)
