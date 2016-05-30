@@ -647,7 +647,7 @@ foreach ($user->posts as $post)
 }
 ```
 
-####Order the results of the relastionship results
+###Order the results of the relastionship results
 
 Sometimes you need to order the results coming from the with_*() method. In order do this, you can use the order_inside parameter like below:
 
@@ -660,13 +660,60 @@ A query like the one above should return all the authors with their respective p
 $this->author_model->with_posts('fields:...|order_inside:published_at desc, readings asc')->get_all();
 ```
 
-####Order THE MAIN RESULT by the relationship data
+###Order THE MAIN RESULT by the relationship data
 
 You can order the main result by using a field that can be found inside a relationship column.
 ```php
 $this->post_model->with_author("order_by:username,asc")->get_all();
 ```
 The code above will order all the posts by the username of the authors (ascending).
+
+###Retrieve data from nested relationships (or should we say retrieve nested relationships data?)
+
+In order to retrieve data from nested relationships, we should pass the with_*() method a multidimensional array. Let's assume we have a Country_model with many City_model, the City_Model having many Company_model:
+
+So... the Country_model.php: would look like this:
+
+```php
+class Country_model extends MY_Model
+{
+    function __construct()
+    {
+        $this->has_many['cities'] = array('foreign_model'=>'City_model','foreign_table'=>'cities','foreign_key'=>'country_id','local_key'=>'id');
+    }
+}
+```
+
+The City_model.php would look like this:
+
+```php
+class City_model extends MY_Model
+{
+    function __construct()
+    {
+        $this->has_one['country'] = array('foreign_model'=>'Country_model','foreign_table'=>'countries','foreign_key'=>'id','local_key'=>'country_id');
+        $this->has_many['companies'] = array('foreign_model'=>'Company_model','foreign_table'=>'companies','foreign_key'=>'city_id','local_key'=>'id');
+    }
+}
+```
+
+The Company_model.php would look like this:
+
+```php
+class Company_model extends MY_Model
+{
+    function __construct()
+    {
+        $this->has_one['city'] = array('foreign_model'=>'City_model','foreign_table'=>'cities','foreign_key'=>'id','local_key'=>'city_id');
+    }
+}
+```
+
+Now, if we want to retrieve the cities with their companies from a country we would go like this:
+
+```php
+$this->country_model->with_cities(array('fields'=>'name,id,population','with'=>array('relation'=>'companies','fields'=>'name,phone_number'))->get($country_id);
+```
 
 ##Database Connection
 
