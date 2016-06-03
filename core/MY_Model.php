@@ -195,7 +195,7 @@ class MY_Model extends CI_Model
         Their respective functions - add_creator() and add_updater() - can be found at the end of the model.
         They add user id on create and update. If you comment this out don't forget to do the same for the methods()
         $this->before_create[]='add_creator';
-        $this->before_create[]='add_updater';
+        $this->before_update[]='add_updater';
         */
     }
 
