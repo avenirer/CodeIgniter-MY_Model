@@ -753,13 +753,12 @@ class User_model extends MY_Model
 		$this->before_create[] = 'hash_password';
 		parent::__construct();
 	}
-    public $before_create = array( 'hash_password' );
 
 	protected function hash_password($data)
-    {
-        $data['password'] = 'whateverpasswordcreationresultyoumaythinkof';
-        return $data;
-    }
+    	{
+        	$data['password'] = 'whateverpasswordcreationresultyoumaythinkof';
+        	return $data;
+    	}
 }
 ```
 Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has an `after_get` trigger which will be called last.
