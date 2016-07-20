@@ -37,7 +37,7 @@ class User_model extends MY_Model
 	public $protected = array(); // ...Or you can set an array with the fields that cannot be filled by insert/update
 	public function __construct()
 	{
-		parent::__construct()
+		parent::__construct();
 	}
 }
 ```
