@@ -499,7 +499,7 @@ class Post_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = array('foreign_model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','foreign_key'=>'user_id');
+		$this->has_one['user'] = array('foreign_model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','local_key'=>'user_id');
 	}
 }
 ```
