@@ -1334,8 +1334,12 @@ class MY_Model extends CI_Model
                         if(!is_array($relation))
                         {
                             $foreign_model = $relation;
-                            $foreign_model_name = strtolower($foreign_model);
-                            $this->load->model($foreign_model_name);
+                            $model = _parse_model_dir($foreign_model);
+                            $foreign_model = $model['foreign_model'];
+                            $model_dir = $model['model_dir'];
+                            $foreign_model_name = $model['foreign_model_name'];
+
+                            $this->load->model($model_dir . $foreign_model_name);
                             $foreign_table = $this->{$foreign_model_name}->table;
                             $foreign_key = $this->{$foreign_model_name}->primary_key;
                             $local_key = $this->primary_key;
@@ -1355,8 +1359,12 @@ class MY_Model extends CI_Model
                                 }
                                 else
                                 {
-                                    $foreign_model_name = strtolower($foreign_model);
-                                    $this->load->model($foreign_model_name);
+                                    $model = $this->_parse_model_dir($foreign_model);
+                                    $foreign_model = $model['foreign_model'];
+                                    $model_dir = $model['model_dir'];
+                                    $foreign_model_name = $model['foreign_model_name'];
+
+                                    $this->load->model($model_dir . $foreign_model_name);
                                     $foreign_table = $this->{$foreign_model_name}->table;
                                 }
                                 $foreign_key = $relation['foreign_key'];
@@ -1372,8 +1380,12 @@ class MY_Model extends CI_Model
                             else
                             {
                                 $foreign_model = $relation[0];
-                                $foreign_model_name = strtolower($foreign_model);
-                                $this->load->model($foreign_model_name);
+                                $model = $this->_parse_model_dir($foreign_model);
+                                $foreign_model = $model['foreign_model'];
+                                $model_dir = $model['model_dir'];
+                                $foreign_model_name = $model['foreign_model_name'];
+
+                                $this->load->model($model_dir . $foreign_model_name);
                                 $foreign_table = $this->{$foreign_model_name}->table;
                                 $foreign_key = $relation[1];
                                 $local_key = $relation[2];
@@ -1918,6 +1930,31 @@ class MY_Model extends CI_Model
     private function _is_assoc(array $array) {
         return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
+
+    /**
+     * private function _parse_model_dir($foreign_model)
+     *
+     * Parse model and model folder 
+     * @param $foreign_model
+     * @return $data
+     */
+    private function _parse_model_dir($foreign_model)
+    {
+        $data['foreign_model']      = $foreign_model;
+        $data['model_dir']          = NULL;
+
+        $full_model = explode('/', $data['foreign_model']);
+        if ($full_model) {
+
+            $data['foreign_model'] = end($full_model);
+            $data['model_dir'] = str_replace($data['foreign_model'], null, implode('/', $full_model));
+        }
+
+        $data['foreign_model_name'] = strtolower($data['foreign_model']);
+
+        return $data;
+    }
+
 
     /*
     public function add_creator($data)
