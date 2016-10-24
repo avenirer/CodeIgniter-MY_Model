@@ -892,8 +892,13 @@ class MY_Model extends CI_Model
             {
                 $this->where($where);
             }
+	    elseif($this->soft_deletes===TRUE)
+            {
+                $this->_where_trashed();
+            }
             $this->limit(1);
             $query = $this->_database->get($this->table);
+	    $this->_reset_trashed();
             if ($query->num_rows() == 1)
             {
                 $row = $query->row_array();
@@ -948,6 +953,7 @@ class MY_Model extends CI_Model
                 }
             }
             $query = $this->_database->get($this->table);
+	    $this->_reset_trashed();
             if($query->num_rows() > 0)
             {
                 $data = $query->result_array();
@@ -975,8 +981,13 @@ class MY_Model extends CI_Model
         {
             $this->where($where);
         }
+	elseif($this->soft_deletes===TRUE)
+        {
+            $this->_where_trashed();
+        }
         $this->_database->from($this->table);
         $number_rows = $this->_database->count_all_results();
+	$this->_reset_trashed();
         return $number_rows;
     }
 
@@ -1476,7 +1487,15 @@ class MY_Model extends CI_Model
         }
         return $data;
     }
-
+    /**
+     * private function _reset_trashed()
+     * Sets $_trashed to default 'without'
+     */
+    private function _reset_trashed()
+    {
+        $this->_trashed = 'without';
+        return $this;
+    }
 
     /**
      * public function with_trashed()
@@ -1511,7 +1530,7 @@ class MY_Model extends CI_Model
             case 'with' :
                 break;
         }
-        $this->_trashed = 'without';
+        $this->_trashed = '';
         return $this;
     }
 
