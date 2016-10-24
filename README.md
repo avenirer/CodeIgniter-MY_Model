@@ -37,7 +37,7 @@ class User_model extends MY_Model
 	public $protected = array(); // ...Or you can set an array with the fields that cannot be filled by insert/update
 	public function __construct()
 	{
-		parent::__construct()
+		parent::__construct();
 	}
 }
 ```
@@ -90,7 +90,7 @@ class User_model extends MY_Model
 		//By default, MY_Model uses the files (CodeIgniter's file driver) to cache result. If you want to change the way it stores the cache, you can change the $cache_driver property to whatever CodeIgniter cache driver you want to use.
 
 		$this->cache_prefix = 'mm';
-		With $cache_prefix, you can prefix the name of the caches. By default any cache made by MY_Model starts with 'mm' + _ + "name chosen for cache"
+		//With $cache_prefix, you can prefix the name of the caches. By default any cache made by MY_Model starts with 'mm' + _ + "name chosen for cache"
 
 		parent::__construct();
  	}
@@ -499,7 +499,7 @@ class Post_model extends MY_Model
 
 	function __construct()
 	{
-		$this->has_one['user'] = array('foreign_model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','foreign_key'=>'user_id');
+		$this->has_one['user'] = array('foreign_model'=>'User_model','foreign_table'=>'users','foreign_key'=>'id','local_key'=>'user_id');
 	}
 }
 ```
@@ -613,7 +613,7 @@ You can then access your related data using the `with_*()` method:
 ```php
 $user = $this->user_model->with_phone()->with_posts()->get(1);
 ```
-The `with_*()` method can accept parameters like 'fields', 'where', and 'non_exclusivist_where'.
+The `with_*()` method can accept parameters like 'fields', 'where', and 'non_exclusive_where'.
 
 With the `fields:...` you can enumerate the fields you want returned.
 ```php
@@ -628,12 +628,12 @@ Take note that you can retrieve the count as `counted_rows` (do a print_r() and 
 
 With the `where:...` you can pass a where clause that will be interpreted as string.
 
-The where clause is an *exclusivist* one. That means that it will retrieve only results that are complying to the subresult's where: if a `users` table has relationship with an `details` table, and you set a `where` clause inside the with_*() method that looks only for the results that have `first_name` of `John` in the `details` table, the final results that will be returned will only those users from the `users` table that have a related first_name inside the `details` table of `John`.
+The where clause is an *exclusivist* one. That means that it will retrieve only results that are complying to the subresult's where. If a `users` table has relationship with a `details` table, and you set a `where` clause inside the with_*() method, that `where:...` looks only for the results that have `first_name` of `John` in the `details` table, the final results that will be returned will only be those users from the `users` table that have a related first_name inside the `details` table of `John`.
 ```php
 $user = $this->user_model->with_phone('fields:mobile_number', 'where:`phone_status`=\'active\'')->get(1);
 ```
 
-A `non_exclusivist_where` would return all the main results and only the additional subresults appended to the main results.
+A `non_exclusive_where` would return all the main results and only the additional subresults appended to the main results.
 
 *NB: You won't be able to add an exclusive and a non-exclusive where in the same time*
 
@@ -647,11 +647,72 @@ foreach ($user->posts as $post)
 }
 ```
 
-####Order by relationship data
+###Order the results of the relastionship results
 
-You can order the result by related data column.
+Sometimes you need to order the results coming from the with_*() method. In order do this, you can use the order_inside parameter like below:
+
 ```php
-$this->post_model->with_user("order_by:views,desc");
+$this->author_model->with_posts('fields:...|order_inside:published_at desc')->get_all();
+```
+A query like the one above should return all the authors with their respective posts ordered by the publish date. You can also have more than one order inside parameters:
+
+```php
+$this->author_model->with_posts('fields:...|order_inside:published_at desc, readings asc')->get_all();
+```
+
+###Order THE MAIN RESULT by the relationship data
+
+You can order the main result by using a field that can be found inside a relationship column.
+```php
+$this->post_model->with_author("order_by:username,asc")->get_all();
+```
+The code above will order all the posts by the username of the authors (ascending).
+
+###Retrieve data from nested relationships (or should we say retrieve nested relationships data?)
+
+In order to retrieve data from nested relationships, we should pass the with_*() method a multidimensional array. Let's assume we have a Country_model with many City_model, the City_Model having many Company_model:
+
+So... the Country_model.php: would look like this:
+
+```php
+class Country_model extends MY_Model
+{
+    function __construct()
+    {
+        $this->has_many['cities'] = array('foreign_model'=>'City_model','foreign_table'=>'cities','foreign_key'=>'country_id','local_key'=>'id');
+    }
+}
+```
+
+The City_model.php would look like this:
+
+```php
+class City_model extends MY_Model
+{
+    function __construct()
+    {
+        $this->has_one['country'] = array('foreign_model'=>'Country_model','foreign_table'=>'countries','foreign_key'=>'id','local_key'=>'country_id');
+        $this->has_many['companies'] = array('foreign_model'=>'Company_model','foreign_table'=>'companies','foreign_key'=>'city_id','local_key'=>'id');
+    }
+}
+```
+
+The Company_model.php would look like this:
+
+```php
+class Company_model extends MY_Model
+{
+    function __construct()
+    {
+        $this->has_one['city'] = array('foreign_model'=>'City_model','foreign_table'=>'cities','foreign_key'=>'id','local_key'=>'city_id');
+    }
+}
+```
+
+Now, if we want to retrieve the cities with their companies from a country we would go like this:
+
+```php
+$this->country_model->with_cities(array('fields'=>'name,id,population','with'=>array('relation'=>'companies','fields'=>'name,phone_number'))->get($country_id);
 ```
 
 ##Database Connection
@@ -692,13 +753,12 @@ class User_model extends MY_Model
 		$this->before_create[] = 'hash_password';
 		parent::__construct();
 	}
-    public $before_create = array( 'hash_password' );
 
 	protected function hash_password($data)
-    {
-        $data['password'] = 'whateverpasswordcreationresultyoumaythinkof';
-        return $data;
-    }
+    	{
+        	$data['password'] = 'whateverpasswordcreationresultyoumaythinkof';
+        	return $data;
+    	}
 }
 ```
 Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has an `after_get` trigger which will be called last.

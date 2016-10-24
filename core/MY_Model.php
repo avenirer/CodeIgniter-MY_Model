@@ -195,7 +195,7 @@ class MY_Model extends CI_Model
         Their respective functions - add_creator() and add_updater() - can be found at the end of the model.
         They add user id on create and update. If you comment this out don't forget to do the same for the methods()
         $this->before_create[]='add_creator';
-        $this->before_create[]='add_updater';
+        $this->before_update[]='add_updater';
         */
     }
 
@@ -307,9 +307,9 @@ class MY_Model extends CI_Model
             $data = json_decode(json_encode($data), FALSE);
         }
         if(isset($this->_select))
-		{
-			$this->_select = '*';
-		}
+        {
+            $this->_select = '*';
+        }
         return $data;
     }
 
@@ -605,10 +605,10 @@ class MY_Model extends CI_Model
     {
         if($this->soft_deletes===TRUE)
         {
-        	if(debug_backtrace()[1]['function']!='force_delete')
-        	{
-        		$this->_where_trashed();
-        	}
+            $backtrace = debug_backtrace(); #fix for lower PHP 5.4 version
+            if($backtrace[1]['function']!='force_delete'){
+                $this->_where_trashed();
+            }
         }
 
         if(is_array($field_or_array))
@@ -742,17 +742,17 @@ class MY_Model extends CI_Model
             }
             if(!empty($this->before_soft_delete))
             {
-            	foreach($to_update as &$row)
-            	{
-            		$row = $this->trigger('before_soft_delete',$row);
-            	}
+                foreach($to_update as &$row)
+                {
+                    $row = $this->trigger('before_soft_delete',$row);
+                }
             }
             if(!empty($this->before_delete))
             {
-            	foreach($to_update as &$row)
-            	{
-            		$row = $this->trigger('before_delete',$row);
-            	}
+                foreach($to_update as &$row)
+                {
+                    $row = $this->trigger('before_delete',$row);
+                }
             }
         }
         if(isset($where))
@@ -1001,26 +1001,26 @@ class MY_Model extends CI_Model
             {
                 foreach($arguments as $argument)
                 {
-			        if(is_array($argument))
+                    if(is_array($argument))
                     {
-				        foreach($argument as $k => $v)
+                        foreach($argument as $k => $v)
                         {
-					        $parameters[$k] = $v;
-                         }
+                            $parameters[$k] = $v;
+                        }
                     }
-                    else 
+                    else
                     {
-						$requested_operations = explode('|',$argument);
-						foreach($requested_operations as $operation)
-						{
-							$elements = explode(':', $operation, 2);
-							if (sizeof($elements) == 2) {
-								$parameters[$elements[0]] = $elements[1];
-							} else {
-								show_error('MY_Model: Parameters for with_*() method must be of the form: "...->with_*(\'where:...|fields:...\')"');
-							}
-						}
-					}
+                        $requested_operations = explode('|',$argument);
+                        foreach($requested_operations as $operation)
+                        {
+                            $elements = explode(':', $operation, 2);
+                            if (sizeof($elements) == 2) {
+                                $parameters[$elements[0]] = $elements[1];
+                            } else {
+                                show_error('MY_Model: Parameters for with_*() method must be of the form: "...->with_*(\'where:...|fields:...\')"');
+                            }
+                        }
+                    }
                 }
             }
             $this->_requested[$request]['parameters'] = $parameters;
@@ -1053,6 +1053,8 @@ class MY_Model extends CI_Model
     protected function join_temporary_results($data)
     {
         $order_by = array();
+        $order_inside_array = array();
+        //$order_inside = '';
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
@@ -1069,6 +1071,25 @@ class MY_Model extends CI_Model
                 $pivot_local_key = $relation['pivot_local_key'];
                 $pivot_foreign_key = $relation['pivot_foreign_key'];
                 $get_relate = $relation['get_relate'];
+            }
+
+            if(array_key_exists('order_inside',$request['parameters']))
+            {
+                //$order_inside = $request['parameters']['order_inside'];
+                $elements = explode(',', $request['parameters']['order_inside']);
+                foreach($elements as $element)
+                {
+                    $order = explode(' ',$element);
+                    if(sizeof($order)==2)
+                    {
+                        $order_inside_array[] = array(trim($order[0]), trim($order[1]));
+                    }
+                    else
+                    {
+                        $order_inside_array[] = array(trim($order[0]), 'desc');
+                    }
+                }
+
             }
 
 
@@ -1114,34 +1135,43 @@ class MY_Model extends CI_Model
 
                     }
                     if(array_key_exists('fields',$request['parameters']) && ($request['parameters']['fields']=='*count*'))
-					{
-						$sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
-					}
+                    {
+                        $sub_results->group_by('`' . $foreign_table . '`.`' . $foreign_key . '`');
+                    }
                     if(array_key_exists('where',$request['parameters']) || array_key_exists('non_exclusive_where',$request['parameters']))
                     {
                         $the_where = array_key_exists('where', $request['parameters']) ? 'where' : 'non_exclusive_where';
                     }
                     $sub_results = isset($the_where) ? $sub_results->where($request['parameters'][$the_where],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
-                    //Add nested relation   
-					if(array_key_exists('with',$request['parameters']))
-					{
-						// Do we have many nested relation
-						if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0]))
-						{
-							foreach ($request['parameters']['with'] as $with)
-							{
-								$with_relation = array_shift($with);
-								$sub_results->with($with_relation, array($with));
-							}
-						}
-						else // single nested relation
-						{
-							$with_relation = array_shift($request['parameters']['with']);
-							$sub_results->with($with_relation,array($request['parameters']['with']));
-						}
-					}
+
+                    if(isset($order_inside_array))
+                    {
+                        foreach($order_inside_array as $order_by_inside)
+                        {
+                            $sub_results = $sub_results->order_by($order_by_inside[0],$order_by_inside[1]);
+                        }
+                    }
+
+                    //Add nested relation
+                    if(array_key_exists('with',$request['parameters']))
+                    {
+                        // Do we have many nested relation
+                        if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0]))
+                        {
+                            foreach ($request['parameters']['with'] as $with)
+                            {
+                                $with_relation = array_shift($with);
+                                $sub_results->with($with_relation, array($with));
+                            }
+                        }
+                        else // single nested relation
+                        {
+                            $with_relation = array_shift($request['parameters']['with']);
+                            $sub_results->with($with_relation,array($request['parameters']['with']));
+                        }
+                    }
                 }
-                
+
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
             }
             else
@@ -1179,6 +1209,18 @@ class MY_Model extends CI_Model
                     }
                 }
                 $this->_database->where_in($pivot_table.'.'.$pivot_local_key,$local_key_values);
+
+                if(!empty($order_inside_array))
+                {
+                    $order_inside_str = '';
+                    foreach($order_inside_array as $order_by_inside)
+                    {
+                        $order_inside_str .= (strpos($order_by_inside[0],',')=== false) ? '`'.$foreign_table.'`.`'.$order_by_inside[0].' '.$order_by_inside[1] : $order_by_inside[0].' '.$order_by_inside[1];
+                        $order_inside_str .= ',';
+                    }
+                    $order_inside_str = rtrim($order_inside_str, ",");
+                    $this->_database->order_by(rtrim($order_inside_str,","));
+                }
                 $sub_results = $this->_database->get($foreign_table)->result_array();
                 $this->_database->reset_query();
             }
@@ -1247,7 +1289,7 @@ class MY_Model extends CI_Model
             }
             unset($this->_requested[$requested_key]);
         }
-        if($order_by)
+        if(!empty($order_by))
         {
             foreach($order_by as $field => $row)
             {
@@ -1292,8 +1334,12 @@ class MY_Model extends CI_Model
                         if(!is_array($relation))
                         {
                             $foreign_model = $relation;
-                            $foreign_model_name = strtolower($foreign_model);
-                            $this->load->model($foreign_model_name);
+                            $model = _parse_model_dir($foreign_model);
+                            $foreign_model = $model['foreign_model'];
+                            $model_dir = $model['model_dir'];
+                            $foreign_model_name = $model['foreign_model_name'];
+
+                            $this->load->model($model_dir . $foreign_model_name);
                             $foreign_table = $this->{$foreign_model_name}->table;
                             $foreign_key = $this->{$foreign_model_name}->primary_key;
                             $local_key = $this->primary_key;
@@ -1313,8 +1359,12 @@ class MY_Model extends CI_Model
                                 }
                                 else
                                 {
-                                    $foreign_model_name = strtolower($foreign_model);
-                                    $this->load->model($foreign_model_name);
+                                    $model = $this->_parse_model_dir($foreign_model);
+                                    $foreign_model = $model['foreign_model'];
+                                    $model_dir = $model['model_dir'];
+                                    $foreign_model_name = $model['foreign_model_name'];
+
+                                    $this->load->model($model_dir . $foreign_model_name);
                                     $foreign_table = $this->{$foreign_model_name}->table;
                                 }
                                 $foreign_key = $relation['foreign_key'];
@@ -1330,8 +1380,12 @@ class MY_Model extends CI_Model
                             else
                             {
                                 $foreign_model = $relation[0];
-                                $foreign_model_name = strtolower($foreign_model);
-                                $this->load->model($foreign_model_name);
+                                $model = $this->_parse_model_dir($foreign_model);
+                                $foreign_model = $model['foreign_model'];
+                                $model_dir = $model['model_dir'];
+                                $foreign_model_name = $model['foreign_model_name'];
+
+                                $this->load->model($model_dir . $foreign_model_name);
                                 $foreign_table = $this->{$foreign_model_name}->table;
                                 $foreign_key = $relation[1];
                                 $local_key = $relation[2];
@@ -1604,6 +1658,7 @@ class MY_Model extends CI_Model
     {
         $this->load->driver('cache');
         $prefix = (strlen($this->cache_prefix)>0) ? $this->cache_prefix.'_' : '';
+		$prefix .= $this->table.'_';
         if(isset($string) && (strpos($string,'*') === FALSE))
         {
             $this->cache->{$this->cache_driver}->delete($prefix . $string);
@@ -1668,16 +1723,16 @@ class MY_Model extends CI_Model
     private function _set_connection()
     {
         if(isset($this->_database_connection))
-            {
-                $this->_database = $this->load->database($this->_database_connection,TRUE);
-            }
-            else
-            {
-                $this->load->database();
-                $this->_database =$this->db;
-            }
-            // This may not be required 
-            return $this;
+        {
+            $this->_database = $this->load->database($this->_database_connection,TRUE);
+        }
+        else
+        {
+            $this->load->database();
+            $this->_database =$this->db;
+        }
+        // This may not be required
+        return $this;
     }
 
     /*
@@ -1817,7 +1872,7 @@ class MY_Model extends CI_Model
     }
     private function _get_table_name($model_name)
     {
-        $table_name = plural(preg_replace('/(_m|_model)?$/', '', strtolower($model_name)));
+        $table_name = plural(preg_replace('/(_m|_model|_mdl)?$/', '', strtolower($model_name)));
         return $table_name;
     }
 
@@ -1845,10 +1900,25 @@ class MY_Model extends CI_Model
     private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC')
     {
         usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
-            return strtoupper($sort_by) ==  "DESC" ? ($a[$field][$order_by] < $b[$field][$order_by]) : ($a[$field][$order_by] > $b[$field][$order_by]);
+            $array_a = $this->object_to_array($a[$field]);
+            $array_b = $this->object_to_array($b[$field]);
+            return strtoupper($sort_by) ==  "DESC" ? ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] < $array_b[$order_by]) : -1) : ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] > $array_b[$order_by]) : -1);
         });
 
         return $data;
+    }
+
+    public function object_to_array( $object )
+    {
+        if( !is_object( $object ) && !is_array( $object ) )
+        {
+            return $object;
+        }
+        if( is_object( $object ) )
+        {
+            $object = get_object_vars( $object );
+        }
+        return array_map( array($this,'object_to_array'), $object );
     }
 
 
@@ -1860,7 +1930,32 @@ class MY_Model extends CI_Model
     private function _is_assoc(array $array) {
         return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
-    
+
+    /**
+     * private function _parse_model_dir($foreign_model)
+     *
+     * Parse model and model folder 
+     * @param $foreign_model
+     * @return $data
+     */
+    private function _parse_model_dir($foreign_model)
+    {
+        $data['foreign_model']      = $foreign_model;
+        $data['model_dir']          = NULL;
+
+        $full_model = explode('/', $data['foreign_model']);
+        if ($full_model) {
+
+            $data['foreign_model'] = end($full_model);
+            $data['model_dir'] = str_replace($data['foreign_model'], null, implode('/', $full_model));
+        }
+
+        $data['foreign_model_name'] = strtolower($data['foreign_model']);
+
+        return $data;
+    }
+
+
     /*
     public function add_creator($data)
     {
@@ -1868,7 +1963,7 @@ class MY_Model extends CI_Model
     	return $data;
     }
     */
-    
+
     /*
     public function add_updater($data)
     {
