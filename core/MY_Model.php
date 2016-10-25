@@ -1918,9 +1918,7 @@ class MY_Model extends CI_Model
 
     private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC')
     {
-        $sort_array = explode('_',$sort_by);
-        $sort_by = $sort_array[0];
-        usort($data, function($a, $b) use ($field, $order_by, $sort_by,$null_top) {
+        usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
             $array_a = isset($a[$field]) ? $this->object_to_array($a[$field]) : NULL;
             $array_b = isset($b[$field]) ? $this->object_to_array($b[$field]) : NULL;
             return strtoupper($sort_by) ==  "DESC" ?
