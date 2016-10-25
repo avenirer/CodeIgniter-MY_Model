@@ -1920,13 +1920,12 @@ class MY_Model extends CI_Model
     {
         $sort_array = explode('_',$sort_by);
         $sort_by = $sort_array[0];
-        $null_top = (isset($sort_array[1]) && strtoupper($sort_array[1]) == 'NULL' && isset($sort_array[2]) && strtoupper($sort_array[2])  == 'TOP')? -1 :+1;
         usort($data, function($a, $b) use ($field, $order_by, $sort_by,$null_top) {
             $array_a = isset($a[$field]) ? $this->object_to_array($a[$field]) : NULL;
             $array_b = isset($b[$field]) ? $this->object_to_array($b[$field]) : NULL;
             return strtoupper($sort_by) ==  "DESC" ?
-                ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] < $array_b[$order_by]) : (!isset($array_b) ? $null_top*-1: -1))
-                : ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] > $array_b[$order_by]) : (!isset($array_a)? $null_top: -1));
+                ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] < $array_b[$order_by]) : (!isset($array_a) ? 1 : -1))
+                : ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] > $array_b[$order_by]) : (!isset($array_b) ? 1: -1));
         });
 
         return $data;
