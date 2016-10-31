@@ -1919,9 +1919,11 @@ class MY_Model extends CI_Model
     private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC')
     {
         usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
-            $array_a = $this->object_to_array($a[$field]);
-            $array_b = $this->object_to_array($b[$field]);
-            return strtoupper($sort_by) ==  "DESC" ? ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] < $array_b[$order_by]) : -1) : ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] > $array_b[$order_by]) : -1);
+            $array_a = isset($a[$field]) ? $this->object_to_array($a[$field]) : NULL;
+            $array_b = isset($b[$field]) ? $this->object_to_array($b[$field]) : NULL;
+            return strtoupper($sort_by) ==  "DESC" ?
+                ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] < $array_b[$order_by]) : (!isset($array_a) ? 1 : -1))
+                : ((isset($array_a[$order_by]) && isset($array_b[$order_by])) ? ($array_a[$order_by] > $array_b[$order_by]) : (!isset($array_b) ? 1: -1));
         });
 
         return $data;
