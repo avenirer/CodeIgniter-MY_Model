@@ -1345,7 +1345,7 @@ class MY_Model extends CI_Model
                         if(!is_array($relation))
                         {
                             $foreign_model = $relation;
-                            $model = _parse_model_dir($foreign_model);
+                            $model = $this->_parse_model_dir($foreign_model);
                             $foreign_model = $model['foreign_model'];
                             $model_dir = $model['model_dir'];
                             $foreign_model_name = $model['foreign_model_name'];
