@@ -1197,7 +1197,7 @@ class MY_Model extends CI_Model
                     {
                         if($request['parameters']['fields'] == '*count*')
                         {
-                            $this->_database->select('COUNT(`'.$foreign_table.'`*) as counted_rows, `' . $foreign_table . '`.`' . $foreign_key . '`', FALSE);
+                            $this->_database->select('COUNT(`'.$foreign_table.'`.*) as counted_rows, `' . $foreign_table . '`.`' . $foreign_key . '`', FALSE);
                         }
                         else
                         {
