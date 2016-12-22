@@ -872,6 +872,7 @@ class MY_Model extends CI_Model
         if(isset($data) && $data !== FALSE)
         {
             $this->_database->reset_query();
+            if(isset($this->_cache)) unset($this->_cache);
             return $data;
         }
         else
@@ -892,13 +893,13 @@ class MY_Model extends CI_Model
             {
                 $this->where($where);
             }
-	    elseif($this->soft_deletes===TRUE)
+            elseif($this->soft_deletes===TRUE)
             {
                 $this->_where_trashed();
             }
             $this->limit(1);
             $query = $this->_database->get($this->table);
-	    $this->_reset_trashed();
+            $this->_reset_trashed();
             if ($query->num_rows() == 1)
             {
                 $row = $query->row_array();
@@ -923,12 +924,15 @@ class MY_Model extends CI_Model
      */
     public function get_all($where = NULL)
     {
+
         $data = $this->_get_from_cache();
 
         if(isset($data) && $data !== FALSE)
         {
             $this->_database->reset_query();
+            if(isset($this->_cache)) unset($this->_cache);
             return $data;
+
         }
         else
         {
@@ -953,7 +957,7 @@ class MY_Model extends CI_Model
                 }
             }
             $query = $this->_database->get($this->table);
-	    $this->_reset_trashed();
+            $this->_reset_trashed();
             if($query->num_rows() > 0)
             {
                 $data = $query->result_array();
@@ -981,13 +985,13 @@ class MY_Model extends CI_Model
         {
             $this->where($where);
         }
-	elseif($this->soft_deletes===TRUE)
+        elseif($this->soft_deletes===TRUE)
         {
             $this->_where_trashed();
         }
         $this->_database->from($this->table);
         $number_rows = $this->_database->count_all_results();
-	$this->_reset_trashed();
+        $this->_reset_trashed();
         return $number_rows;
     }
 
@@ -1677,7 +1681,7 @@ class MY_Model extends CI_Model
     {
         $this->load->driver('cache');
         $prefix = (strlen($this->cache_prefix)>0) ? $this->cache_prefix.'_' : '';
-		$prefix .= $this->table.'_';
+        $prefix .= $this->table.'_';
         if(isset($string) && (strpos($string,'*') === FALSE))
         {
             $this->cache->{$this->cache_driver}->delete($prefix . $string);
@@ -1955,7 +1959,7 @@ class MY_Model extends CI_Model
     /**
      * private function _parse_model_dir($foreign_model)
      *
-     * Parse model and model folder 
+     * Parse model and model folder
      * @param $foreign_model
      * @return $data
      */
