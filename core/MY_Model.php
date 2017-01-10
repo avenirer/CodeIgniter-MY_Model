@@ -1365,7 +1365,7 @@ class MY_Model extends CI_Model
                         }
                         else
                         {
-                            if($this->_is_assoc($relation))
+                            if($this->is_assoc($relation))
                             {
                                 $foreign_model = $relation['foreign_model'];
                                 if(array_key_exists('foreign_table',$relation))
@@ -1952,7 +1952,7 @@ class MY_Model extends CI_Model
      * @param array $array
      * @return bool
      */
-    private function _is_assoc(array $array) {
+    protected function is_assoc(array $array) {
         return (bool)count(array_filter(array_keys($array), 'is_string'));
     }
 
