@@ -1351,10 +1351,10 @@ class MY_Model extends CI_Model
                             $foreign_model = $relation;
                             $model = $this->_parse_model_dir($foreign_model);
                             $foreign_model = $model['foreign_model'];
-                            $model_dir = $model['model_dir'];
+                            //$model_dir = $model['model_dir'];
                             $foreign_model_name = $model['foreign_model_name'];
 
-                            $this->load->model($model_dir . $foreign_model_name);
+                            $this->load->model($foreign_model, $foreign_model_name);
                             $foreign_table = $this->{$foreign_model_name}->table;
                             $foreign_key = $this->{$foreign_model_name}->primary_key;
                             $local_key = $this->primary_key;
@@ -1368,20 +1368,20 @@ class MY_Model extends CI_Model
                             if($this->is_assoc($relation))
                             {
                                 $foreign_model = $relation['foreign_model'];
+                                $model = $this->_parse_model_dir($foreign_model);
+                                $foreign_model = $model['foreign_model'];
+                                $model_dir = $model['model_dir'];
+                                $foreign_model_name = $model['foreign_model_name'];
+                                $this->load->model($model_dir . $foreign_model, $foreign_model_name);
                                 if(array_key_exists('foreign_table',$relation))
                                 {
                                     $foreign_table = $relation['foreign_table'];
                                 }
                                 else
                                 {
-                                    $model = $this->_parse_model_dir($foreign_model);
-                                    $foreign_model = $model['foreign_model'];
-                                    $model_dir = $model['model_dir'];
-                                    $foreign_model_name = $model['foreign_model_name'];
-
-                                    $this->load->model($model_dir . $foreign_model_name);
                                     $foreign_table = $this->{$foreign_model_name}->table;
                                 }
+
                                 $foreign_key = $relation['foreign_key'];
                                 $local_key = $relation['local_key'];
                                 if($option=='has_many_pivot')
@@ -1421,7 +1421,7 @@ class MY_Model extends CI_Model
                             $pivot_table = $tables[0].'_'.$tables[1];
                         }
 
-                        $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => strtolower($foreign_model), 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
+                        $this->_relationships[$key] = array('relation' => $option, 'relation_key' => $key, 'foreign_model' => strtolower($foreign_model), 'foreign_model_name'=>strtolower($foreign_model_name), 'foreign_table' => $foreign_table, 'foreign_key' => $foreign_key, 'local_key' => $local_key);
                         if($option == 'has_many_pivot')
                         {
                             $this->_relationships[$key]['pivot_table'] = $pivot_table;
@@ -1966,7 +1966,7 @@ class MY_Model extends CI_Model
     private function _parse_model_dir($foreign_model)
     {
         $data['foreign_model']      = $foreign_model;
-        $data['model_dir']          = NULL;
+        $data['model_dir']          = '';
 
         $full_model = explode('/', $data['foreign_model']);
         if ($full_model) {
@@ -1975,7 +1975,9 @@ class MY_Model extends CI_Model
             $data['model_dir'] = str_replace($data['foreign_model'], null, implode('/', $full_model));
         }
 
-        $data['foreign_model_name'] = strtolower($data['foreign_model']);
+        $foreign_model_name = str_replace('/','_',$data['model_dir'].$data['foreign_model']);
+
+        $data['foreign_model_name'] = strtolower($foreign_model_name);
 
         return $data;
     }
