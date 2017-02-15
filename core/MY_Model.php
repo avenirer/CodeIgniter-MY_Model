@@ -1074,7 +1074,10 @@ class MY_Model extends CI_Model
         {
             $pivot_table = NULL;
             $relation = $this->_relationships[$request['request']];
-            $this->load->model($relation['foreign_model']);
+            echo '<pre>';
+            print_r($relation);
+            echo '</pre>';
+            $this->load->model($relation['foreign_model'],$relation['foreign_model_name']);
             $foreign_key = $relation['foreign_key'];
             $local_key = $relation['local_key'];
             $foreign_table = $relation['foreign_table'];
@@ -1124,7 +1127,7 @@ class MY_Model extends CI_Model
             }
             if(!isset($pivot_table))
             {
-                $sub_results = $this->{$relation['foreign_model']};
+                $sub_results = $this->{$relation['foreign_model_name']};
                 $select = array();
                 $select[] = '`'.$foreign_table.'`.`'.$foreign_key.'`';
                 if(!empty($request['parameters']))
@@ -1369,16 +1372,16 @@ class MY_Model extends CI_Model
                             {
                                 $foreign_model = $relation['foreign_model'];
                                 $model = $this->_parse_model_dir($foreign_model);
-                                $foreign_model = $model['foreign_model'];
-                                $model_dir = $model['model_dir'];
+                                $foreign_model = $model['model_dir'].$model['foreign_model'];
                                 $foreign_model_name = $model['foreign_model_name'];
-                                $this->load->model($model_dir . $foreign_model, $foreign_model_name);
+
                                 if(array_key_exists('foreign_table',$relation))
                                 {
                                     $foreign_table = $relation['foreign_table'];
                                 }
                                 else
                                 {
+                                    $this->load->model($foreign_model, $foreign_model_name);
                                     $foreign_table = $this->{$foreign_model_name}->table;
                                 }
 
@@ -1396,12 +1399,11 @@ class MY_Model extends CI_Model
                             {
                                 $foreign_model = $relation[0];
                                 $model = $this->_parse_model_dir($foreign_model);
-                                $foreign_model = $model['foreign_model'];
-                                $model_dir = $model['model_dir'];
+                                $foreign_model = $model['model_dir'].$model['foreign_model'];
                                 $foreign_model_name = $model['foreign_model_name'];
 
-                                $this->load->model($model_dir . $foreign_model_name);
-                                $foreign_table = $this->{$foreign_model_name}->table;
+                                $this->load->model($foreign_model);
+                                $foreign_table = $this->{$foreign_model}->table;
                                 $foreign_key = $relation[1];
                                 $local_key = $relation[2];
                                 if($option=='has_many_pivot')
