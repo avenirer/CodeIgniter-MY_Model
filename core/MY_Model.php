@@ -1074,9 +1074,6 @@ class MY_Model extends CI_Model
         {
             $pivot_table = NULL;
             $relation = $this->_relationships[$request['request']];
-            echo '<pre>';
-            print_r($relation);
-            echo '</pre>';
             $this->load->model($relation['foreign_model'],$relation['foreign_model_name']);
             $foreign_key = $relation['foreign_key'];
             $local_key = $relation['local_key'];
