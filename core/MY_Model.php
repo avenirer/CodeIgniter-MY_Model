@@ -858,6 +858,32 @@ class MY_Model extends CI_Model
         return FALSE;
     }
 
+    public function _get_joined($requested)
+    {
+        $this->_database->join($this->_relationships[$requested['request']]['foreign_table'], $this->table.'.'.$this->_relationships[$requested['request']]['local_key'].' = '.$this->_relationships[$requested['request']]['foreign_table'].'.'.$this->_relationships[$requested['request']]['foreign_key']);
+        $the_select = '';
+        if(!empty($requested['parameters']))
+        {
+            if(array_key_exists('fields',$requested['parameters']))
+            {
+                $fields = explode(',', $requested['parameters']['fields']);
+                $sub_select = array();
+                foreach ($fields as $field)
+                {
+                    $sub_select[] = ((strpos($field,'.')===FALSE) ? '`' . $this->_relationships[$requested['request']]['foreign_table'] . '`.`' . trim($field) . '`' : trim($field)).' AS '.$requested['request'].'_'.trim($field);
+                }
+                $the_select = implode(',', $sub_select);
+
+            }
+            else
+            {
+                $the_select = $this->_relationships[$requested['request']]['foreign_table'] . '.*';
+            }
+        }
+        $this->_database->select($the_select);
+        unset($this->_requested[$requested['request']]);
+    }
+
 
     /**
      * public function get()
@@ -884,9 +910,17 @@ class MY_Model extends CI_Model
             }
             if(!empty($this->_requested))
             {
+
                 foreach($this->_requested as $requested)
                 {
-                    $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                    if(isset($requested['parameters']['join']))
+                    {
+                        $this->_get_joined($requested);
+                    }
+                    else
+                    {
+                        $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                    }
                 }
             }
             if(isset($where))
@@ -953,7 +987,14 @@ class MY_Model extends CI_Model
             {
                 foreach($this->_requested as $requested)
                 {
-                    $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                    if(isset($requested['parameters']['join']))
+                    {
+                        $this->_get_joined($requested);
+                    }
+                    else
+                    {
+                        $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                    }
                 }
             }
             $query = $this->_database->get($this->table);
@@ -1346,6 +1387,7 @@ class MY_Model extends CI_Model
                 {
                     foreach($this->{$option} as $key => $relation)
                     {
+                        $single_query=false;
                         if(!is_array($relation))
                         {
                             $foreign_model = $relation;
@@ -1391,6 +1433,10 @@ class MY_Model extends CI_Model
                                     $pivot_foreign_key = (array_key_exists('pivot_foreign_key',$relation)) ? $relation['pivot_foreign_key'] : $foreign_table.'_'.$foreign_key;
                                     $get_relate = (array_key_exists('get_relate',$relation) && ($relation['get_relate']===TRUE)) ? TRUE : FALSE;
                                 }
+                                if($option=='has_one' && isset($relation['join']) && $relation['join']===true)
+                                {
+                                    $single_query=true;
+                                }
                             }
                             else
                             {
@@ -1428,10 +1474,15 @@ class MY_Model extends CI_Model
                             $this->_relationships[$key]['pivot_foreign_key'] = $pivot_foreign_key;
                             $this->_relationships[$key]['get_relate'] = $get_relate;
                         }
+                        if($single_query===true)
+                        {
+                            $this->_relationships[$key]['joined'] = true;
+                        }
                     }
                 }
             }
         }
+
     }
 
     /** END RELATIONSHIPS */
@@ -1535,10 +1586,10 @@ class MY_Model extends CI_Model
         switch($this->_trashed)
         {
             case 'only' :
-                $this->_database->where($this->_deleted_at_field.' IS NOT NULL', NULL, FALSE);
+                $this->_database->where($this->table.'.'.$this->_deleted_at_field.' IS NOT NULL', NULL, FALSE);
                 break;
             case 'without' :
-                $this->_database->where($this->_deleted_at_field.' IS NULL', NULL, FALSE);
+                $this->_database->where($this->table.'.'.$this->_deleted_at_field.' IS NULL', NULL, FALSE);
                 break;
             case 'with' :
                 break;
