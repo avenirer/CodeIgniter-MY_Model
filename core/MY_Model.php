@@ -1502,7 +1502,7 @@ class MY_Model extends CI_Model
 
     /**
      * public function with_trashed()
-     * Sets $_trashed to TRUE
+     * Sets $_trashed to with
      */
     public function with_trashed()
     {
@@ -1511,8 +1511,18 @@ class MY_Model extends CI_Model
     }
 
     /**
+     * public function without_trashed()
+     * Sets $_trashed to without
+     */
+    public function without_trashed()
+    {
+        $this->_trashed = 'without';
+        return $this;
+    }
+
+    /**
      * public function with_trashed()
-     * Sets $_trashed to TRUE
+     * Sets $_trashed to only
      */
     public function only_trashed()
     {
@@ -1533,7 +1543,7 @@ class MY_Model extends CI_Model
             case 'with' :
                 break;
         }
-        $this->_trashed = '';
+        //$this->_trashed = ''; issue #208...
         return $this;
     }
 
