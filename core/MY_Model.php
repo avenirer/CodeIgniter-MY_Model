@@ -252,6 +252,10 @@ class MY_Model extends CI_Model
                 if (in_array($field, $can_fill)) {
                     $new_data[$field] = $value;
                 }
+                else
+                {
+                     show_error('MY_Model: Unknown column ('.$field.') in table: ('.$this->table.').');
+                }
             }
         }
         else
@@ -262,6 +266,10 @@ class MY_Model extends CI_Model
                 {
                     if (in_array($field, $can_fill)) {
                         $new_data[$key][$field] = $value;
+                    }
+                    else
+                    {
+                        show_error('MY_Model: Unknown column '.$field.' in table: '.$this->table);
                     }
                 }
             }
@@ -2042,7 +2050,7 @@ class MY_Model extends CI_Model
         return $data;
     }
 
-
+    
     /*
     public function add_creator($data)
     {
