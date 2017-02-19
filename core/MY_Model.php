@@ -2050,33 +2050,7 @@ class MY_Model extends CI_Model
         return $data;
     }
 
-    public function transaction_begin($test_mode = FALSE)
-    {
-         return  $this->_database->trans_begin($test_mode); 
-    }
     
-    public function transaction_complete()
-    {
-         return  $this->_database->trans_complete(); 
-    }
-    
-    public function transaction_rollback()
-    {
-         return  $this->_database->trans_rollback(); 
-    }
-    
-    public function transaction_status()
-    {
-        if ($this->_database->trans_status() === FALSE)
-        {
-              return  $this->transaction_rollback();
-        }
-        else
-        {
-              return  $this->_database->trans_commit();
-        }
-    }
-            
     /*
     public function add_creator($data)
     {
