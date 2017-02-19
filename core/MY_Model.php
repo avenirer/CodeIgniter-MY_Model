@@ -252,6 +252,10 @@ class MY_Model extends CI_Model
                 if (in_array($field, $can_fill)) {
                     $new_data[$field] = $value;
                 }
+                else
+                {
+                     show_error('MY_Model: Unknown column ('.$field.') in table: ('.$this->table.').');
+                }
             }
         }
         else
@@ -262,6 +266,10 @@ class MY_Model extends CI_Model
                 {
                     if (in_array($field, $can_fill)) {
                         $new_data[$key][$field] = $value;
+                    }
+                    else
+                    {
+                        show_error('MY_Model: Unknown column '.$field.' in table: '.$this->table);
                     }
                 }
             }
@@ -2042,7 +2050,33 @@ class MY_Model extends CI_Model
         return $data;
     }
 
-
+    public function transaction_begin($test_mode = FALSE)
+    {
+         return  $this->_database->trans_begin($test_mode); 
+    }
+    
+    public function transaction_complete()
+    {
+         return  $this->_database->trans_complete(); 
+    }
+    
+    public function transaction_rollback()
+    {
+         return  $this->_database->trans_rollback(); 
+    }
+    
+    public function transaction_status()
+    {
+        if ($this->_database->trans_status() === FALSE)
+        {
+              return  $this->transaction_rollback();
+        }
+        else
+        {
+              return  $this->_database->trans_commit();
+        }
+    }
+            
     /*
     public function add_creator($data)
     {
