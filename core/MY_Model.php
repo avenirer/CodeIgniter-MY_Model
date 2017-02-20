@@ -1981,6 +1981,10 @@ class MY_Model extends CI_Model
             $this->with($relation,$arguments);
             return $this;
         }
+        if (method_exists($this->_database, $method)) {
+                call_user_func_array(array($this->_database, $method), $arguments);
+                return $this;
+        }
         $parent_class = get_parent_class($this);
         if ($parent_class !== FALSE && !method_exists($parent_class, $method) && !method_exists($this,$method))
         {
