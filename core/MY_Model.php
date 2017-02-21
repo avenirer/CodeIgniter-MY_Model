@@ -1985,6 +1985,7 @@ class MY_Model extends CI_Model
         if ($parent_class !== FALSE && !method_exists($parent_class, $method) && !method_exists($this,$method))
         {
             echo 'No method with that name ('.$method.') in '. get_class($this) .' or MY_Model or CI_Model.';
+            exit;
         }
     }
 
