@@ -1220,7 +1220,7 @@ class MY_Model extends CI_Model
                     if(array_key_exists('with',$request['parameters']))
                     {
                         // Do we have many nested relation
-                        if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0]))
+                        if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0])&& is_array($request['parameters']['with'][0]))
                         {
                             foreach ($request['parameters']['with'] as $with)
                             {
@@ -1984,8 +1984,8 @@ class MY_Model extends CI_Model
         $parent_class = get_parent_class($this);
         if ($parent_class !== FALSE && !method_exists($parent_class, $method) && !method_exists($this,$method))
         {
-            echo 'No method with that name ('.$method.') in '. get_class($this) .' or MY_Model or CI_Model.';
-            exit;
+            $msg = 'The method "'.$method.'" does not exist in '. get_class($this) .' or MY_Model or CI_Model.';
+            show_error($msg,EXIT_UNKNOWN_METHOD,'Method Not Found');
         }
     }
 
