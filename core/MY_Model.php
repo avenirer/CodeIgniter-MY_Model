@@ -1250,7 +1250,7 @@ class MY_Model extends CI_Model
                     if(array_key_exists('with',$request['parameters']))
                     {
                         // Do we have many nested relation
-                        if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0]))
+                        if(is_array($request['parameters']['with']) && isset($request['parameters']['with'][0])&& is_array($request['parameters']['with'][0]))
                         {
                             foreach ($request['parameters']['with'] as $with)
                             {
