@@ -155,7 +155,7 @@ class MY_Model extends CI_Model
     private $validated = TRUE;
     private $row_fields_to_update = array();
 
-    public $remove_empty = FALSE;
+    public $remove_empty_before_write = FALSE;
     /**
      * The various callbacks available to the model. Each are
      * simple lists of method names (methods will be run on $this).
@@ -250,7 +250,7 @@ class MY_Model extends CI_Model
             foreach ($data_as_array as $field => $value)
             {
                 if (in_array($field, $can_fill)) {
-                   if($this->remove_empty){
+                   if($this->remove_empty_before_write){
                        if(trim($value)==''){
                             continue;
                        }
@@ -270,7 +270,7 @@ class MY_Model extends CI_Model
                 foreach ($row as $field => $value)
                 {
                     if (in_array($field, $can_fill)) {
-			if($this->remove_empty){
+			if($this->remove_empty_before_write){
                             if(trim($value)==''){
                                  continue;
                             }
