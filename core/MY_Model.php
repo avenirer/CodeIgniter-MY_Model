@@ -352,11 +352,13 @@ class MY_Model extends CI_Model
         {
             $this->fillable_fields();
             $this->validated = array();
-            foreach($rules as $rule)
+            foreach($rules as $table_column_name => $rule)
             {
-                if(in_array($rule['field'],$this->_can_be_filled))
+                if(in_array($table_column_name,$this->_can_be_filled))
                 {
-                    $this->validated[$rule['field']] = $this->input->post($rule['field']);
+                    $this->validated[$table_column_name] = $this->input->post($rule['field']);
+                }else{                        
+                     show_error('MY_Model: Unknown column ('.$table_column_name.') in table: ('.$this->table.') in $rules.');
                 }
             }
             if(isset($additional_values) && is_array($additional_values) && !empty($additional_values))
