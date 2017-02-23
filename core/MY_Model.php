@@ -393,7 +393,32 @@ class MY_Model extends CI_Model
         }
 
     }
-
+    private function _unset_none_value_fields($data)
+    {
+        $multi = $this->is_multidimensional($data);
+         if($multi===FALSE)
+        {
+            foreach ($data as $field => $value)
+            {
+                if(trim($value)==''){
+                        unset($data[$field]);
+                }
+            }
+        }
+        else
+        {
+            foreach($data_as_array as $key => $row)
+            {
+                foreach ($row as $field => $value)
+                {
+                    if(trim($value)==''){
+                        unset($data[$field]);
+                    }
+                }
+            }
+        }
+        return $data;
+    }
     /**
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
@@ -412,7 +437,8 @@ class MY_Model extends CI_Model
             return FALSE;
         }
         $data = $this->_prep_before_write($data);
-
+	$data = $this->_unset_none_value_fields($data);
+	    
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = $this->is_multidimensional($data);
 
