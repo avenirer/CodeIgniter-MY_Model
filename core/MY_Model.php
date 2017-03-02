@@ -301,7 +301,7 @@ class MY_Model extends CI_Model
         // let's join the subqueries...
         $data = $this->join_temporary_results($data);
         $this->_database->reset_query();
-        $this->_requesteduested = array();
+        $this->_requested = array();
         if(isset($this->return_as_dropdown) && $this->return_as_dropdown == 'dropdown')
         {
             foreach($data as $row)
