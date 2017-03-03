@@ -928,7 +928,7 @@ class MY_Model extends CI_Model
                     }
                     else
                     {
-                        $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                        $this->_database->select($this->table.'.'.$this->_relationships[$requested['request']]['local_key']);
                     }
                 }
             }
@@ -1002,7 +1002,7 @@ class MY_Model extends CI_Model
                     }
                     else
                     {
-                        $this->_database->select($this->_relationships[$requested['request']]['local_key']);
+                        $this->_database->select($this->table.'.'.$this->_relationships[$requested['request']]['local_key']);
                     }
                 }
             }
