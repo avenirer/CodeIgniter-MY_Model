@@ -1117,11 +1117,10 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
-        $order_by = array();
-        $order_inside_array = array();
-        //$order_inside = '';
         foreach($this->_requested as $requested_key => $request)
         {
+            $order_by = array();
+            $order_inside_array = array();
             $pivot_table = NULL;
             $relation = $this->_relationships[$request['request']];
             $this->load->model($relation['foreign_model'],$relation['foreign_model_name']);
