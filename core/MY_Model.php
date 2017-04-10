@@ -523,7 +523,7 @@ class MY_Model extends CI_Model
             }
             if(isset($column_name_where))
             {
-                if (is_array($column_name_where))
+                if (is_array($column_name_where) OR is_string($column_name_where))
                 {
                     $this->where($column_name_where);
                 } elseif (is_numeric($column_name_where)) {
