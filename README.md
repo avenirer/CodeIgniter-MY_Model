@@ -4,7 +4,7 @@ This **CodeIgniter MY_Model** is the result of a lengthy tutorial about construc
 
 **VERY IMPORTANT NOTE: MY_Model DOESN'T REPLACE THE QUERY BUILDER. IF YOU HAVE A VERY COMPLEX QUERY, DO NOT ASK MY_Model TO DO IT FOR YOU**
 
-##Synopsis
+## Synopsis
 ```php
 class User_model extends MY_Model { }
 
@@ -23,7 +23,7 @@ $this->user_model->update(array('status' => '0'), 1);
 $this->user_model->delete(1);
 ```
 
-##Installation/Usage
+## Installation/Usage
 
 Download and drag the **MY_Model.php** file into your **application/core** directory. CodeIgniter will load and initialise this class automatically.
 
@@ -97,9 +97,9 @@ class User_model extends MY_Model
 }
 ```
 
-##CREATE
+## CREATE
 
-###Inserting values
+### Inserting values
 
 You can insert values by using the **insert()** method, passing it an array or an object as parameter. You can also insert multiple rows of data by using a multidimensional array.
 
@@ -111,7 +111,7 @@ $this->user_model->insert($insert_data);
 ?>
 ```
 
-###Inserting directly from forms with form validation
+### Inserting directly from forms with form validation
 
 You can at any time directly insert values from forms into the tables using the **from_form()** method. First of all **make sure you have a fillable or a protected property (at least the primary key should be in there)**, because you must make sure no-one interferes with your id's or whatever you use to uniquely identify the rows. Also is worth noting that, because the inserts and updates from forms are done directly without intervention from developer, **YOU MUST DEFINE VALIDATION RULES FOR ALL FIELDS THAT YOU ARE FILLING**
 
@@ -220,9 +220,9 @@ $id = $this->user_model->from_form(NULL,array('created_by'=>'1'))->insert();
 ...
 ```
 
-##READ
+## READ
 
-###Arrays vs Objects
+### Arrays vs Objects
 
 By default, MY_Model is setup to return objects. If you'd like to return results as array you can:
 
@@ -233,7 +233,7 @@ $users = $this->user_model->as_array()->get_all(); $posts = $this->post_model->a
 ```
 If you'd like all your calls to use the array methods, you can set the $return_type variable to array.
 
-###Return as dropdown
+### Return as dropdown
 
 There are moments when you need to retrieve data to fill a select input type. For this we have a method called as_dropdown($field). This method will return an array having the primary keys as array keys and a $field as values:
 ```php
@@ -241,7 +241,7 @@ $categories = $this->category_model->as_dropdown('title')->get_all();
 echo form_dropdown($categories);
 ```
 
-###Caching
+### Caching
 
 If you want to cache the result for faster output, you can at any time use the MY_Model's caching. To do this you simply attach a set_cache('name') inside the query chain:
 
@@ -269,7 +269,7 @@ Example:
 $this->user_model->delete_cache('get_all_users');
 ```
 
-####Auto-delete caching
+#### Auto-delete caching
 
 You can set the model in a way so that the cache will be deleted automatically whenever you write/update/delete data from your model's table. This way you won't need to do it manually. You can have this enabled by setting the delete_cache_on_save property to TRUE in the constructor:
 
@@ -286,7 +286,7 @@ class User_model extends MY_Model
     ...
 ```
 
-##Pagination
+## Pagination
 
 You can at any time "paginate" the results. You can do this by simply changing `get_all()` method with `paginate()` method. The paginate() method can receive up to three parameters:
 
@@ -313,10 +313,10 @@ $this->pagination_arrows = array('&lt;','&gt;');
 ```
 Also, you can use the set_pagination_delimiters($delimiters) and set_pagination_arrows($arrows) methods, where $delimiters and $arrows are arrays.
 
-##UPDATE
-###The update() method
+## UPDATE
+### The update() method
 
-####The basic update()
+#### The basic update()
 
 The update() method is pretty much the same as the insert() method.
 
@@ -340,7 +340,7 @@ $this->user_model->update($update_data,'email');
 ```
 You can also pass a multidimensional array to change multiple rows. In this case the second parameter should be the name of the identifying column.
 
-####Update using the where() method
+#### Update using the where() method
 
 Another method to do an update would be to use the update() method in conjuction with the where() method:
 ```php
@@ -351,7 +351,7 @@ $this->user_model->where('email','email@email.com')->update($update_data);
 ?>
 ```
 
-####Update directly from form using from_form() method
+#### Update directly from form using from_form() method
 
 The update can also be made directly from the form with validation, the same way as is done by the insert() method. The only difference would be that you need to specify which input field should be used as reference for the rows to be updated. You do this by passing a third parameter as array:
 ```php
@@ -366,7 +366,7 @@ If you need to use another table field that is not in the form, in order to iden
 $id = $this->user_model->from_form(NULL,array('created_by'=>'1'), array('user_id'))->update();
 ```
 
-####Update custom string with disabled escaping
+#### Update custom string with disabled escaping
 
 You can prevent escaping content by passing an optional third argument, and setting it to FALSE (the second parameter is a where condition set as an array - you can set it to NULL):
 ```php
@@ -374,10 +374,10 @@ $this->user_model->update(array('views'=>'views+1'), array('id'=>'1'), FALSE);
 ```
 **TAKE CARE:** This doesn't work with values that have space inside unless you set quotes on them. So I would rather not use this (Maybe in future I will change the way this works)
 
-##DELETE
-###The delete() method
+## DELETE
+### The delete() method
 
-###Soft Deletes
+### Soft Deletes
 
 By default, the delete mechanism works with an SQL DELETE statement. However, you might not want to destroy the data, you might instead want to perform a **'soft delete'**.
 
@@ -411,19 +411,19 @@ You can also check if a row is **soft_deleted** by using `trashed()` method:
 $this->user_model->trashed(3); // will return TRUE or FALSE
 ```
 
-###The observers for the delete() method
+### The observers for the delete() method
 
 The before_soft_delete and before_delete observers offer the ID's of the rows that are about to be (soft) deleted. At the end of the callback you should return the array of ID's.
 
 The after_soft_delete and after_delete are also returning the ID's of the rows that you wanted deleted (Not those that have been deleted, so take care...). The one difference is that the array will also contain a key named "affected_rows" that will have the number of affected rows as value.
 
-##Relationships
+## Relationships
 
-###Creating relationships
+### Creating relationships
 
 When you extend MY_Model, you can also setup relationships between the model and other models. There are multiple ways of creating relations between tables:
 
-####The right way
+#### The right way
 
 Before `parent::__construct();` you add:
 
@@ -431,7 +431,7 @@ Before `parent::__construct();` you add:
 $this->has_one['phone'] = array('foreign_model'=>'Phone_model','foreign_table'=>'phones','foreign_key'=>'user_id','local_key'=>'id');
 ```
 
-####The semi-fast way
+#### The semi-fast way
 
 In the semi-fast way, you can simply pass the model, the foreign key and the local key (mind the order). The table name will be taken from the related model:
 
@@ -439,7 +439,7 @@ In the semi-fast way, you can simply pass the model, the foreign key and the loc
 $this->has_one['phone'] = array('Phone_model','foreign_key','local_key');
 ```
 
-####The fast and dirty way
+#### The fast and dirty way
 
 The fast and dirty way will simply need the related model name. All else will be taken from the model (I wouldn't advise this solution)
 
@@ -447,7 +447,7 @@ The fast and dirty way will simply need the related model name. All else will be
 $this->has_one['address'] = 'Address_model';
 ```
 
-###Has One (one to one) relationship (property)
+### Has One (one to one) relationship (property)
 
 Has One relationship tells our model that ever record in the table has assigned to it a record in another table. It is my opinion that there is no need to do a reverse relation like in Eloquent, where there is a "belongs to" relationship because, the truth be told, being a "one to one" relationship it's an equality between the entities.
 
@@ -476,7 +476,7 @@ class Phone_model extends MY_Model
 }
 ```
 
-###Has Many relationship (property)
+### Has Many relationship (property)
 
 Has Many relationship tells our model that a record in the table can have many related records in another table. The reverse of this relationship is a has one relation, which translates into a One To Many type of relationship. For a reverse relationship of type Many To Many, we will have another property named Has Many Pivot.
 
@@ -504,11 +504,11 @@ class Post_model extends MY_Model
 }
 ```
 
-###Has Many Pivot relationship (property)
+### Has Many Pivot relationship (property)
 
 Many to many relationship can have one to one as reverse relationship. But there are also many to many relationships that have many to many as reverse relationships. For this we have has_many_pivot key as relation. This one allows establishing MANY TO MANY or more MANY TO MANY relationship(s) between models/tables with the use of a PIVOT TABLE.
 
-####Setting up a Has Many Pivot relationship THE RIGHT WAY
+#### Setting up a Has Many Pivot relationship THE RIGHT WAY
 
 For the MY_Model to work properly every single time, you must provide it every single detail:
 
@@ -534,7 +534,7 @@ class User_model extends MY_Model
  }
 ```
 
-####Setting up a Has Many Pivot relationship THE FAST AND PRONE TO ERRORS WAY.
+#### Setting up a Has Many Pivot relationship THE FAST AND PRONE TO ERRORS WAY.
 
 **ATTENTION**: The pivot table name must be composed of the two connected table names separated by _ (underscore) the table names having to be alphabetically ordered (NOT users_posts, but posts_users). Also the pivot table must contain as identifying columns the columns named by convention as follows: foreign_table_name_singular + _ (underscore) + foreign_table_primary_key.
 
@@ -568,7 +568,7 @@ class Post_model extends MY_Model
 }
 ```
 
-####Get relation data on many to many relationship
+#### Get relation data on many to many relationship
 
 You get data only related key ids on many to many relationships. If you set as TRUE 4th parameter, you will get related data not only keys.
 
@@ -593,7 +593,7 @@ class Posts_Model extends MY_Model
 }
 ```
 
-##Working with relationships
+## Working with relationships
 
 Every table has a way to interact with other tables. So if your model has relationships with other models, you can define those relationships:
 ```php
@@ -647,7 +647,7 @@ foreach ($user->posts as $post)
 }
 ```
 
-###Order the results of the relastionship results
+### Order the results of the relastionship results
 
 Sometimes you need to order the results coming from the with_*() method. In order do this, you can use the order_inside parameter like below:
 
@@ -660,7 +660,7 @@ A query like the one above should return all the authors with their respective p
 $this->author_model->with_posts('fields:...|order_inside:published_at desc, readings asc')->get_all();
 ```
 
-###Order THE MAIN RESULT by the relationship data
+### Order THE MAIN RESULT by the relationship data
 
 You can order the main result by using a field that can be found inside a relationship column.
 ```php
@@ -668,7 +668,7 @@ $this->post_model->with_author("order_by:username,asc")->get_all();
 ```
 The code above will order all the posts by the username of the authors (ascending).
 
-###Retrieve data from nested relationships (or should we say retrieve nested relationships data?)
+### Retrieve data from nested relationships (or should we say retrieve nested relationships data?)
 
 In order to retrieve data from nested relationships, we should pass the with_*() method a multidimensional array. Let's assume we have a Country_model with many City_model, the City_Model having many Company_model:
 
@@ -715,7 +715,7 @@ Now, if we want to retrieve the cities with their companies from a country we wo
 $this->country_model->with_cities(array('fields'=>'name,id,population','with'=>array('relation'=>'companies','fields'=>'name,phone_number'))->get($country_id);
 ```
 
-##Database Connection
+## Database Connection
 
 The class will automatically use the default database connection, and even load it for you if you haven't yet.
 
@@ -727,7 +727,7 @@ $this->user_model->on('write_conn')->delete(3);
 ```
 After this, I would advise you to do a `$this->user_model->reset_connection();` in order to reset the database connection to the model's (or application's) default.
 
-##Observers##
+## Observers ##
 
 There are times when you'll need to alter your model data before or after it's inserted or returned. This could be adding timestamps, pulling in relationships or deleting dependent rows. The MVC pattern states that these sorts of operations need to go in the model. In order to facilitate this, MY_Model contains a series of callbacks/observers -- methods that will be called at certain points.
 
@@ -763,35 +763,35 @@ class User_model extends MY_Model
 ```
 Each observer overwrites its predecessor's data, sequentially, in the order the observers are defined. In order to work with relationships, the MY_Model already has an `after_get` trigger which will be called last.
 
-##Available methods
+## Available methods
 
-###insert($data)
+### insert($data)
 It inserts one or more rows into table
 
-####Parameters
+#### Parameters
 * $data - data to be inserted.
 
-####Return
+#### Return
 * either a integer representing the id of the inserted row;
 * or an array with ids.
 
-####Examples
+#### Examples
 ```php
 $data = array('username'=>'avenirer','email'=>'avenir.ro@gmail.com');
 $this->user_model->insert($data);
 ```
 
-###update($data, $column_name_where = NULL)
+### update($data, $column_name_where = NULL)
 It updates one or more rows from table
 
-####Parameters
+#### Parameters
 * $data - the updated data as object or multidimensional array or multiple array (just like the native $this->db->update())
 * $column_name_where - no value if you want to update all rows, an id of the row, an array containing column name and value or, if there are multiple rows, the name of the column that can be found in the $data array.
 
-####Return
+#### Return
 Returns the number of affected rows
 
-####Examples
+#### Examples
 ```php
 $newdata = array('status'=>'1');
 $this->user_model->update($data);
@@ -806,16 +806,16 @@ $newdata = array('username'=>'aveniro', 'email'=>'avenir.ro@gmail.com');
 $this->user_model->update($data,'email');
 ```
 
-###where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
+### where($field_or_array = NULL, $operator_or_value = NULL, $value = NULL, $with_or = FALSE, $with_not = FALSE, $custom_string = FALSE)
 It sets a where condition to the query
 
-####Parameters
+#### Parameters
 * $field_or_array, $operator_or_value = NULL - if you want to look by an id you can simply pass the id; if you want to look for a value of a column, you can pass it as to parameters where('column','value');  if you have multiple columns for identifing a row you can pass it an array where(array('column1'=>'value1','column2'=>'value2')); if you have a "where in" type of query (multiple posible values for a column), you can pass it the name of the column as first parameter and an array of possible values as second parameter;
 
-####Return
+#### Return
 Doesn't return anything, being a part of the query chain
 
-####Examples
+#### Examples
 ```php
 $this->user_model->where(3)->get();
 //you can also do it like this: $this->user_model->get(3);
@@ -829,7 +829,7 @@ $this->user_model->where(array('email'=>'avenir.ro@gmail.com','username'=>'aveni
 $this->user_model->where('username',array('avenirer','aveniro')->get();
 ```
 
-###where_*()
+### where_*()
 Although I wouldn't advise (there are some buggy things there...), there is also a "dynamic" where. That means that at any time you can write a where method that contains the name of the column:
 
 ```php
@@ -837,37 +837,37 @@ $this->user_model->where_username('avenirer')->get(); // where the "username" va
 $this->user->model->where_mail(array('avenir.ro@gmail.com','adrian.voicu@avenir.ro'))->get_all();
 ```
 
-###limit($limit,$offset=0)
+### limit($limit,$offset=0)
 Is a self explaining method...
 
-###order_by($criteria, $order = 'ASC')
+### order_by($criteria, $order = 'ASC')
 Is a wrapper for $this->db->order_by()
 
-###group_by($grouping_by)
+### group_by($grouping_by)
 Is a wrapper for $this->db->group_by()
 
-###delete(where)
+### delete(where)
 It deletes or soft deletes (depending on your settings) rows, working like the native $this->db->delete().
 
-####Parameters
+#### Parameters
 
-####Return
+#### Return
 It returns affected rows or false, if no delete was done.
 
-###force_delete(where)
+### force_delete(where)
 It forces the delete of row(s) if soft delete was enabled. Takes same parameters and returns same thing like the method before
 
-###restore($where)
+### restore($where)
 Restores row(s) that were previously soft deleted.
 Takes same parameters and returns same thing like the method before
 
-###trashed($where)
+### trashed($where)
 Verifies if a row is soft deleted or not
 
-####Return
+#### Return
 It returns TRUE or FALSE
 
-####Examples
+#### Examples
 ```php
 if($this->user_model->trashed(1))
 {
@@ -875,89 +875,89 @@ if($this->user_model->trashed(1))
 }
 ```
 
-###get($where = NULL)
+### get($where = NULL)
 Returns a single row that respects the $where parameter
 
-####Parameters
+#### Parameters
 * where - the $where parameter uses the where($param) method, that means only one parameter
 
-####Return
+#### Return
 Returns a row;
 
-####Examples
+#### Examples
 ```php
 $user = $this->user_model->get(1);
 
 $user = $this->user_model->get(array('username'=>'avenirer'));
 ```
 
-###get_all($where = NULL)
+### get_all($where = NULL)
 Same as the get() method but it can return more than one row
 
-###paginate($rows_per_page = 10, $total_rows = NULL, $page_number = 1)
+### paginate($rows_per_page = 10, $total_rows = NULL, $page_number = 1)
 
-####Parameters
+#### Parameters
 * rows_per_page = 10 - the number of rows per page
 * total_rows = NULL - the total number of rows
 * page_number = 1 - current page number
 
-####Return
+#### Return
 Returns the results and created the links that can be retrieved by accessing "previous_page", "next_page" and "all_pages" properties
 
-###count_rows($where)
+### count_rows($where)
 Returns the number of rows.
 
-####Example
+#### Example
 ```php
 $users = $this->user_model->as_array()->count_rows();
 ```
 
-###as_array()
+### as_array()
 Sets the option to return the results as an array(), if the model was previously set to return the results as objects.
 
-####Example
+#### Example
 ```php
 $users = $this->user_model->as_array()->get_all();
 ```
 
-###fields($fields)
+### fields($fields)
 Allows the user to select only specific columns
 
-###Examples
+### Examples
 ```php
 $users = $this->user_model->fields('username,password')->get_all();
 
 $users = $this->user_model->fields(array('users.username', 'users.password', 'group.name')->get_all();
 ```
 
-###as_object()
+### as_object()
 Sets the option to return the results as object, if the model was previously set to return the results as arrays.
 
-####Example
+#### Example
 ```php
 $users = $this->user_model->as_object()->get_all();
 ```
 
-###with_trashed()
+### with_trashed()
 Sets the option to return in the results the rows that were soft deleted
 
-####Example
+#### Example
 ```php
 $users = $this->user_model->with_trashed()->get_all;
 ```
 
-###only_trashed()
+### only_trashed()
 Sets the option to return in the results only the rows that were soft deleted
 
-####Example
+#### Example
 ```php
 $users = $this->user_model->only_trashed()->get_all;
 ```
 
-###on($connection_group)
+### on($connection_group)
 Sets a connection group for the current chain query
 
-###reset_connection()
+### reset_connection()
 Resets the connection to the database to the one that is set for the model or the default connection
 
 Enjoy using my MY_Model and please report any issues or try some pull requests. Thank you
