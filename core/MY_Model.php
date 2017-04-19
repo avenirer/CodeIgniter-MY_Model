@@ -1279,6 +1279,7 @@ class MY_Model extends CI_Model
                     $this->_database->order_by(rtrim($order_inside_str,","));
                 }
                 $sub_results = $this->_database->get($foreign_table)->result_array();
+                $order_inside_array = array();
                 $this->_database->reset_query();
             }
 
