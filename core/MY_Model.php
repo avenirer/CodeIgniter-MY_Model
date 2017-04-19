@@ -353,11 +353,13 @@ class MY_Model extends CI_Model
         {
             $this->fillable_fields();
             $this->validated = array();
-            foreach($rules as $rule)
+            foreach($rules as $table_column_name => $rule)
             {
-                if(in_array($rule['field'],$this->_can_be_filled))
+                if(in_array($table_column_name,$this->_can_be_filled))
                 {
-                    $this->validated[$rule['field']] = $this->input->post($rule['field']);
+                    $this->validated[$table_column_name] = $this->input->post($rule['field']);
+                }else{                        
+                     show_error('MY_Model: Unknown column ('.$table_column_name.') in table: ('.$this->table.') in $rules.');
                 }
             }
             if(isset($additional_values) && is_array($additional_values) && !empty($additional_values))
@@ -367,7 +369,9 @@ class MY_Model extends CI_Model
                     if(in_array($field, $this->_can_be_filled))
                     {
                         $this->validated[$field] = $value;
-                    }
+                    }else{                        
+                     show_error('MY_Model: Unknown column ('.$field.') in table: ('.$this->table.') in $additional_values.');
+                }
                 }
             }
 
@@ -380,9 +384,9 @@ class MY_Model extends CI_Model
                     else if (in_array($key, $this->table_fields)){
                         $this->row_fields_to_update[$key] = $field;
                     }
-                    else {
-                        continue;
-                    }
+                    else {  
+                        show_error('MY_Model: Unknown column ('.$key.'=>'.$field.') in table: ('.$this->table.') in $row_fields_to_update.');
+                     }
                 }
             }
             return $this;
@@ -394,7 +398,32 @@ class MY_Model extends CI_Model
         }
 
     }
-
+    private function _unset_none_value_fields($data)
+    {
+        $multi = $this->is_multidimensional($data);
+         if($multi===FALSE)
+        {
+            foreach ($data as $field => $value)
+            {
+                if(trim($value)==''){
+                        unset($data[$field]);
+                }
+            }
+        }
+        else
+        {
+            foreach($data_as_array as $key => $row)
+            {
+                foreach ($row as $field => $value)
+                {
+                    if(trim($value)==''){
+                        unset($data[$field]);
+                    }
+                }
+            }
+        }
+        return $data;
+    }
     /**
      * public function insert($data)
      * Inserts data into table. Can receive an array or a multidimensional array depending on what kind of insert we're talking about.
@@ -413,7 +442,8 @@ class MY_Model extends CI_Model
             return FALSE;
         }
         $data = $this->_prep_before_write($data);
-
+        $data = $this->_unset_none_value_fields($data);
+    
         //now let's see if the array is a multidimensional one (multiple rows insert)
         $multi = $this->is_multidimensional($data);
 
