@@ -115,7 +115,7 @@ $this->user_model->insert($insert_data);
 
 You can at any time directly insert values from forms into the tables using the **from_form()** method. First of all **make sure you have a fillable or a protected property (at least the primary key should be in there)**, because you must make sure no-one interferes with your id's or whatever you use to uniquely identify the rows. Also is worth noting that, because the inserts and updates from forms are done directly without intervention from developer, **YOU MUST DEFINE VALIDATION RULES FOR ALL FIELDS THAT YOU ARE FILLING**
 
-After you've done this, you must set the rules. If you use the MY_Model's form validation, I advise you to write the rules inside your model. Below you can find an example of model:
+After you've done this, you must set the rules. If you use the MY_Model's form validation, I advise you to write the rules inside your model. This even allows you to specify separate rules for each action (i.e. insert and update) by using an associative array with keys according to the action. If the same ruleset should apply to all actions, just use an sequential array. Below you can find an example of model:
 
 ```php
 <?php
