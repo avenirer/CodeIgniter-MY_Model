@@ -652,7 +652,7 @@ class MY_Model extends CI_Model
         {
             $this->_database->{$where_or}($field_or_array, NULL, FALSE);
         }
-        elseif(is_numeric($field_or_array))
+        elseif((is_numeric($field_or_array) || is_string($field_or_array)) && !isset($operator_or_value))
         {
             $this->_database->{$where_or}(array($this->table.'.'.$this->primary_key => $field_or_array));
         }
