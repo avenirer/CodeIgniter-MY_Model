@@ -489,7 +489,7 @@ class MY_Model extends CI_Model
      * @param array $data
      * @param array|int $column_name_where
      * @param bool $escape should the values be escaped or not - defaults to true
-     * @return str/array Returns id/ids of inserted rows
+     * @return int Returns affected rows
      */
     public function update($data = NULL, $column_name_where = NULL, $escape = TRUE)
     {
@@ -524,7 +524,7 @@ class MY_Model extends CI_Model
             }
             if(isset($column_name_where))
             {
-                if (is_array($column_name_where))
+                if (is_array($column_name_where) OR is_string($column_name_where))
                 {
                     $this->where($column_name_where);
                 } elseif (is_numeric($column_name_where)) {
