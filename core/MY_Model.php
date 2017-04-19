@@ -524,14 +524,19 @@ class MY_Model extends CI_Model
             }
             if(isset($column_name_where))
             {
+                $this->_get_table_fields();
                 if (is_array($column_name_where))
                 {
                     $this->where($column_name_where);
-                } elseif (is_numeric($column_name_where)) {
-                    $this->_database->where($this->primary_key, $column_name_where);
-                } else {
+                }
+                elseif (in_array($column_name_where, $this->table_fields))
+                {
                     $column_value = (is_object($data)) ? $data->{$column_name_where} : $data[$column_name_where];
                     $this->_database->where($column_name_where, $column_value);
+                }
+                else
+                {
+                    $this->_database->where($this->primary_key, $column_name_where);
                 }
             }
             if($escape)
