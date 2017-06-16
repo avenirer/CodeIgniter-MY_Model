@@ -1758,8 +1758,11 @@ class MY_Model extends CI_Model
                     break;
                 }
             }
-            $mask = (isset($string)) ? $path.$prefix.$string : $path.$this->cache_prefix.'_*';
-            array_map('unlink', glob($mask));
+           if(isset($path))
+           {
+                $mask = (isset($string)) ? $path.$prefix.$string : $path.$this->cache_prefix.'_*';
+                array_map('unlink', glob($mask));
+           }
         }
         return $this;
     }
