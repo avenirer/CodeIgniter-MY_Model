@@ -4,6 +4,20 @@ This **CodeIgniter MY_Model** is the result of a lengthy tutorial about construc
 
 **VERY IMPORTANT NOTE: MY_Model DOESN'T REPLACE THE QUERY BUILDER. IF YOU HAVE A VERY COMPLEX QUERY, DO NOT ASK MY_Model TO DO IT FOR YOU**
 
+## Table of contents
+* [Synopsis](#synopsis)
+* [Installation/Usage](#installationusage)
+* [CREATE](#create)
+* [READ](#read)
+* [Pagination](#pagination)
+* [UPDATE](#update)
+* [DELETE](#delete)
+* [Relationships](#relationships)
+* [Working with relationships](#working-with-relationships)
+* [Database Connection](#database-connection)
+* [Observers](#observers)
+* [Available methods](#available-methods)
+
 ## Synopsis
 ```php
 class User_model extends MY_Model { }
