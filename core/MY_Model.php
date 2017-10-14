@@ -1504,19 +1504,16 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
-
+    
     /**
-     * public function reset_connection($connection_group = NULL)
+     * public function reset_connection()
      * Resets the connection to the default used for all the model
      * @return obj
      */
     public function reset_connection()
     {
-        if(isset($connection_group))
-        {
-            $this->_database->close();
-            $this->_set_connection();
-        }
+        $this->_database->close();
+        $this->_set_connection();
         return $this;
     }
 
@@ -1813,7 +1810,7 @@ class MY_Model extends CI_Model
         else
         {
             $this->load->database();
-            $this->_database =$this->db;
+            $this->_database = $this->db;
         }
         // This may not be required
         return $this;
