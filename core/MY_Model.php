@@ -94,24 +94,20 @@ class MY_Model extends CI_Model
     public $primary_key = 'id';
 
     /**
-     * @var array
-     * You can establish the fields of the table. If you won't these fields will be filled by MY_Model (with one query)
+     * @var null|array
+     * Sets fillable fields.
+     * If value is set as null, the $fillable property will be set as an array with all the table fields (except the primary key) as elements.
+     * If value is set as an array, there won't be any changes done to it (ie: no field of the table will be updated or inserted).
      */
-    public $table_fields = array();
-
+    public $fillable = null;
+    
     /**
-     * @var array
-     * Sets fillable fields
+     * @var null|array
+     * Sets protected fields.
+     * If value is set as null, the $protected will be set as an array with the primary key as single element.
+     * If value is set as an array, there won't be any changes done to it (if set as empty array, the primary key won't be inserted here).
      */
-    public $fillable = array();
-
-    /**
-     * @var array
-     * Sets protected fields
-     */
-    public $protected = array();
-
-    private $_can_be_filled = NULL;
+    public $protected = null;
 
 
     /** @var bool | array
@@ -185,7 +181,6 @@ class MY_Model extends CI_Model
     public function __construct()
     {
         parent::__construct();
-        $this->load->helper('inflector');
         $this->_set_connection();
         $this->_set_timestamps();
         $this->_fetch_table();
@@ -199,46 +194,10 @@ class MY_Model extends CI_Model
         */
     }
 
-    public function _get_table_fields()
-    {
-        if(empty($this->table_fields))
-        {
-            $this->table_fields = $this->_database->list_fields($this->table);
-        }
-        return TRUE;
-    }
-
-    public function fillable_fields()
-    {
-        if(!isset($this->_can_be_filled))
-        {
-            $this->_get_table_fields();
-            $no_protection = array();
-            foreach ($this->table_fields as $field) {
-                if (!in_array($field, $this->protected)) {
-                    $no_protection[] = $field;
-                }
-            }
-            if (!empty($this->fillable)) {
-                $can_fill = array();
-                foreach ($this->fillable as $field) {
-                    if (in_array($field, $no_protection)) {
-                        $can_fill[] = $field;
-                    }
-                }
-                $this->_can_be_filled = $can_fill;
-            } else {
-                $this->_can_be_filled = $no_protection;
-            }
-        }
-        return TRUE;
-    }
+    
 
     public function _prep_before_write($data)
     {
-        $this->fillable_fields();
-        // We make sure we have the fields that can be filled
-        $can_fill = $this->_can_be_filled;
 
         // Let's make sure we receive an array...
         $data_as_array = (is_object($data)) ? (array)$data : $data;
@@ -249,7 +208,7 @@ class MY_Model extends CI_Model
         {
             foreach ($data_as_array as $field => $value)
             {
-                if (in_array($field, $can_fill)) {
+                if (in_array($field, $this->fillable)) {
                     $new_data[$field] = $value;
                 }
                 else
@@ -264,7 +223,7 @@ class MY_Model extends CI_Model
             {
                 foreach ($row as $field => $value)
                 {
-                    if (in_array($field, $can_fill)) {
+                    if (in_array($field, $this->fillable)) {
                         $new_data[$key][$field] = $value;
                     }
                     else
@@ -1504,16 +1463,19 @@ class MY_Model extends CI_Model
         }
         return $this;
     }
-    
+
     /**
-     * public function reset_connection()
+     * public function reset_connection($connection_group = NULL)
      * Resets the connection to the default used for all the model
      * @return obj
      */
     public function reset_connection()
     {
-        $this->_database->close();
-        $this->_set_connection();
+        if(isset($connection_group))
+        {
+            $this->_database->close();
+            $this->_set_connection();
+        }
         return $this;
     }
 
@@ -1810,7 +1772,7 @@ class MY_Model extends CI_Model
         else
         {
             $this->load->database();
-            $this->_database = $this->db;
+            $this->_database =$this->db;
         }
         // This may not be required
         return $this;
@@ -1938,23 +1900,52 @@ class MY_Model extends CI_Model
     }
 
     /**
-     * private function _fetch_table()
-     *
-     * Sets the table name when called by the constructor
-     *
+     * this function verifies if a table name was defined. if not, it calls the _get_table_name in order to retrieve a potential table name,
+     * which will be tested if exists. If all went well, the table name will be saved as $this->table
+     * @return boolean
      */
     private function _fetch_table()
     {
         if (!isset($this->table))
         {
             $this->table = $this->_get_table_name(get_class($this));
+            if (!$this->db->table_exists($this->table)) {
+               show_error(
+                   sprintf('While trying to figure out the table name, couldn\'t find an existing table named: <strong>"%s"</strong>.<br />You can set the table name in your model by defining the protected variable <strong>$table</strong>.',$this->table),
+                   500,
+                   sprintf('Error trying to figure out table name for model "%s"',get_class($this))
+               ); 
+            }
         }
         return TRUE;
     }
+    
     private function _get_table_name($model_name)
     {
-        $table_name = plural(preg_replace('/(_m|_model|_mdl)?$/', '', strtolower($model_name)));
+        $this->load->helper('inflector');
+        $table_name = plural(preg_replace('/(_m|_model|_mdl|model)?$/', '', strtolower($model_name)));
         return $table_name;
+    }
+    
+    private function _set_table_fillable_protected()
+    {
+        if (is_null($this->fillable)) {
+            
+            $table_fields = $this->_database->list_fields($this->table);
+            foreach ($table_fields as $field) {
+                if (is_array($this->protected) && !in_array($field, $this->protected)) {
+                    $this->fillable[] = $field;
+                }
+                
+                elseif(is_null($this->protected) && ($field !== $this->primary_key)) {
+                    $this->fillable[] = $field;
+                }
+            }
+        }
+        if (is_null($this->protected)) {
+            $this->protected = array($this->primary_key);
+        }
+        return $this;
     }
 
     public function __call($method, $arguments)
