@@ -294,7 +294,6 @@ class MY_Model extends CI_Model
      */
     public function from_form($rules = NULL,$additional_values = NULL, $row_fields_to_update = array())
     {
-        $this->_get_table_fields();
         $this->load->library('form_validation');
         if(!isset($rules))
         {
@@ -333,10 +332,10 @@ class MY_Model extends CI_Model
             if(!empty($row_fields_to_update))
             {
                 foreach ($row_fields_to_update as $key => $field) {
-                    if (in_array($field, $this->table_fields)) {
+                    if (in_array($field, $this->fillable)) {
                         $this->row_fields_to_update[$field] = $this->input->post($field);
                     }
-                    else if (in_array($key, $this->table_fields)){
+                    else if (in_array($key, $this->fillable)){
                         $this->row_fields_to_update[$key] = $field;
                     }
                     else {
