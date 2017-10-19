@@ -309,11 +309,10 @@ class MY_Model extends CI_Model
         $this->form_validation->set_rules($rules);
         if($this->form_validation->run())
         {
-            $this->fillable_fields();
             $this->validated = array();
             foreach($rules as $rule)
             {
-                if(in_array($rule['field'],$this->_can_be_filled))
+                if(in_array($rule['field'],$this->fillable))
                 {
                     $this->validated[$rule['field']] = $this->input->post($rule['field']);
                 }
@@ -322,7 +321,7 @@ class MY_Model extends CI_Model
             {
                 foreach($additional_values as $field => $value)
                 {
-                    if(in_array($field, $this->_can_be_filled))
+                    if(in_array($field, $this->fillable))
                     {
                         $this->validated[$field] = $value;
                     }
@@ -1912,6 +1911,8 @@ class MY_Model extends CI_Model
                    sprintf('Error trying to figure out table name for model "%s"',get_class($this))
                ); 
             }
+		else {
+			$this->_set_table_fillable_protected()
         }
         return TRUE;
     }
