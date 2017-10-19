@@ -1912,7 +1912,8 @@ class MY_Model extends CI_Model
                ); 
             }
 		else {
-			$this->_set_table_fillable_protected()
+			$this->_set_table_fillable_protected();
+		}
         }
         return TRUE;
     }
