@@ -1243,11 +1243,11 @@ class MY_Model extends CI_Model
                     $order_inside_str = '';
                     foreach($order_inside_array as $order_by_inside)
                     {
-                        $order_inside_str .= (strpos($order_by_inside[0],',')=== false) ? '`'.$foreign_table.'`.`'.$order_by_inside[0].' '.$order_by_inside[1] : $order_by_inside[0].' '.$order_by_inside[1];
+                        $order_inside_str .= (strpos($order_by_inside[0],'.')=== false) ? '`'.$foreign_table.'`.`'.$order_by_inside[0].' '.$order_by_inside[1] : $order_by_inside[0].' '.$order_by_inside[1];
                         $order_inside_str .= ',';
                     }
                     $order_inside_str = rtrim($order_inside_str, ",");
-                    $this->_database->order_by(rtrim($order_inside_str,","));
+                    $this->_database->order_by($order_inside_str);
                 }
                 $sub_results = $this->_database->get($foreign_table)->result_array();
                 $this->_database->reset_query();
