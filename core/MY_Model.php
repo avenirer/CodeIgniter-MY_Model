@@ -272,7 +272,7 @@ class MY_Model extends CI_Model
         }
         elseif($this->return_as == 'object')
         {
-            $data = json_decode(json_encode($data), FALSE);
+            $data = $this->array_to_object($data);
         }
         if(isset($this->_select))
         {
@@ -897,7 +897,7 @@ class MY_Model extends CI_Model
                 $row = $query->row_array();
                 $row = $this->trigger('after_get', $row);
                 $row =  $this->_prep_after_read(array($row),FALSE);
-                $row = $row[0];
+                $row = $row->{0};
                 $this->_write_to_cache($row);
                 return $row;
             }
@@ -1998,6 +1998,24 @@ class MY_Model extends CI_Model
         return array_map( array($this,'object_to_array'), $object );
     }
 
+    public function array_to_object($array)
+    {
+        $obj = new stdClass();
+        return $this->_array_to_object($array, $obj);
+    }
+
+    private function _array_to_object($array, &$obj)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $obj->$key = new stdClass();
+                $this->_array_to_object($value, $obj->$key);
+            } else {
+                $obj->$key = $value;
+            }
+        }
+        return $obj;
+    }
 
     /**
      * Verifies if an array is associative or not
