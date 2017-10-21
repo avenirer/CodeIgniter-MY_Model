@@ -193,6 +193,20 @@ class MY_Model extends CI_Model
         $this->before_update[]='add_updater';
         */
     }
+	
+    /*
+     * public function _get_rules($action=NULL)
+     * This function returns the rules. If action is given and rules are
+     * stored in an associative array, only the rules for this action are
+     * returned, all otherwise.
+     * This should be used by any method utilizing the rules.
+     */
+    public function _get_rules($action=NULL) {
+        if (isset($action) && $this->is_assoc($this->rules)) {
+            return $this->rules[$action];
+        }
+        return $this->rules;
+    }
 
     
 
@@ -299,11 +313,11 @@ class MY_Model extends CI_Model
         {
             if(empty($row_fields_to_update))
             {
-                $rules = $this->rules['insert'];
+                $rules = $this->_get_rules('insert');
             }
             else
             {
-                $rules = $this->rules['update'];
+                $rules = $this->_get_rules('update');
             }
         }
         $this->form_validation->set_rules($rules);
