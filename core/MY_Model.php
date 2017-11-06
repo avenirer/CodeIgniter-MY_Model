@@ -911,7 +911,7 @@ class MY_Model extends CI_Model
                 $row = $query->row_array();
                 $row = $this->trigger('after_get', $row);
                 $row =  $this->_prep_after_read(array($row),FALSE);
-                $row = $row->{0};
+                $row = is_array($row) ? $row[0] : $row->{0};
                 $this->_write_to_cache($row);
                 return $row;
             }
