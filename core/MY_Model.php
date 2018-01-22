@@ -1927,10 +1927,8 @@ class MY_Model extends CI_Model
                    sprintf('Error trying to figure out table name for model "%s"',get_class($this))
                ); 
             }
-		else {
-			$this->_set_table_fillable_protected();
-		}
         }
+    	$this->_set_table_fillable_protected();
         return TRUE;
     }
     
