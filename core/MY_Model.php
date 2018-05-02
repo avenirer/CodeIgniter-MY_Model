@@ -1919,7 +1919,7 @@ class MY_Model extends CI_Model
     {
         if (!isset($this->table))
         {
-            $this->table = $this->_get_table_name(get_class($this));
+            $this->table = $this->_database->dbprefix($this->_get_table_name(get_class($this)));
             if (!$this->db->table_exists($this->table)) {
                show_error(
                    sprintf('While trying to figure out the table name, couldn\'t find an existing table named: <strong>"%s"</strong>.<br />You can set the table name in your model by defining the protected variable <strong>$table</strong>.',$this->table),
