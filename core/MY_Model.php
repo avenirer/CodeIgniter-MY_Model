@@ -974,7 +974,10 @@ class MY_Model extends CI_Model
             if($query->num_rows() > 0)
             {
                 $data = $query->result_array();
-                $data = $this->trigger('after_get', $data);
+		for ($i = 0; $i < count($data); $i++) {
+                    $last = $i == count($data)-1;
+                    $data[$i] = $this->trigger('after_get', $data[$i], $last);
+                }
                 $data = $this->_prep_after_read($data,TRUE);
                 $this->_write_to_cache($data);
                 return $data;
