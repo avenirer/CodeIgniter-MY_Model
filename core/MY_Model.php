@@ -1424,7 +1424,7 @@ class MY_Model extends CI_Model
                                 {
                                     $pivot_local_key = $this->table.'_'.$this->primary_key;
                                     $pivot_foreign_key = $foreign_table.'_'.$foreign_key;
-                                    $get_relate = (isset($relation[3]) && ($relation[3]===TRUE())) ? TRUE : FALSE;
+                                    $get_relate = (isset($relation[3]) && ($relation[3]===TRUE)) ? TRUE : FALSE;
                                 }
                             }
 
