@@ -100,7 +100,7 @@ class MY_Model extends CI_Model
      * If value is set as an array, there won't be any changes done to it (ie: no field of the table will be updated or inserted).
      */
     public $fillable = null;
-    
+
     /**
      * @var null|array
      * Sets protected fields.
@@ -193,7 +193,7 @@ class MY_Model extends CI_Model
         $this->before_update[]='add_updater';
         */
     }
-	
+
     /*
      * public function _get_rules($action=NULL)
      * This function returns the rules. If action is given and rules are
@@ -208,7 +208,7 @@ class MY_Model extends CI_Model
         return $this->rules;
     }
 
-    
+
 
     public function _prep_before_write($data)
     {
@@ -1199,7 +1199,15 @@ class MY_Model extends CI_Model
                     }
                 }
 
-                $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
+                $this->_database->group_start();
+                $local_key_values_chunk = array_chunk($local_key_values,500);
+                foreach($local_key_values_chunk as $value_lkv)
+                {
+                    $this->_database->or_where_in($foreign_key, $value_lkv);
+                }
+                $this->_database->group_end();
+
+                $sub_results = $sub_results->get_all();
             }
             else
             {
@@ -1925,30 +1933,30 @@ class MY_Model extends CI_Model
                    sprintf('While trying to figure out the table name, couldn\'t find an existing table named: <strong>"%s"</strong>.<br />You can set the table name in your model by defining the protected variable <strong>$table</strong>.',$this->table),
                    500,
                    sprintf('Error trying to figure out table name for model "%s"',get_class($this))
-               ); 
+               );
             }
         }
     	$this->_set_table_fillable_protected();
         return TRUE;
     }
-    
+
     private function _get_table_name($model_name)
     {
         $this->load->helper('inflector');
         $table_name = plural(preg_replace('/(_m|_model|_mdl|model)?$/', '', strtolower($model_name)));
         return $table_name;
     }
-    
+
     private function _set_table_fillable_protected()
     {
         if (is_null($this->fillable)) {
-            
+
             $table_fields = $this->_database->list_fields($this->table);
             foreach ($table_fields as $field) {
                 if (is_array($this->protected) && !in_array($field, $this->protected)) {
                     $this->fillable[] = $field;
                 }
-                
+
                 elseif(is_null($this->protected) && ($field !== $this->primary_key)) {
                     $this->fillable[] = $field;
                 }
@@ -2066,7 +2074,7 @@ class MY_Model extends CI_Model
         return $data;
     }
 
-    
+
     /*
     public function add_creator($data)
     {
