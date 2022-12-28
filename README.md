@@ -840,7 +840,7 @@ $this->user_model->where('id >=', '3')->get();
 
 $this->user_model->where(array('email'=>'avenir.ro@gmail.com','username'=>'avenirer'))->get();
 
-$this->user_model->where('username',array('avenirer','aveniro')->get();
+$this->user_model->where('username',array('avenirer','aveniro'))->get();
 ```
 
 ### where_*()
